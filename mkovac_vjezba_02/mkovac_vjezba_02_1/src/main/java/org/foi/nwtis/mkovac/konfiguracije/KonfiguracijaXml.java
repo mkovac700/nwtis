@@ -29,7 +29,7 @@ public class KonfiguracijaXml extends KonfiguracijaApstraktna {
     }
 
     try {
-      this.postavke.store(Files.newOutputStream(putanja), "NWTiS mkovac 2023.");
+      this.postavke.storeToXML(Files.newOutputStream(putanja), "NWTiS mkovac 2023.");
     } catch (IOException e) {
       throw new NeispravnaKonfiguracija(
           "Datoteka '" + datoteka + "' nije moguće upisivati. " + e.getMessage());
@@ -51,7 +51,7 @@ public class KonfiguracijaXml extends KonfiguracijaApstraktna {
     }
 
     try {
-      this.postavke.load(Files.newInputStream(putanja));
+      this.postavke.loadFromXML(Files.newInputStream(putanja));
     } catch (IOException e) {
       throw new NeispravnaKonfiguracija(
           "Datoteka '" + datoteka + "' nije moguće čitati. " + e.getMessage());
