@@ -47,6 +47,14 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     return this.postavke.getProperty(kljuc);
   }
 
+  /**
+   * Sprema postavku ako ne postoji
+   * 
+   * @param kljuc naziv postavke
+   * @param vrijednost vrijednost postavke
+   * @return vraća true ako je postavka dodana ili false ako postoji
+   * @see KonfiguracijaApstraktna azurirajPostavku
+   */
   @Override
   public boolean spremiPostavku(String kljuc, String vrijednost) {
 
@@ -57,6 +65,14 @@ public abstract class KonfiguracijaApstraktna implements Konfiguracija {
     return true;
   }
 
+  /**
+   * Ažurira postojeću postavku ako ne postoji
+   * 
+   * @param kljuc naziv postavke
+   * @param vrijednost vrijednost postavke
+   * @return vraća true ako je postavka ažurirana ili false ako ne postoji
+   * @see KonfiguracijaApstraktna spremiPostavku
+   */
   @Override
   public boolean azurirajPostavku(String kljuc, String vrijednost) {
     if (!this.postojiPostavka(kljuc))

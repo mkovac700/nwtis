@@ -7,10 +7,24 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
+/**
+ * Klasa konfiguracija za rad s postavkama konfiguracije u bin formatu
+ * 
+ * @author Marijan Kovac
+ *
+ */
 public class KonfiguracijaBin extends KonfiguracijaApstraktna {
 
+  /**
+   * Konstanta TIP
+   */
   public static final String TIP = "bin";
 
+  /**
+   * Konstruktor za inicijalizaciju KonfiguracijaBin
+   * 
+   * @param nazivDatoteke naziv datoteke
+   */
   public KonfiguracijaBin(String nazivDatoteke) {
     super(nazivDatoteke);
   }

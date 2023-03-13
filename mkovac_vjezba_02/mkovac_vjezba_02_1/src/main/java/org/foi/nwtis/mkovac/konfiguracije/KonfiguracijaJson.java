@@ -7,10 +7,24 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
+/**
+ * Klasa konfiguracija za rad s postavkama konfiguracije u json formatu
+ * 
+ * @author Marijan Kovac
+ *
+ */
 public class KonfiguracijaJson extends KonfiguracijaApstraktna {
 
+  /**
+   * Konstanta TIP
+   */
   public static final String TIP = "json";
 
+  /**
+   * Konstruktor za inicijalizaciju KonfiguracijaJson
+   * 
+   * @param nazivDatoteke naziv datoteke
+   */
   public KonfiguracijaJson(String nazivDatoteke) {
     super(nazivDatoteke);
   }

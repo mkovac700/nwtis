@@ -1,6 +1,6 @@
 package org.foi.nwtis;
 
-/*
+/**
  * Iznimka za slučaj kada je neispravna konfiguracija s postavmaka
  */
 public class NeispravnaKonfiguracija extends Exception {
@@ -18,7 +18,7 @@ public class NeispravnaKonfiguracija extends Exception {
   /**
    * Kreira instancu <code>NeispravnaKonfiguracija</code> s pridruženim tekstom poruke.
    *
-   * @param poruka razloga nastanka iznimke
+   * @param msg poruka razloga nastanka iznimke
    */
   public NeispravnaKonfiguracija(String msg) {
     super(msg);

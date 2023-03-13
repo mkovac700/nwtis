@@ -1,6 +1,8 @@
 package org.foi.nwtis.mkovac.vjezba_02;
 
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
@@ -17,7 +19,8 @@ public class Vjezba_02_3 {
     Konfiguracija konf = null;
     switch (args.length) {
       case 1:
-        System.out.println("Ispis svih postavki");
+        // System.out.println("Ispis svih postavki");
+        Logger.getLogger(Vjezba_02_3.class.getName()).log(Level.INFO, "Ispis svih postavki");
         konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(args[0]);
         Properties postavke = konf.dajSvePostavke();
         for (Object o : postavke.keySet()) {
@@ -28,13 +31,15 @@ public class Vjezba_02_3 {
         }
         break;
       case 2:
-        System.out.println("Ispis jedne postavke");
+        // System.out.println("Ispis jedne postavke");
+        Logger.getLogger(Vjezba_02_3.class.getName()).log(Level.INFO, "Ispis jedne postavke");
         konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(args[0]);
         String v = konf.dajPostavku(args[1]);
         System.out.println(args[0] + "=> " + v);
         break;
       case 3:
-        System.out.println("Dodavanje nove postavke");
+        // System.out.println("Dodavanje nove postavke");
+        Logger.getLogger(Vjezba_02_3.class.getName()).log(Level.INFO, "Dodavanje nove postavke");
         konf = KonfiguracijaApstraktna.preuzmiKonfiguraciju(args[0]);
         // samo u memoriji (u objektu konf)
         konf.spremiPostavku(args[1], args[2]);
@@ -42,7 +47,8 @@ public class Vjezba_02_3 {
         konf.spremiKonfiguraciju();
         break;
       default:
-        System.out.println("Neispravni unos");
+        // System.out.println("Neispravni unos");
+        Logger.getLogger(Vjezba_02_3.class.getName()).log(Level.SEVERE, "Neispravni unos");
         break;
     }
 

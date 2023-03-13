@@ -1,0 +1,4 @@
+#NWTiS mkovac 2023.
+#Mon Mar 13 16:38:52 CET 2023
+lozinka=54321
+pero=peric

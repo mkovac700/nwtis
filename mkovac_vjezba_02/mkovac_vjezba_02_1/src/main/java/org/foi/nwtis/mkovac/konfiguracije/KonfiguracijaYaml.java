@@ -7,10 +7,24 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
+/**
+ * Klasa konfiguracija za rad s postavkama konfiguracije u yaml formatu
+ * 
+ * @author Marijan Kovac
+ *
+ */
 public class KonfiguracijaYaml extends KonfiguracijaApstraktna {
 
+  /**
+   * Konstanta TIP
+   */
   public static final String TIP = "yaml";
 
+  /**
+   * Konstruktor za inicijalizaciju KonfiguracijaYaml
+   * 
+   * @param nazivDatoteke naziv datoteke
+   */
   public KonfiguracijaYaml(String nazivDatoteke) {
     super(nazivDatoteke);
   }

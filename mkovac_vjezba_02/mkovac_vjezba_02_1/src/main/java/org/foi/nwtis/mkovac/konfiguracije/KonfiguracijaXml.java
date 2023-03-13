@@ -7,10 +7,24 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 
+/**
+ * Klasa konfiguracija za rad s postavkama konfiguracije u xml formatu
+ * 
+ * @author Marijan Kovac
+ *
+ */
 public class KonfiguracijaXml extends KonfiguracijaApstraktna {
 
+  /**
+   * Konstanta TIP
+   */
   public static final String TIP = "xml";
 
+  /**
+   * Konstruktor za inicijalizaciju KonfiguracijaXml
+   * 
+   * @param nazivDatoteke naziv datoteke
+   */
   public KonfiguracijaXml(String nazivDatoteke) {
     super(nazivDatoteke);
   }

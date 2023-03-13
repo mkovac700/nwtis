@@ -1,0 +1,6 @@
+#NWTiS mkovac 2023.
+#Wed Mar 08 10:50:39 CET 2023
+ivica=ivic
+korime=pero
+lozinka=123456
+pero=peri\u00C4\u0087
