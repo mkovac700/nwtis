@@ -35,9 +35,9 @@ public class MrezniRadnik extends Thread {
     // TODO ovdje ne treba super.run, samo se pise vlastiti dio
     try {
       var citac = new BufferedReader(new InputStreamReader(this.mreznaUticnica.getInputStream(),
-          Charset.forName(getName("UTF-8"))));
+          Charset.forName("UTF-8")));
       var pisac = new BufferedWriter(new OutputStreamWriter(this.mreznaUticnica.getOutputStream(),
-          Charset.forName(getName("UTF-8"))));
+          Charset.forName("UTF-8")));
       var poruka = new StringBuilder();
       while (true) {
         var red = citac.readLine();
