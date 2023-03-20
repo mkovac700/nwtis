@@ -32,6 +32,7 @@ public class CitanjeKorisnika {
         Logger.getGlobal().log(Level.WARNING, red);
       } else {
         boolean administrator = isAdministrator(atributi[4]);
+        // boolean administrator = false;
         var korisnik =
             new Korisnik(atributi[0], atributi[1], atributi[2], atributi[3], administrator);
         korisnici.put(atributi[2], korisnik);
@@ -46,6 +47,6 @@ public class CitanjeKorisnika {
   }
 
   private boolean redImaPetAtributa(String[] atribut) {
-    return atribut.length != 5;
+    return atribut.length == 5;
   }
 }

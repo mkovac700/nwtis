@@ -1,6 +1,7 @@
 package org.foi.nwtis.mkovac.zadaca_1;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,16 +21,23 @@ public class GlavniPosluzitelj {
   protected Map<String, Korisnik> korisnici;
   protected Map<String, Uredaj> uredaji;
   private int ispis = 0;
+  private int mreznaVrata = 8000; // default
+  private int brojCekaca = 10;
+  private boolean kraj = false;
 
   public GlavniPosluzitelj(Konfiguracija konfig) {
     this.konfig = konfig;
     this.ispis = Integer.parseInt(konfig.dajPostavku("ispis"));
+    this.mreznaVrata = Integer.parseInt(konfig.dajPostavku("mreznaVrata"));
+    this.brojCekaca = Integer.parseInt(konfig.dajPostavku("brojCekaca"));
   }
 
   public void pokreniPosluzitelja() {
     try {
       ucitajKorisnika();
       // TODO dodati ucitavanje ostalih podataka
+
+      otvoriMreznaVrata();
     } catch (IOException e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
@@ -40,7 +48,7 @@ public class GlavniPosluzitelj {
    * 
    * @throws IOException baca iznimku ako je problem s učitavanjem
    */
-  private void ucitajKorisnika() throws IOException {
+  public void ucitajKorisnika() throws IOException {
     var nazivDatoteke = this.konfig.dajPostavku("datotekaKorisnika");
     var citacKorisnika = new CitanjeKorisnika();
     this.korisnici = citacKorisnika.ucitajDatoteku(nazivDatoteke);
@@ -51,6 +59,23 @@ public class GlavniPosluzitelj {
             "Korisnik: " + korisnik.prezime() + " " + korisnik.ime());
       }
     }
+  }
+
+  public void otvoriMreznaVrata() {
+    try (var posluzitelj = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
+
+      while (!this.kraj) {
+        var uticnica = posluzitelj.accept(); // program stoji i ceka da dode zahtjev
+        var dretva = new MrezniRadnik(uticnica, konfig);
+        dretva.start();
+      }
+
+
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
   }
 
 }

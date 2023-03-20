@@ -34,10 +34,10 @@ public class MrezniRadnik extends Thread {
   public void run() {
     // TODO ovdje ne treba super.run, samo se pise vlastiti dio
     try {
-      var citac = new BufferedReader(new InputStreamReader(this.mreznaUticnica.getInputStream(),
-          Charset.forName("UTF-8")));
-      var pisac = new BufferedWriter(new OutputStreamWriter(this.mreznaUticnica.getOutputStream(),
-          Charset.forName("UTF-8")));
+      var citac = new BufferedReader(
+          new InputStreamReader(this.mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
+      var pisac = new BufferedWriter(
+          new OutputStreamWriter(this.mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
       var poruka = new StringBuilder();
       while (true) {
         var red = citac.readLine();
@@ -48,8 +48,15 @@ public class MrezniRadnik extends Thread {
         }
         poruka.append(red);
       }
-      this.mreznaUticnica.shutdownInput();
+      this.mreznaUticnica.shutdownInput();// prebacujemo se s primanja na slanje
       String odgovor = this.obradiZahtjev(poruka.toString());
+      Logger.getGlobal().log(Level.INFO, "Odgovor: " + odgovor);
+      pisac.write(odgovor);
+      pisac.flush();
+      this.mreznaUticnica.shutdownOutput();
+      this.mreznaUticnica.close(); // zatvara konekciju klijent-posluzitelj
+      // dretva zavrsava
+
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
