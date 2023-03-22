@@ -34,7 +34,7 @@ public class GlavniPosluzitelj {
 
   public void pokreniPosluzitelja() {
     try {
-      ucitajKorisnika();
+      ucitajKorisnike();
       // TODO dodati ucitavanje ostalih podataka
 
       otvoriMreznaVrata();
@@ -48,7 +48,7 @@ public class GlavniPosluzitelj {
    * 
    * @throws IOException baca iznimku ako je problem s učitavanjem
    */
-  public void ucitajKorisnika() throws IOException {
+  public void ucitajKorisnike() throws IOException {
     var nazivDatoteke = this.konfig.dajPostavku("datotekaKorisnika");
     var citacKorisnika = new CitanjeKorisnika();
     this.korisnici = citacKorisnika.ucitajDatoteku(nazivDatoteke);
