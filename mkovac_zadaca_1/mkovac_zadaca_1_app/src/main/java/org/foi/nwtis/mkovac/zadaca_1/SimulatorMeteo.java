@@ -1,11 +1,17 @@
 package org.foi.nwtis.mkovac.zadaca_1;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
@@ -13,11 +19,17 @@ import org.foi.nwtis.mkovac.zadaca_1.podaci.MeteoSimulacija;
 
 public class SimulatorMeteo {
 
+  private String trajanjeSekunde;
+  private String korisnickoIme;
+  private String korisnickaLozinka;
+  private String posluziteljGlavniAdresa;
+  private String posluziteljGlavniVrata;
+
   public static void main(String[] args) {
     var sm = new SimulatorMeteo();
     if (!SimulatorMeteo.provjeriArgumente(args)) {
       Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
-          "Nije upisan naziv datoteke!");
+          "Nije upisan naziv datoteke ili datoteka nema odgovarajući format!");
       return;
     }
 
@@ -30,13 +42,35 @@ public class SimulatorMeteo {
       Logger.getLogger(PokretacPosluzitelja.class.getName()).log(Level.SEVERE,
           "Greška učitavanja meteo podataka" + e.getMessage());
     }
+
   }
 
   private static boolean provjeriArgumente(String[] args) {
-    return args.length == 1 ? true : false;
+    // return args.length == 1 ? true : false;
+    if (args.length != 1)
+      return false;
+
+    String regex = "\\w+.(txt|xml|bin|json|yaml)$";
+    String s = args[0].trim();
+
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(s);
+
+    boolean status = matcher.matches();
+
+    return status;
   }
 
   private void pokreniSimulator(Konfiguracija konf) throws IOException {
+    // preuzimanje postavki
+    trajanjeSekunde = konf.dajPostavku("trajanjeSekunde");
+    korisnickoIme = konf.dajPostavku("korisnickoIme");
+    korisnickaLozinka = konf.dajPostavku("korisnickaLozinka");
+    posluziteljGlavniAdresa = konf.dajPostavku("posluziteljGlavniAdresa");
+    posluziteljGlavniVrata = konf.dajPostavku("posluziteljGlavniVrata");
+    // TODO dodati ostale, myb u globalno i onda ucitavati putem zasebne funkcije!
+
+    // otvaranje datoteke
     var nazivDatoteke = konf.dajPostavku("datotekaMeteo");
     var putanja = Path.of(nazivDatoteke);
 
@@ -64,12 +98,21 @@ public class SimulatorMeteo {
       if (!redImaPetAtributa(atributi)) {
         Logger.getGlobal().log(Level.WARNING, red);
       } else {
-        var vazeciMeteo =
+        MeteoSimulacija vazeciMeteo =
             new MeteoSimulacija(atributi[0], atributi[1], Float.parseFloat(atributi[2]),
                 Float.parseFloat(atributi[3]), Float.parseFloat(atributi[4]));
 
         if (!isPrviPodatak(rbroj)) {
-          this.izracunajSpavanje(prethodniMeteo, vazeciMeteo);
+          long spavanjeKorigirano = this.izracunajSpavanje(prethodniMeteo, vazeciMeteo);
+
+          try {
+            if (spavanjeKorigirano != 0)
+              Thread.sleep(spavanjeKorigirano);
+
+          } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
         }
 
         this.posaljiMeteoPodatak(vazeciMeteo);
@@ -78,21 +121,34 @@ public class SimulatorMeteo {
     }
   }
 
-  private void izracunajSpavanje(MeteoSimulacija prethodniMeteo, MeteoSimulacija vazeciMeteo) {
+  private long izracunajSpavanje(MeteoSimulacija prethodniMeteo, MeteoSimulacija vazeciMeteo) {
     String prvi = prethodniMeteo.vrijeme();
     String drugi = vazeciMeteo.vrijeme();
-    int kraj = 10; // drugi u milisekundama
-    int pocetak = 5; // prvi u milisekundama
 
-    int spavanje = kraj - pocetak;
-    // TODO napraviti korekciju temeljem podatka o trajanjuSekunde
+    long ms1 = 0, ms2 = 0;
 
+    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
     try {
-      Thread.sleep(spavanje);
-    } catch (InterruptedException e) {
+      Date date2 = sdf.parse(drugi);
+      ms2 = date2.getTime();
+      Date date1 = sdf.parse(prvi);
+      ms1 = date1.getTime();
+    } catch (ParseException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+
+    long kraj = ms2; // drugi u milisekundama //10?
+    long pocetak = ms1; // prvi u milisekundama //5?
+
+    long spavanje = kraj - pocetak;
+
+    // TODO napraviti korekciju temeljem podatka o trajanjuSekunde
+    long trajanje = Long.parseLong(trajanjeSekunde);
+
+    long spavanjeKorigirano = spavanje / (1000 / trajanje);
+
+    return spavanjeKorigirano;
 
   }
 
@@ -115,6 +171,14 @@ public class SimulatorMeteo {
 
   private void posaljiMeteoPodatak(MeteoSimulacija vazeciMeteo) {
     // TODO isto kao što smo radili u GlavnomKlijentu
+    try {
+      var mreznaUticnica =
+          new Socket(posluziteljGlavniAdresa, Integer.parseInt(posluziteljGlavniVrata));
 
+
+    } catch (NumberFormatException | IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 }

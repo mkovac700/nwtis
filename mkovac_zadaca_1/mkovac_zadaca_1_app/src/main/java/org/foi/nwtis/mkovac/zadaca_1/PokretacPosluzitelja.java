@@ -18,6 +18,7 @@ public class PokretacPosluzitelja {
     }
 
     try {
+      // TODO NWTiS_mkovac_3.txt (.json, .bin, .yaml, ...)
       var konf = pokretac.ucitajPostavke(args[0]);
       GlavniPosluzitelj posluzitelj = new GlavniPosluzitelj(konf);
       posluzitelj.pokreniPosluzitelja();
