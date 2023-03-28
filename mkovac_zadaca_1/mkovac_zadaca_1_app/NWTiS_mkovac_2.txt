@@ -1,0 +1,4 @@
+mreznaVrata=8000
+brojCekaca=10
+brojZadnjihSpremljenih=5
+datotekaSerijalizacija=serijalizacija.bin
