@@ -1,4 +1,4 @@
-mreznaVrata=8000
+mreznaVrata=8001
 brojCekaca=10
 brojZadnjihSpremljenih=5
 datotekaSerijalizacija=serijalizacija.bin
