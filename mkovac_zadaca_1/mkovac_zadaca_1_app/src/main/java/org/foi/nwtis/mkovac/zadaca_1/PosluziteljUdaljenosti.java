@@ -171,7 +171,7 @@ public class PosluziteljUdaljenosti {
 
   private String obradiZahtjev(String zahtjev) {
     String regex1 =
-        "UDALJENOST ([(\\d*\\.)?\\d+]) ([(\\d*\\.)?\\d+]) ([(\\d*\\.)?\\d+]) ([(\\d*\\.)?\\d+])$";
+        "UDALJENOST ((\\d*\\.)?\\d+) ((\\d*\\.)?\\d+) ((\\d*\\.)?\\d+) ((\\d*\\.)?\\d+)$";
 
     String regex2 = "UDALJENOST SPREMI$";
 

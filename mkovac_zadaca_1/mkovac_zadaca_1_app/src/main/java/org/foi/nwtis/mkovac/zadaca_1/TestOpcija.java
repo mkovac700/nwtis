@@ -29,6 +29,11 @@ public class TestOpcija {
     String sintaksa2 = "-k (?<korisnik>[0-9a-zA-Z_]+) -l (?<lozinka>[0-9a-zA-Z_-]+) "
         + "-a (?<adresa>[0-9a-zA-Z_-[.]]+) -v (?<mreznaVrata>[0-9]+) -t (?<cekanje>[0-9]+) ((--meteo (?<meteo>[0-9a-zA-Z_-[.]]+))|(?<kraj>--kraj))$";
 
+    String sintaksa3 =
+        "UDALJENOST ((\\d*\\.)?\\d+) ((\\d*\\.)?\\d+) ((\\d*\\.)?\\d+) ((\\d*\\.)?\\d+)$";
+
+    String sintaksa4 = "UDALJENOST SPREMI$";
+
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < args.length; i++) {
       sb.append(args[i]).append(" ");
@@ -60,6 +65,24 @@ public class TestOpcija {
       System.out.println("Kraj: " + m2.group("kraj"));
     } else {
       System.out.println("Ne odgovara 2!");
+    }
+
+    Pattern pattern3 = Pattern.compile(sintaksa3);
+    Matcher m3 = pattern3.matcher(s);
+    boolean status3 = m3.matches();
+    if (status3) {
+      System.out.println("Odgovara 3!");
+    } else {
+      System.out.println("Ne odgovara 3!");
+    }
+
+    Pattern pattern4 = Pattern.compile(sintaksa4);
+    Matcher m4 = pattern4.matcher(s);
+    boolean status4 = m4.matches();
+    if (status4) {
+      System.out.println("Odgovara 4!");
+    } else {
+      System.out.println("Ne odgovara 4!");
     }
   }
 }
