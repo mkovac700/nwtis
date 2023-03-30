@@ -34,6 +34,17 @@ public class TestOpcija {
 
     String sintaksa4 = "UDALJENOST SPREMI$";
 
+    String sintaksa5 = "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) KRAJ$";
+
+    String sintaksa6 =
+        "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) SENZOR ([a-zA-Z0-9_-]+) (\\d{1,2}:\\d{1,2}:\\d{2}) ([0-9]{1,3}(\\.\\d)?) ([0-9]{1,3}(\\.\\d)?) ([0-9]{1,3}(\\.\\d)?)$"; // (\\d{1,2}:\\d{1,2}:\\d{2})
+    // (\\d{3}[0-9](\\.\\d)?)
+    // (\\d{3}[0-9](\\.\\d)?)
+    // (\\d{3}[0-9](\\.\\d)?)
+
+    String sintaksa7 =
+        "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) SENZOR ([a-zA-Z0-9_-]+) (\\d{1,2}:\\d{1,2}:\\d{2}) ([0-9]{1,3}(\\.\\d)?)( ([0-9]{1,3}(\\.\\d)?)?)?( ([0-9]{1,3}(\\.\\d)?)?)?$";
+
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < args.length; i++) {
       sb.append(args[i]).append(" ");
@@ -83,6 +94,33 @@ public class TestOpcija {
       System.out.println("Odgovara 4!");
     } else {
       System.out.println("Ne odgovara 4!");
+    }
+
+    Pattern pattern5 = Pattern.compile(sintaksa5);
+    Matcher m5 = pattern5.matcher(s);
+    boolean status5 = m5.matches();
+    if (status5) {
+      System.out.println("Odgovara 5!");
+    } else {
+      System.out.println("Ne odgovara 5!");
+    }
+
+    Pattern pattern6 = Pattern.compile(sintaksa6);
+    Matcher m6 = pattern6.matcher(s);
+    boolean status6 = m6.matches();
+    if (status6) {
+      System.out.println("Odgovara 6!");
+    } else {
+      System.out.println("Ne odgovara 6!");
+    }
+
+    Pattern pattern7 = Pattern.compile(sintaksa7);
+    Matcher m7 = pattern7.matcher(s);
+    boolean status7 = m7.matches();
+    if (status7) {
+      System.out.println("Odgovara 7!");
+    } else {
+      System.out.println("Ne odgovara 7!");
     }
   }
 }

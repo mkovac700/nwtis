@@ -10,10 +10,13 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Korisnik;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Lokacija;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Uredaj;
+import org.foi.nwtis.mkovac.zadaca_1.podaci.UredajVrsta;
 
 public class MrezniRadnik extends Thread {
 
@@ -76,9 +79,92 @@ public class MrezniRadnik extends Thread {
     }
   }
 
-  private String obradiZahtjev(String string) {
+  private String obradiZahtjev(String zahtjev) {
+    // KORISNIK korisnik LOZINKA lozinka KRAJ
+    String regex1 = "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) KRAJ$";
+    // KORISNIK korisnik LOZINKA lozinka SENZOR idUredaj vrijeme temp vlaga tlak
+    String regex2 =
+        "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) SENZOR ([a-zA-Z0-9_-]+) (\\d{1,2}:\\d{1,2}:\\d{2}) ([0-9]{1,3}(\\.\\d)?)( ([0-9]{1,3}(\\.\\d)?)?)?( ([0-9]{1,3}(\\.\\d)?)?)?$";
+
+    if (provjeriIzraz(zahtjev, regex2)) {
+      var podaci = zahtjev.split(" ");
+
+      if (!autenticirajKorisnika(podaci[1], podaci[3]))
+        return "ERROR 21 Korisnik ne postoji ili lozinka nije ispravna";
+
+      if (!isAdministrator(podaci[1]))
+        return "ERROR 22 Korisnik nije administrator";
+
+      if (!postojiUredaj(podaci[5]))
+        return "ERROR 23 Uredaj ne postoji";
+
+      if (!odgovaraTipUredaja(podaci))
+        return "ERROR 29 Ne odgovara tip uredaja";
+
+      return podaci[5] + ": OK";
+    }
+
     return "OK";
 
+  }
+
+  private boolean odgovaraTipUredaja(String[] podaci) {
+    int brojPodataka = podaci.length - 7;
+    boolean odgovara = false;
+
+    switch (brojPodataka) {
+      case 1:
+        odgovara = this.uredaji.get(podaci[5]).vrsta() == UredajVrsta.SenzorTemperatura;
+        break;
+
+      case 2:
+        odgovara = this.uredaji.get(podaci[5]).vrsta() == UredajVrsta.SenzorTemperaturaVlaga;
+        break;
+
+      case 3:
+        odgovara = this.uredaji.get(podaci[5]).vrsta() == UredajVrsta.SenzorTemperaturaVlagaTlak;
+        break;
+
+      default:
+        odgovara = false;
+        break;
+    }
+
+    return odgovara;
+  }
+
+  private boolean postojiUredaj(String id) {
+    return this.uredaji.get(id) != null;
+  }
+
+  private boolean isAdministrator(String korime) {
+    var korisnik = this.korisnici.get(korime);
+    if (korisnik == null)
+      return false;
+    if (!korisnik.administrator())
+      return false;
+    return true;
+  }
+
+  private boolean autenticirajKorisnika(String korime, String lozinka) {
+
+    var korisnik = this.korisnici.get(korime);
+    if (korisnik == null)
+      return false;
+    if (korisnik.lozinka() != lozinka)
+      return false;
+    return true;
+  }
+
+  private boolean provjeriIzraz(String string, String regex) {
+    String s = string.trim();
+
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(s);
+
+    boolean status = matcher.matches();
+
+    return status;
   }
 
   @Override
