@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -99,6 +101,21 @@ public class MrezniRadnik extends Thread {
     String regex2 =
         "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) SENZOR ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+) (\\d{1,2}:\\d{1,2}:\\d{2}) ([0-9]{1,3}(\\.\\d)?)( ([0-9]{1,3}(\\.\\d)?)?)?( ([0-9]{1,4}(\\.\\d)?)?)?$";
 
+    String regex3 =
+        "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) METEO ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+)$";
+
+    String regex4 =
+        "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) MAKS (TEMP|VLAGA|TLAK) ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+)$";
+
+    String regex5 =
+        "(KORISNIK) ([a-zA-Z0-9_-]{3,10}) (LOZINKA) ([a-zA-Z0-9_\\-#!]{3,10}) (ALARM) '([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+)'$";
+
+    String regex6 =
+        "(KORISNIK) ([a-zA-Z0-9_-]{3,10}) (LOZINKA) ([a-zA-Z0-9_\\-#!]{3,10}) (UDALJENOST) '([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+)' '([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+)'$";
+
+    String regex7 =
+        "(KORISNIK) ([a-zA-Z0-9_-]{3,10}) (LOZINKA) ([a-zA-Z0-9_\\-#!]{3,10}) (UDALJENOST) (SPREMI)$";
+
     if (provjeriIzraz(zahtjev, regex2)) {
       var podaci = zahtjev.split(" ");
 
@@ -117,10 +134,194 @@ public class MrezniRadnik extends Thread {
       return dodajOcitanje(podaci);
     }
 
-    return "Regex fail";
+    if (provjeriIzraz(zahtjev, regex3)) {
+      var podaci = zahtjev.split(" ");
+
+      if (!autenticirajKorisnika(podaci[1], podaci[3]))
+        return "ERROR 21 Korisnik ne postoji ili lozinka nije ispravna";
+
+      if (!postojiUredaj(podaci[5]))
+        return "ERROR 23 Uredaj ne postoji";
+
+      String komanda = podaci[4];
+      String kljuc = podaci[5];
+
+      Ocitanje ocitanje = vratiOcitanje(komanda, kljuc);
+
+      if (ocitanje != null) {
+        String poruka = "OK " + ocitanje.vrijeme() + " " + ocitanje.temp() + " " + ocitanje.vlaga()
+            + " " + ocitanje.tlak();
+
+        return poruka.replaceAll("\\s+", " ").trim();
+      } else {
+        return "ERROR 29 Nema podataka";
+      }
+    }
+
+    if (provjeriIzraz(zahtjev, regex4)) {
+      var podaci = zahtjev.split(" ");
+
+      if (!autenticirajKorisnika(podaci[1], podaci[3]))
+        return "ERROR 21 Korisnik ne postoji ili lozinka nije ispravna";
+
+      if (!postojiUredaj(podaci[6]))
+        return "ERROR 23 Uredaj ne postoji";
+
+      String komanda = podaci[4] + " " + podaci[5];
+      String kljuc = podaci[6];
+
+      Ocitanje ocitanje = vratiOcitanje(komanda, kljuc);
+
+      if (ocitanje != null) {
+        String poruka = "OK " + ocitanje.vrijeme() + " " + ocitanje.temp() + " " + ocitanje.vlaga()
+            + " " + ocitanje.tlak();
+
+        return poruka.replaceAll("\\s+", " ").trim();
+      } else {
+        return "ERROR 29 Nema podataka";
+      }
+    }
+
+    if (provjeriIzraz(zahtjev, regex5)) {
+      var podaci = razdvojiIzraz(zahtjev, regex5); // 0 = SVI; 2 = korime; 4 = lozinka; 6 = lokacija
+
+      if (!autenticirajKorisnika(podaci[2], podaci[4]))
+        return "ERROR 21 Korisnik ne postoji ili lozinka nije ispravna";
+
+      if (!postojiLokacija(podaci[6]))
+        return "ERROR 24 Lokacija ne postoji";
+
+      String komanda = podaci[5];
+      String kljuc = podaci[6];
+
+      Ocitanje ocitanje = vratiOcitanje(komanda, kljuc);
+
+      if (ocitanje != null) {
+        String poruka = "OK " + ocitanje.id() + " " + ocitanje.vrijeme();
+        if (ocitanje.alarmTemp())
+          poruka += " TEMP";
+        if (ocitanje.alarmVlaga())
+          poruka += " VLAGA";
+        if (ocitanje.alarmTlak())
+          poruka += " TLAK";
+
+        return poruka.replaceAll("\\s+", " ").trim();
+      } else {
+        return "ERROR 29 Nema podataka";
+      }
+    }
+
+    if (provjeriIzraz(zahtjev, regex6)) {
+      var podaci = razdvojiIzraz(zahtjev, regex6);
+
+      if (!autenticirajKorisnika(podaci[2], podaci[4]))
+        return "ERROR 21 Korisnik ne postoji ili lozinka nije ispravna";
+
+      if (!postojiLokacija(podaci[6]))
+        return "ERROR 24 Lokacija ne postoji";
+
+      if (!postojiLokacija(podaci[7]))
+        return "ERROR 24 Lokacija ne postoji";
+
+      String komanda = podaci[5];
+      String lokacija1 = podaci[6];
+      String lokacija2 = podaci[7];
+
+      // TODO iz datoteke dohvatiti gps sirinu i duzinu za pojedinu lokaciju
+      // 1. odmah tu pa promijeniti argumente za func
+      // 2. tek u funkc
+
+      String odgovor = kontaktirajPosluziteljUdaljenosti(komanda, lokacija1, lokacija2);
+
+      // TODO formirati odgovor korisniku na bazi odgovora PosluziteljUdaljenosti
+    }
+
+    if (provjeriIzraz(zahtjev, regex7)) {
+      var podaci = razdvojiIzraz(zahtjev, regex7);
+
+      if (!autenticirajKorisnika(podaci[2], podaci[4]))
+        return "ERROR 21 Korisnik ne postoji ili lozinka nije ispravna";
+
+      String komanda1 = podaci[5];
+      String komanda2 = podaci[6];
+
+      String odgovor = kontaktirajPosluziteljUdaljenosti(komanda1, komanda2);
+
+      // TODO isto kao kod prethodnog
+    }
+
+    return "ERROR 20 Format komande nije ispravan";
 
   }
 
+  private String kontaktirajPosluziteljUdaljenosti(String komanda1, String komanda2) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  private String kontaktirajPosluziteljUdaljenosti(String komanda, String lokacija1,
+      String lokacija2) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  private synchronized Ocitanje vratiOcitanje(String komanda, String kljuc) {
+    Ocitanje ocitanje = null;
+    List<Ocitanje> tmp = new ArrayList<>(listaOcitanja);
+    Collections.reverse(tmp);
+
+    if (komanda.equals("METEO")) { // METEO
+      for (Ocitanje o : tmp) {
+        if (o.id().equals(kljuc)) {
+          ocitanje = o;
+          break;
+        }
+      }
+    }
+
+    if (komanda.equals("MAKS TEMP")) {
+      float max = -999;
+      for (Ocitanje o : tmp) {
+        if (o.id().equals(kljuc) && Float.parseFloat(o.temp()) > max) {
+          max = Float.parseFloat(o.temp());
+          ocitanje = o;
+        }
+      }
+    }
+
+    if (komanda.equals("MAKS VLAGA")) {
+      float max = -999;
+      for (Ocitanje o : tmp) {
+        if (o.id().equals(kljuc) && Float.parseFloat(o.vlaga()) > max) {
+          max = Float.parseFloat(o.temp());
+          ocitanje = o;
+        }
+      }
+    }
+
+    if (komanda.equals("MAKS TLAK")) {
+      float max = -999;
+      for (Ocitanje o : tmp) {
+        if (o.id().equals(kljuc) && Float.parseFloat(o.tlak()) > max) {
+          max = Float.parseFloat(o.temp());
+          ocitanje = o;
+        }
+      }
+    }
+
+    if (komanda.equals("ALARM")) {
+      for (Ocitanje o : tmp) {
+        if (o.id().equals(kljuc) && o.alarm()) {
+          ocitanje = o;
+          break;
+        }
+      }
+    }
+
+    return ocitanje;
+  }
+
+  // TODO malo pocistiti funkciju, izdvojiti dijelove ili napraviti override
   private synchronized String dodajOcitanje(String[] podaci) {
     boolean[] odstupaMeteo = {false, false, false};
     boolean alarm = false;
@@ -128,11 +329,14 @@ public class MrezniRadnik extends Thread {
 
     for (Ocitanje o : listaOcitanja) {
       if (o.id().equals(podaci[5])) {
-        if (Math.abs(Float.parseFloat(o.temp()) - Float.parseFloat(podaci[7])) > odstupanjeTemp)
+        if (brojMeteoPodataka(podaci) >= 1
+            && Math.abs(Float.parseFloat(o.temp()) - Float.parseFloat(podaci[7])) > odstupanjeTemp)
           odstupaMeteo[0] = true;
-        if (Math.abs(Float.parseFloat(o.vlaga()) - Float.parseFloat(podaci[8])) > odstupanjeVlaga)
+        if (brojMeteoPodataka(podaci) >= 2 && Math
+            .abs(Float.parseFloat(o.vlaga()) - Float.parseFloat(podaci[8])) > odstupanjeVlaga)
           odstupaMeteo[1] = true;
-        if (Math.abs(Float.parseFloat(o.tlak()) - Float.parseFloat(podaci[9])) > odstupanjeTlak)
+        if (brojMeteoPodataka(podaci) == 3
+            && Math.abs(Float.parseFloat(o.tlak()) - Float.parseFloat(podaci[9])) > odstupanjeTlak)
           odstupaMeteo[2] = true;
       }
     }
@@ -148,8 +352,15 @@ public class MrezniRadnik extends Thread {
       }
 
       // dodaj zapis s alarmom
-      listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], podaci[9],
-          odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+      if (brojMeteoPodataka(podaci) == 3)
+        listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], podaci[9],
+            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+      if (brojMeteoPodataka(podaci) == 2)
+        listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], "",
+            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+      if (brojMeteoPodataka(podaci) == 1)
+        listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], "", "", odstupaMeteo[0],
+            odstupaMeteo[1], odstupaMeteo[2], alarm));
 
       poruka = "OK ALARM";
       if (odstupaMeteo[0])
@@ -159,19 +370,29 @@ public class MrezniRadnik extends Thread {
       if (odstupaMeteo[2])
         poruka += " TLAK";
     } else { // samo dodaj zapis bez alarma
-      listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], podaci[9],
-          odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+      if (brojMeteoPodataka(podaci) == 3)
+        listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], podaci[9],
+            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+      if (brojMeteoPodataka(podaci) == 2)
+        listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], "",
+            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+      if (brojMeteoPodataka(podaci) == 1)
+        listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], "", "", odstupaMeteo[0],
+            odstupaMeteo[1], odstupaMeteo[2], alarm));
       poruka = "OK";
     }
 
     return poruka;
   }
 
+  private int brojMeteoPodataka(String[] podaci) {
+    return podaci.length - 7;
+  }
+
   private boolean odgovaraTipUredaja(String[] podaci) {
-    int brojPodataka = podaci.length - 7;
     boolean odgovara = false;
 
-    switch (brojPodataka) {
+    switch (brojMeteoPodataka(podaci)) {
       case 1:
         odgovara = this.uredaji.get(podaci[5]).vrsta() == UredajVrsta.SenzorTemperatura;
         break;
@@ -190,6 +411,21 @@ public class MrezniRadnik extends Thread {
     }
 
     return odgovara;
+  }
+
+  private String pronadiUredaj(String idLokacija) {
+    String idUredaj = "";
+    for (Map.Entry<String, Uredaj> entry : uredaji.entrySet()) {
+      if (entry.getValue().equals(idLokacija)) {
+        idUredaj = entry.getKey();
+        break;
+      }
+    }
+    return idUredaj;
+  }
+
+  private boolean postojiLokacija(String id) {
+    return this.lokacije.get(id) != null;
   }
 
   private boolean postojiUredaj(String id) {
@@ -224,6 +460,29 @@ public class MrezniRadnik extends Thread {
     boolean status = matcher.matches();
 
     return status;
+  }
+
+  private String[] razdvojiIzraz(String string, String regex) {
+    String[] rezultat = null;
+
+    String s = string.trim();
+
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(s);
+
+    boolean status = matcher.matches();
+
+    if (status) {
+      int poc = 0;
+      int kraj = matcher.groupCount();
+      for (int i = poc; i <= kraj; i++) {
+        rezultat[i] = matcher.group(i);
+      }
+    } else {
+      rezultat = null;
+    }
+
+    return rezultat;
   }
 
   @Override

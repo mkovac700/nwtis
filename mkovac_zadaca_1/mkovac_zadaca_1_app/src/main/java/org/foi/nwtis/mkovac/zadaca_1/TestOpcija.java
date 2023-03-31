@@ -45,11 +45,43 @@ public class TestOpcija {
     String sintaksa7 =
         "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) SENZOR ([a-zA-Z0-9_-]+) (\\d{1,2}:\\d{1,2}:\\d{2}) ([0-9]{1,3}(\\.\\d)?)( ([0-9]{1,3}(\\.\\d)?)?)?( ([0-9]{1,3}(\\.\\d)?)?)?$";
 
+    String sintaksa8 =
+        "(KORISNIK) ([a-zA-Z0-9_-]{3,10}) (LOZINKA) ([a-zA-Z0-9_\\-#!]{3,10}) (ALARM) '([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+)'$";
+
+    String sintaksa9 =
+        "(KORISNIK) ([a-zA-Z0-9_-]{3,10}) (LOZINKA) ([a-zA-Z0-9_\\-#!]{3,10}) (UDALJENOST) '([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+)' '([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+)'$";
+
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < args.length; i++) {
       sb.append(args[i]).append(" ");
     }
     String s = sb.toString().trim();
+
+    Pattern pattern9 = Pattern.compile(sintaksa9);
+    Matcher m9 = pattern9.matcher(s);
+    boolean status9 = m9.matches();
+    if (status9) {
+      int poc = 0;
+      int kraj = m9.groupCount();
+      for (int i = poc; i <= kraj; i++) {
+        System.out.println(i + ". " + m9.group(i));
+      }
+    } else {
+      System.out.println("Ne odgovara 9!");
+    }
+
+    Pattern pattern8 = Pattern.compile(sintaksa8);
+    Matcher m8 = pattern8.matcher(s);
+    boolean status8 = m8.matches();
+    if (status8) {
+      int poc = 0;
+      int kraj = m8.groupCount();
+      for (int i = poc; i <= kraj; i++) {
+        System.out.println(i + ". " + m8.group(i));
+      }
+    } else {
+      System.out.println("Ne odgovara 8!");
+    }
 
     Pattern pattern1 = Pattern.compile(sintaksa1);
     Matcher m1 = pattern1.matcher(s);
