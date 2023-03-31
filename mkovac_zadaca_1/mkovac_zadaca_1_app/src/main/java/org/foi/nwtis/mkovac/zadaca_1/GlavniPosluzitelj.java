@@ -2,12 +2,15 @@ package org.foi.nwtis.mkovac.zadaca_1;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Korisnik;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Lokacija;
+import org.foi.nwtis.mkovac.zadaca_1.podaci.Ocitanje;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Uredaj;
 import org.foi.nwtis.mkovac.zadaca_1.pomocnici.CitanjeKorisnika;
 import org.foi.nwtis.mkovac.zadaca_1.pomocnici.CitanjeLokacija;
@@ -24,6 +27,8 @@ public class GlavniPosluzitelj {
   protected Map<String, Korisnik> korisnici;
   protected Map<String, Lokacija> lokacije;
   protected Map<String, Uredaj> uredaji;
+
+  private List<Ocitanje> listaOcitanja = new ArrayList<>();
 
   private int ispis = 0;
   private int mreznaVrata = 8000; // default
@@ -103,6 +108,8 @@ public class GlavniPosluzitelj {
         dretva.korisnici = this.korisnici;
         dretva.lokacije = this.lokacije;
         dretva.uredaji = this.uredaji;
+
+        dretva.listaOcitanja = this.listaOcitanja;
 
         dretva.setName("mkovac_" + brojacDretvi++);
         dretva.start();

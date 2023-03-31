@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +17,7 @@ import java.util.regex.Pattern;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Korisnik;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Lokacija;
+import org.foi.nwtis.mkovac.zadaca_1.podaci.Ocitanje;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Uredaj;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.UredajVrsta;
 
@@ -28,11 +31,20 @@ public class MrezniRadnik extends Thread {
   protected Map<String, Lokacija> lokacije;
   protected Map<String, Uredaj> uredaji;
 
+  protected List<Ocitanje> listaOcitanja;
+
+  private float odstupanjeTemp;
+  private float odstupanjeVlaga;
+  private float odstupanjeTlak;
+
   public MrezniRadnik(Socket mreznaUticnica, Konfiguracija konfig) {
     super();
     this.mreznaUticnica = mreznaUticnica;
     this.konfig = konfig;
     this.ispis = Integer.parseInt(konfig.dajPostavku("ispis"));
+    this.odstupanjeTemp = Float.parseFloat(konfig.dajPostavku("odstupanjeTemp"));
+    this.odstupanjeVlaga = Float.parseFloat(konfig.dajPostavku("odstupanjeVlaga"));
+    this.odstupanjeTlak = Float.parseFloat(konfig.dajPostavku("odstupanjeTlak"));
   }
 
   @Override
@@ -82,9 +94,10 @@ public class MrezniRadnik extends Thread {
   private String obradiZahtjev(String zahtjev) {
     // KORISNIK korisnik LOZINKA lozinka KRAJ
     String regex1 = "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) KRAJ$";
-    // KORISNIK korisnik LOZINKA lozinka SENZOR idUredaj vrijeme temp vlaga tlak
+    // KORISNIK korisnik LOZINKA lozinka SENZOR idUredaj vrijeme temp vlaga tlak //SENZOR:
+    // [a-zA-Z0-9_-]+
     String regex2 =
-        "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) SENZOR ([a-zA-Z0-9_-]+) (\\d{1,2}:\\d{1,2}:\\d{2}) ([0-9]{1,3}(\\.\\d)?)( ([0-9]{1,3}(\\.\\d)?)?)?( ([0-9]{1,3}(\\.\\d)?)?)?$";
+        "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) SENZOR ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+) (\\d{1,2}:\\d{1,2}:\\d{2}) ([0-9]{1,3}(\\.\\d)?)( ([0-9]{1,3}(\\.\\d)?)?)?( ([0-9]{1,4}(\\.\\d)?)?)?$";
 
     if (provjeriIzraz(zahtjev, regex2)) {
       var podaci = zahtjev.split(" ");
@@ -101,11 +114,57 @@ public class MrezniRadnik extends Thread {
       if (!odgovaraTipUredaja(podaci))
         return "ERROR 29 Ne odgovara tip uredaja";
 
-      return podaci[5] + ": OK";
+      return dodajOcitanje(podaci);
     }
 
-    return "OK";
+    return "Regex fail";
 
+  }
+
+  private synchronized String dodajOcitanje(String[] podaci) {
+    boolean[] odstupaMeteo = {false, false, false};
+    boolean alarm = false;
+    String poruka = "";
+
+    for (Ocitanje o : listaOcitanja) {
+      if (o.id().equals(podaci[5])) {
+        if (Math.abs(Float.parseFloat(o.temp()) - Float.parseFloat(podaci[7])) > odstupanjeTemp)
+          odstupaMeteo[0] = true;
+        if (Math.abs(Float.parseFloat(o.vlaga()) - Float.parseFloat(podaci[8])) > odstupanjeVlaga)
+          odstupaMeteo[1] = true;
+        if (Math.abs(Float.parseFloat(o.tlak()) - Float.parseFloat(podaci[9])) > odstupanjeTlak)
+          odstupaMeteo[2] = true;
+      }
+    }
+
+    if (odstupaMeteo[0] || odstupaMeteo[1] || odstupaMeteo[2]) {
+      alarm = true;
+      // obriši ranija očitanja
+      Iterator<Ocitanje> i = listaOcitanja.iterator();
+      while (i.hasNext()) {
+        Ocitanje o = i.next();
+        if (o.id().equals(podaci[5]))
+          i.remove();
+      }
+
+      // dodaj zapis s alarmom
+      listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], podaci[9],
+          odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+
+      poruka = "OK ALARM";
+      if (odstupaMeteo[0])
+        poruka += " TEMP";
+      if (odstupaMeteo[1])
+        poruka += " VLAGA";
+      if (odstupaMeteo[2])
+        poruka += " TLAK";
+    } else { // samo dodaj zapis bez alarma
+      listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], podaci[9],
+          odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+      poruka = "OK";
+    }
+
+    return poruka;
   }
 
   private boolean odgovaraTipUredaja(String[] podaci) {
@@ -151,7 +210,7 @@ public class MrezniRadnik extends Thread {
     var korisnik = this.korisnici.get(korime);
     if (korisnik == null)
       return false;
-    if (korisnik.lozinka() != lozinka)
+    if (!korisnik.lozinka().equals(lozinka))
       return false;
     return true;
   }

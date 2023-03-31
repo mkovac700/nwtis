@@ -1,9 +1,9 @@
 ispis=1
 maksCekanje=5000
-trajanjeSekunde=1000
+trajanjeSekunde=10
 brojPokusaja=5
-korisnickoIme=mkovac
-korisnickaLozinka=12345
+korisnickoIme=pkos
+korisnickaLozinka=123456
 datotekaMeteo=meteoSimulacija.csv
 datotekaProblema=
 posluziteljGlavniAdresa=localhost

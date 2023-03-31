@@ -9,9 +9,6 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -131,16 +128,20 @@ public class SimulatorMeteo {
 
     long ms1 = 0, ms2 = 0;
 
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-    try {
-      Date date2 = sdf.parse(drugi);
-      ms2 = date2.getTime();
-      Date date1 = sdf.parse(prvi);
-      ms1 = date1.getTime();
-    } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    ms1 = konvertirajVrijeme(prvi);
+    ms2 = konvertirajVrijeme(drugi);
+
+    /*
+     * LocalTime time2 = LocalTime.parse(drugi); ms2 = time2.toSecondOfDay() * 1000L;
+     * 
+     * LocalTime time1 = LocalTime.parse(prvi); ms1 = time1.toSecondOfDay() * 1000L;
+     */
+
+    /*
+     * SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss"); try { Date date2 = sdf.parse(drugi);
+     * ms2 = date2.getTime(); Date date1 = sdf.parse(prvi); ms1 = date1.getTime(); } catch
+     * (ParseException e) { // TODO Auto-generated catch block e.printStackTrace(); }
+     */
 
     long kraj = ms2; // drugi u milisekundama //10?
     long pocetak = ms1; // prvi u milisekundama //5?
@@ -153,6 +154,17 @@ public class SimulatorMeteo {
     long spavanjeKorigirano = spavanje / (1000 / trajanje);
 
     return spavanjeKorigirano;
+
+  }
+
+  private long konvertirajVrijeme(String vrijeme) {
+    String[] str = vrijeme.split(":");
+
+    int h = Integer.parseInt(str[0]);
+    int m = Integer.parseInt(str[1]);
+    int s = Integer.parseInt(str[2]);
+
+    return (h * 60 * 60 * 1000) + (m * 60 * 1000) + (s * 1000);
 
   }
 
