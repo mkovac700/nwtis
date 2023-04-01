@@ -35,6 +35,7 @@ public class PosluziteljUdaljenosti {
   private final double r = 6371;
 
   private List<Udaljenost> listaUdaljenosti = new ArrayList<>();
+  List<Udaljenost> tmp;
 
   public static void main(String[] args) {
     var pu = new PosluziteljUdaljenosti();
@@ -108,9 +109,7 @@ public class PosluziteljUdaljenosti {
     if (putanja.toFile().length() != 0) {
       ObjectInputStream citac = new ObjectInputStream(new FileInputStream(putanja.toFile()));
 
-      Object o;
-      while ((o = citac.readObject()) != null)
-        listaUdaljenosti = (List<Udaljenost>) o;
+      listaUdaljenosti = (List<Udaljenost>) citac.readObject();
 
       citac.close();
     }
@@ -186,8 +185,8 @@ public class PosluziteljUdaljenosti {
       String udaljenost = "";
 
       for (Udaljenost u : listaUdaljenosti) {
-        if (podaci[1] == u.gpsSirina1() && podaci[2] == u.gpsDuzina1()
-            && podaci[3] == u.gpsSirina2() && podaci[4] == u.gpsDuzina2()) {
+        if (podaci[1].equals(u.gpsSirina1()) && podaci[2].equals(u.gpsDuzina1())
+            && podaci[3].equals(u.gpsSirina2()) && podaci[4].equals(u.gpsDuzina2())) {
           postoji = true;
           udaljenost = u.udaljenost();
           break;
@@ -195,11 +194,11 @@ public class PosluziteljUdaljenosti {
       }
 
       if (postoji) {
-        return "OK " + udaljenost;
+        return "OK " + String.format("%.2f", Double.parseDouble(udaljenost));
       } else { // izracunaj udaljenost
         double rezultat = izracunajUdaljenost(podaci);
         if (listaUdaljenosti.size() == brojZadnjihSpremljenih)
-          listaUdaljenosti.remove(brojZadnjihSpremljenih);
+          listaUdaljenosti.remove(0);
         listaUdaljenosti.add(
             new Udaljenost(podaci[1], podaci[2], podaci[3], podaci[4], Double.toString(rezultat)));
 
@@ -220,6 +219,8 @@ public class PosluziteljUdaljenosti {
   }
 
   private double izracunajUdaljenost(String[] podaci) {
+    System.out.println(Double.parseDouble(podaci[1]) + " " + Double.parseDouble(podaci[2]) + " "
+        + Double.parseDouble(podaci[3]) + " " + Double.parseDouble(podaci[4]));
 
     double gpsSirina1 = Math.toRadians(Double.parseDouble(podaci[1])); // latitude = sirina
     double gpsDuzina1 = Math.toRadians(Double.parseDouble(podaci[2])); // longitude = duzina
@@ -227,9 +228,9 @@ public class PosluziteljUdaljenosti {
     double gpsDuzina2 = Math.toRadians(Double.parseDouble(podaci[4]));
 
     double sirina = gpsSirina2 - gpsSirina1; // lat
-    double duzina = gpsDuzina2 + gpsDuzina1; // lon
+    double duzina = gpsDuzina2 - gpsDuzina1; // lon
 
-    double a = Math.pow(Math.sin(sirina) / 2, 2)
+    double a = Math.pow(Math.sin(sirina / 2), 2)
         + Math.cos(gpsSirina1) * Math.cos(gpsSirina2) * Math.pow(Math.sin(duzina / 2), 2);
 
     double c = 2 * Math.asin(Math.sqrt(a));

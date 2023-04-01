@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 
 public class GlavniKlijent {
 
-  private final String regex =
+  private static final String regex =
       "(-k) ([a-zA-Z0-9_-]{3,10}) (-l) ([a-zA-Z0-9_\\-#!]{3,10}) (-a) ((?:[0-9]{1,3}\\.){3}[0-9]{1,3}|[a-zA-Z_\\-.]+) (-v) ([8-9][0-9]{3}) (-t) ([0-9]+) ((--meteo ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+))|(--makstemp ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+)|--maksvlaga ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+)|--makstlak ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+))|(--alarm ('[a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+'))|(--udaljenost ('[a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+') ('[a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+'))|(--udaljenost spremi)|(--kraj))$";
 
   private static String zahtjev = null;
@@ -27,8 +27,13 @@ public class GlavniKlijent {
       Logger.getGlobal().log(Level.SEVERE, "Nisu ispravni ulazni argumenti!");
       return;
     }
-    String posluzitelj = args[0];
-    int mreznaVrata = Integer.parseInt(args[1]);
+
+    String izraz = String.join(" ", args);
+
+    String[] podaci = razdvojiIzraz(izraz, regex);
+
+    String posluzitelj = podaci[6];
+    int mreznaVrata = Integer.parseInt(podaci[8]);
 
     zahtjev = gk.odrediVrstuRada(args);
 
@@ -138,7 +143,7 @@ public class GlavniKlijent {
     return status;
   }
 
-  private String[] razdvojiIzraz(String izraz, String regex) {
+  private static String[] razdvojiIzraz(String izraz, String regex) {
     List<String> rezultat = new ArrayList<>();
 
     String s = izraz.trim();

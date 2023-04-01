@@ -107,7 +107,7 @@ public class MrezniRadnik extends Thread {
     // KORISNIK korisnik LOZINKA lozinka SENZOR idUredaj vrijeme temp vlaga tlak //SENZOR:
     // [a-zA-Z0-9_-]+
     String regex2 =
-        "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) SENZOR ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+) (\\d{1,2}:\\d{1,2}:\\d{2}) ([0-9]{1,3}(\\.\\d)?)( ([0-9]{1,3}(\\.\\d)?)?)?( ([0-9]{1,4}(\\.\\d)?)?)?$";
+        "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) SENZOR ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+) (\\d{1,2}:\\d{1,2}:\\d{1,2}) ([0-9]{1,3}(\\.\\d)?)( ([0-9]{1,3}(\\.\\d)?)?)?( ([0-9]{1,4}(\\.\\d)?)?)?$";
 
     String regex3 =
         "KORISNIK ([a-zA-Z0-9_-]{3,10}) LOZINKA ([a-zA-Z0-9_\\-#!]{3,10}) METEO ([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_-]+)$";
@@ -166,7 +166,7 @@ public class MrezniRadnik extends Thread {
       }
     }
 
-    if (provjeriIzraz(zahtjev, regex4)) {
+    if (provjeriIzraz(zahtjev, regex4)) { // max
       var podaci = zahtjev.split(" ");
 
       if (!autenticirajKorisnika(podaci[1], podaci[3]))
@@ -181,8 +181,13 @@ public class MrezniRadnik extends Thread {
       Ocitanje ocitanje = vratiOcitanje(komanda, kljuc);
 
       if (ocitanje != null) {
-        String poruka = "OK " + ocitanje.vrijeme() + " " + ocitanje.temp() + " " + ocitanje.vlaga()
-            + " " + ocitanje.tlak();
+        String poruka = "OK " + ocitanje.vrijeme();
+        if (podaci[5].equals("TEMP"))
+          poruka += " " + ocitanje.temp();
+        if (podaci[5].equals("VLAGA"))
+          poruka += " " + ocitanje.vlaga();
+        if (podaci[5].equals("TLAK"))
+          poruka += " " + ocitanje.tlak();
 
         return poruka.replaceAll("\\s+", " ").trim();
       } else {
@@ -190,7 +195,7 @@ public class MrezniRadnik extends Thread {
       }
     }
 
-    if (provjeriIzraz(zahtjev, regex5)) {
+    if (provjeriIzraz(zahtjev, regex5)) { // alarm
       var podaci = razdvojiIzraz(zahtjev, regex5); // 0 = SVI; 2 = korime; 4 = lozinka; 6 = lokacija
 
       if (!autenticirajKorisnika(podaci[2], podaci[4]))
@@ -200,7 +205,8 @@ public class MrezniRadnik extends Thread {
         return "ERROR 24 Lokacija ne postoji";
 
       String komanda = podaci[5];
-      String kljuc = pronadiUredaj(podaci[6]);// podaci[6]
+      // String kljuc = pronadiUredaj(podaci[6]);// podaci[6]
+      String kljuc = podaci[6];
 
       Ocitanje ocitanje = vratiOcitanje(komanda, kljuc);
 
@@ -392,8 +398,10 @@ public class MrezniRadnik extends Thread {
     }
 
     if (komanda.equals("ALARM")) {
+      // System.out.println("Ispis liste za ključ " + kljuc + ":");
       for (Ocitanje o : tmp) {
-        if (o.id().equals(kljuc) && o.alarm()) {
+        // System.out.println(o.id() + ": " + o.alarm());
+        if (o.idLokacija().equals(kljuc) && o.alarm()) {
           ocitanje = o;
           break;
         }
@@ -408,6 +416,8 @@ public class MrezniRadnik extends Thread {
     boolean[] odstupaMeteo = {false, false, false};
     boolean alarm = false;
     String poruka = "";
+
+    String idLokacija = this.uredaji.get(podaci[5]).idLokacija();
 
     for (Ocitanje o : listaOcitanja) {
       if (o.id().equals(podaci[5])) {
@@ -436,13 +446,13 @@ public class MrezniRadnik extends Thread {
       // dodaj zapis s alarmom
       if (brojMeteoPodataka(podaci) == 3)
         listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], podaci[9],
-            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm, idLokacija));
       if (brojMeteoPodataka(podaci) == 2)
         listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], "",
-            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm, idLokacija));
       if (brojMeteoPodataka(podaci) == 1)
         listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], "", "", odstupaMeteo[0],
-            odstupaMeteo[1], odstupaMeteo[2], alarm));
+            odstupaMeteo[1], odstupaMeteo[2], alarm, idLokacija));
 
       poruka = "OK ALARM";
       if (odstupaMeteo[0])
@@ -454,13 +464,13 @@ public class MrezniRadnik extends Thread {
     } else { // samo dodaj zapis bez alarma
       if (brojMeteoPodataka(podaci) == 3)
         listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], podaci[9],
-            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm, idLokacija));
       if (brojMeteoPodataka(podaci) == 2)
         listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], podaci[8], "",
-            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm));
+            odstupaMeteo[0], odstupaMeteo[1], odstupaMeteo[2], alarm, idLokacija));
       if (brojMeteoPodataka(podaci) == 1)
         listaOcitanja.add(new Ocitanje(podaci[5], podaci[6], podaci[7], "", "", odstupaMeteo[0],
-            odstupaMeteo[1], odstupaMeteo[2], alarm));
+            odstupaMeteo[1], odstupaMeteo[2], alarm, idLokacija));
       poruka = "OK";
     }
 
@@ -497,9 +507,11 @@ public class MrezniRadnik extends Thread {
 
   private String pronadiUredaj(String idLokacija) {
     String idUredaj = "";
+    // List<String> uredajiLokacija = new ArrayList<>();
     for (Map.Entry<String, Uredaj> entry : uredaji.entrySet()) {
       if (entry.getValue().idLokacija().equals(idLokacija)) {
         idUredaj = entry.getKey();
+        // uredajiLokacija.add(entry.getKey());
         break;
       }
     }
