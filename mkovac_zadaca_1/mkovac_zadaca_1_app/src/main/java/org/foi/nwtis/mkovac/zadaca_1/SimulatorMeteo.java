@@ -25,6 +25,7 @@ public class SimulatorMeteo {
   private String korisnickaLozinka;
   private String posluziteljGlavniAdresa;
   private String posluziteljGlavniVrata;
+  private String maksCekanje;
 
   public static void main(String[] args) {
     var sm = new SimulatorMeteo();
@@ -69,6 +70,7 @@ public class SimulatorMeteo {
     korisnickaLozinka = konf.dajPostavku("korisnickaLozinka");
     posluziteljGlavniAdresa = konf.dajPostavku("posluziteljGlavniAdresa");
     posluziteljGlavniVrata = konf.dajPostavku("posluziteljGlavniVrata");
+    maksCekanje = konf.dajPostavku("maksCekanje");
     // TODO dodati ostale, myb u globalno i onda ucitavati putem zasebne funkcije!
 
     // otvaranje datoteke
@@ -107,8 +109,11 @@ public class SimulatorMeteo {
           long spavanjeKorigirano = this.izracunajSpavanje(prethodniMeteo, vazeciMeteo);
 
           try {
-            if (spavanjeKorigirano < 0)
+            if (spavanjeKorigirano < 0) {
+              Logger.getGlobal().log(Level.WARNING, "Zapis iz prošlosti, preskačem slanje!");
               continue;
+            }
+
             if (spavanjeKorigirano != 0)
               Thread.sleep(spavanjeKorigirano);
 
@@ -192,6 +197,8 @@ public class SimulatorMeteo {
     try {
       var mreznaUticnica =
           new Socket(posluziteljGlavniAdresa, Integer.parseInt(posluziteljGlavniVrata));
+
+      mreznaUticnica.setSoTimeout(Integer.parseInt(maksCekanje));
 
       var citac = new BufferedReader(
           new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));

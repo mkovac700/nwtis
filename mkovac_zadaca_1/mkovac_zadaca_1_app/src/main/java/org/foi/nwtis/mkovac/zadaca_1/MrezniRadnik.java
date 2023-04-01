@@ -41,6 +41,7 @@ public class MrezniRadnik extends Thread {
 
   private String posluziteljUdaljenostiAdresa;
   private int posluziteljUdaljenostiVrata;
+  private int maksCekanje;
 
   public MrezniRadnik(Socket mreznaUticnica, Konfiguracija konfig) {
     super();
@@ -53,6 +54,7 @@ public class MrezniRadnik extends Thread {
     this.posluziteljUdaljenostiAdresa = konfig.dajPostavku("posluziteljUdaljenostiAdresa");
     this.posluziteljUdaljenostiVrata =
         Integer.parseInt(konfig.dajPostavku("posluziteljUdaljenostiVrata"));
+    this.maksCekanje = Integer.parseInt(konfig.dajPostavku("maksCekanje"));
   }
 
   @Override
@@ -198,7 +200,7 @@ public class MrezniRadnik extends Thread {
         return "ERROR 24 Lokacija ne postoji";
 
       String komanda = podaci[5];
-      String kljuc = podaci[6];
+      String kljuc = pronadiUredaj(podaci[6]);// podaci[6]
 
       Ocitanje ocitanje = vratiOcitanje(komanda, kljuc);
 
@@ -308,6 +310,8 @@ public class MrezniRadnik extends Thread {
 
     try {
       var mreznaUticnica = new Socket(posluziteljUdaljenostiAdresa, posluziteljUdaljenostiVrata);
+
+      mreznaUticnica.setSoTimeout(maksCekanje);
 
       var citac = new BufferedReader(
           new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
@@ -494,7 +498,7 @@ public class MrezniRadnik extends Thread {
   private String pronadiUredaj(String idLokacija) {
     String idUredaj = "";
     for (Map.Entry<String, Uredaj> entry : uredaji.entrySet()) {
-      if (entry.getValue().equals(idLokacija)) {
+      if (entry.getValue().idLokacija().equals(idLokacija)) {
         idUredaj = entry.getKey();
         break;
       }
@@ -541,7 +545,7 @@ public class MrezniRadnik extends Thread {
   }
 
   private String[] razdvojiIzraz(String string, String regex) {
-    String[] rezultat = null;
+    List<String> rezultat = new ArrayList<>();
 
     String s = string.trim();
 
@@ -554,13 +558,13 @@ public class MrezniRadnik extends Thread {
       int poc = 0;
       int kraj = matcher.groupCount();
       for (int i = poc; i <= kraj; i++) {
-        rezultat[i] = matcher.group(i);
+        rezultat.add(matcher.group(i));
       }
     } else {
       rezultat = null;
     }
 
-    return rezultat;
+    return rezultat.toArray(new String[rezultat.size()]);
   }
 
   @Override

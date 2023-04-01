@@ -51,11 +51,27 @@ public class TestOpcija {
     String sintaksa9 =
         "(KORISNIK) ([a-zA-Z0-9_-]{3,10}) (LOZINKA) ([a-zA-Z0-9_\\-#!]{3,10}) (UDALJENOST) '([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+)' '([a-zA-ZÀ-ÖØ-öø-ÿČčĆćŽžĐđŠš0-9_\\-\\s]+)'$";
 
+    String sintaksa10 =
+        "(-k) ([a-zA-Z0-9_-]{3,10}) (-l) ([a-zA-Z0-9_\\-#!]{3,10}) (-a) ((?:[0-9]{1,3}\\.){3}[0-9]{1,3}|[a-zA-Z_\\-.]+) (-v) ([8-9][0-9]{3}) (-t) ([0-9]+) (--kraj)$";
+
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < args.length; i++) {
       sb.append(args[i]).append(" ");
     }
     String s = sb.toString().trim();
+
+    Pattern pattern10 = Pattern.compile(sintaksa10);
+    Matcher m10 = pattern10.matcher(s);
+    boolean status10 = m10.matches();
+    if (status10) {
+      int poc = 0;
+      int kraj = m10.groupCount();
+      for (int i = poc; i <= kraj; i++) {
+        System.out.println(i + ". " + m10.group(i));
+      }
+    } else {
+      System.out.println("Ne odgovara 10!");
+    }
 
     Pattern pattern9 = Pattern.compile(sintaksa9);
     Matcher m9 = pattern9.matcher(s);

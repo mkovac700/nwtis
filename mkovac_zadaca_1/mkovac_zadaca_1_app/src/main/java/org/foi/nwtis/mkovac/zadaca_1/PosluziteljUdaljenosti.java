@@ -102,6 +102,9 @@ public class PosluziteljUdaljenosti {
           "Datoteka '" + nazivDatoteke + "' nije datoteka ili nije moguće otvoriti!");
     }
 
+    // TODO dodati kreiranje datoteke ako ne postoji, automatski se moze napraviti ako se odmah
+    // nesto ide upisivati s writerom, ali ovdje to nije slucaj pa se mora koristiti file create
+
     if (putanja.toFile().length() != 0) {
       ObjectInputStream citac = new ObjectInputStream(new FileInputStream(putanja.toFile()));
 
