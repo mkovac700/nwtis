@@ -107,6 +107,8 @@ public class SimulatorMeteo {
           long spavanjeKorigirano = this.izracunajSpavanje(prethodniMeteo, vazeciMeteo);
 
           try {
+            if (spavanjeKorigirano < 0)
+              continue;
             if (spavanjeKorigirano != 0)
               Thread.sleep(spavanjeKorigirano);
 

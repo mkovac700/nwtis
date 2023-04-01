@@ -39,6 +39,9 @@ public class MrezniRadnik extends Thread {
   private float odstupanjeVlaga;
   private float odstupanjeTlak;
 
+  private String posluziteljUdaljenostiAdresa;
+  private int posluziteljUdaljenostiVrata;
+
   public MrezniRadnik(Socket mreznaUticnica, Konfiguracija konfig) {
     super();
     this.mreznaUticnica = mreznaUticnica;
@@ -47,6 +50,9 @@ public class MrezniRadnik extends Thread {
     this.odstupanjeTemp = Float.parseFloat(konfig.dajPostavku("odstupanjeTemp"));
     this.odstupanjeVlaga = Float.parseFloat(konfig.dajPostavku("odstupanjeVlaga"));
     this.odstupanjeTlak = Float.parseFloat(konfig.dajPostavku("odstupanjeTlak"));
+    this.posluziteljUdaljenostiAdresa = konfig.dajPostavku("posluziteljUdaljenostiAdresa");
+    this.posluziteljUdaljenostiVrata =
+        Integer.parseInt(konfig.dajPostavku("posluziteljUdaljenostiVrata"));
   }
 
   @Override
@@ -227,13 +233,15 @@ public class MrezniRadnik extends Thread {
       String lokacija1 = podaci[6];
       String lokacija2 = podaci[7];
 
-      // TODO iz datoteke dohvatiti gps sirinu i duzinu za pojedinu lokaciju
-      // 1. odmah tu pa promijeniti argumente za func
-      // 2. tek u funkc
+      String gpsSirina1 = this.lokacije.get(lokacija1).gpsSirina();
+      String gpsDuzina1 = this.lokacije.get(lokacija1).gpsDuzina();
+      String gpsSirina2 = this.lokacije.get(lokacija2).gpsSirina();
+      String gpsDuzina2 = this.lokacije.get(lokacija2).gpsDuzina();
 
-      String odgovor = kontaktirajPosluziteljUdaljenosti(komanda, lokacija1, lokacija2);
+      String odgovor = kontaktirajPosluziteljUdaljenosti(komanda, gpsSirina1, gpsDuzina1,
+          gpsSirina2, gpsDuzina2);
 
-      // TODO formirati odgovor korisniku na bazi odgovora PosluziteljUdaljenosti
+      return odgovor;
     }
 
     if (provjeriIzraz(zahtjev, regex7)) {
@@ -247,7 +255,7 @@ public class MrezniRadnik extends Thread {
 
       String odgovor = kontaktirajPosluziteljUdaljenosti(komanda1, komanda2);
 
-      // TODO isto kao kod prethodnog
+      return odgovor;
     }
 
     return "ERROR 20 Format komande nije ispravan";
@@ -255,14 +263,84 @@ public class MrezniRadnik extends Thread {
   }
 
   private String kontaktirajPosluziteljUdaljenosti(String komanda1, String komanda2) {
-    // TODO Auto-generated method stub
-    return null;
+    String odgovor = "";
+
+    try {
+      var mreznaUticnica = new Socket(posluziteljUdaljenostiAdresa, posluziteljUdaljenostiVrata);
+
+      var citac = new BufferedReader(
+          new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
+      var pisac = new BufferedWriter(
+          new OutputStreamWriter(mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
+
+      String zahtjev = komanda1 + " " + komanda2;
+
+      pisac.write(zahtjev);
+      pisac.flush();
+      mreznaUticnica.shutdownOutput();// sa slanja na primanje
+
+      var poruka = new StringBuilder();
+      while (true) {
+        var red = citac.readLine();
+        if (red == null)
+          break;
+        poruka.append(red);
+      }
+
+      odgovor = poruka.toString();
+
+      mreznaUticnica.shutdownInput(); // s primanja na slanje
+      mreznaUticnica.close();
+
+    } catch (NumberFormatException | IOException e) {
+      // TODO: handle exception
+      odgovor = "ERROR 25 PosluziteljUdaljenosti ne radi";
+      e.printStackTrace();
+    }
+
+    return odgovor;
   }
 
-  private String kontaktirajPosluziteljUdaljenosti(String komanda, String lokacija1,
-      String lokacija2) {
-    // TODO Auto-generated method stub
-    return null;
+  private String kontaktirajPosluziteljUdaljenosti(String komanda, String gpsSirina1,
+      String gpsDuzina1, String gpsSirina2, String gpsDuzina2) {
+
+    String odgovor = "ERROR 29 Nema odgovora od PosluziteljUdaljenosti";
+
+    try {
+      var mreznaUticnica = new Socket(posluziteljUdaljenostiAdresa, posluziteljUdaljenostiVrata);
+
+      var citac = new BufferedReader(
+          new InputStreamReader(mreznaUticnica.getInputStream(), Charset.forName("UTF-8")));
+      var pisac = new BufferedWriter(
+          new OutputStreamWriter(mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
+
+      String zahtjev =
+          komanda + " " + gpsSirina1 + " " + gpsDuzina1 + " " + gpsSirina2 + " " + gpsDuzina2;
+
+      pisac.write(zahtjev);
+      pisac.flush();
+      mreznaUticnica.shutdownOutput();// sa slanja na primanje
+
+      var poruka = new StringBuilder();
+      while (true) {
+        var red = citac.readLine();
+        if (red == null)
+          break;
+        poruka.append(red);
+      }
+
+      odgovor = poruka.toString();
+
+      mreznaUticnica.shutdownInput(); // s primanja na slanje
+      mreznaUticnica.close();
+
+    } catch (NumberFormatException | IOException e) {
+      // TODO: handle exception
+      odgovor = "ERROR 25 PosluziteljUdaljenosti ne radi";
+      e.printStackTrace();
+    }
+
+    return odgovor;
   }
 
   private synchronized Ocitanje vratiOcitanje(String komanda, String kljuc) {
