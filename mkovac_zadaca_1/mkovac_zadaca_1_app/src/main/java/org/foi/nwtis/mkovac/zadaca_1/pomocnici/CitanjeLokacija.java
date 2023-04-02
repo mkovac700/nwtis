@@ -10,7 +10,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Lokacija;
 
+/**
+ * Klasa CitanjeLokacija pomoćna je klasa zadužena za čitanje podataka o lokacijama iz datoteke
+ * *.csv
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class CitanjeLokacija {
+  /**
+   * Učitava datoteku lokacija *.csv te sprema podatke u kolekciju
+   * 
+   * @param nazivDatoteke Naziv datoteke lokacija *.csv
+   * @return Vraća kolekciju u obliku Map s lokacijama
+   * @throws IOException Baca iznimku ako otvaranje ili čitanje datoteke nije uspješno
+   */
   public Map<String, Lokacija> ucitajDatoteku(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
     if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
@@ -39,6 +53,12 @@ public class CitanjeLokacija {
     return lokacije;
   }
 
+  /**
+   * Provjerava ima li redak u datoteci 4 atributa
+   * 
+   * @param atribut Polje atributa
+   * @return Vraća true ako je u redu, inače false
+   */
   private boolean redImaCetiriAtributa(String[] atribut) {
     return atribut.length == 4;
   }

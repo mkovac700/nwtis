@@ -11,7 +11,20 @@ import java.util.logging.Logger;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Uredaj;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.UredajVrsta;
 
+/**
+ * Klasa CitanjeUredaja pomoćna je klasa zadužena za čitanje podataka o uređajima iz datoteke *.csv
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class CitanjeUredaja {
+  /**
+   * Učitava datoteku uređaja *.csv te sprema podatke u kolekciju
+   * 
+   * @param nazivDatoteke Naziv datoteke uređaja *.csv
+   * @return Vraća kolekciju u obliku Map s uređajima
+   * @throws IOException Baca iznimku ako otvaranje ili čitanje datoteke nije uspješno
+   */
   public Map<String, Uredaj> ucitajDatoteku(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
     if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
@@ -41,6 +54,12 @@ public class CitanjeUredaja {
     return uredaji;
   }
 
+  /**
+   * Provjerava ima li redak u datoteci 4 atributa
+   * 
+   * @param atribut Polje atributa
+   * @return Vraća true ako je u redu, inače false
+   */
   private boolean redImaCetiriAtributa(String[] atribut) {
     return atribut.length == 4;
   }

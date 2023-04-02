@@ -14,6 +14,13 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Klasa GlavniKlijent služi kao korisnički program putem kojeg se mogu slati određene naredbe.
+ * Obradu naredbi obavlja GlavniPosluzitelj.
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class GlavniKlijent {
 
   private static final String regex =
@@ -21,6 +28,11 @@ public class GlavniKlijent {
 
   private static String zahtjev = null;
 
+  /**
+   * Glavna funkcija koja služi za pokretanje programa GlavniKlijent
+   * 
+   * @param args Naredba za izvršavanje određenog zahtjeva
+   */
   public static void main(String[] args) {
     var gk = new GlavniKlijent();
     if (!gk.provjeriArgumente(args)) {
@@ -45,6 +57,13 @@ public class GlavniKlijent {
 
   }
 
+  /**
+   * Određuje vrstu rada na temelju unesene naredbe na način da formira zahtjev za GlavniPosluzitelj
+   * u točno određenom formatu.
+   * 
+   * @param args Ulazni argument
+   * @return Vraća formirani zahtjev za GlavniPosluzitelj
+   */
   private String odrediVrstuRada(String[] args) {
     String izraz = String.join(" ", args);
 
@@ -124,14 +143,26 @@ public class GlavniKlijent {
     return null;
   }
 
+  /**
+   * Provjerava je li ulazni argument ispravan
+   * 
+   * @param args Ulazni argument
+   * @return Vraća true ako je u redu, inače false
+   */
   private boolean provjeriArgumente(String[] args) {
-    // return args.length == 2 ? true : false;
 
     String izraz = String.join(" ", args);
 
     return provjeriIzraz(izraz, regex);
   }
 
+  /**
+   * Provjerava korektnost izraza korištenjem dozvoljenih izraza (eng. Regular expression)
+   * 
+   * @param string Izraz koji se provjerava
+   * @param regex Regularni izraz s kojim se provjerava
+   * @return Vraća true ako je u redu, inače false
+   */
   private boolean provjeriIzraz(String izraz, String regex) {
     String s = izraz.trim();
 
@@ -143,6 +174,13 @@ public class GlavniKlijent {
     return status;
   }
 
+  /**
+   * Razdvaja izraz po grupama korištenjem dozvoljenih izraza (eng. Regular expression)
+   * 
+   * @param string Izraz koji se provjerava
+   * @param regex Regularni izraz s kojim se provjerava
+   * @return Vraća polje s razdvojenim dijelovima izraza
+   */
   private static String[] razdvojiIzraz(String izraz, String regex) {
     List<String> rezultat = new ArrayList<>();
 
@@ -166,6 +204,12 @@ public class GlavniKlijent {
     return rezultat.toArray(new String[rezultat.size()]);
   }
 
+  /**
+   * Spaja se na GlavniPosluzitelj, šalje korisnikov zahtjev i čeka na odgovor.
+   * 
+   * @param adresa GlavniPosluzitelj adresa
+   * @param mreznaVrata GlavniPosluzitelj vrata
+   */
   private void spojiSeNaPosluzitelj(String adresa, int mreznaVrata) {
 
     try {
@@ -176,26 +220,23 @@ public class GlavniKlijent {
       var pisac = new BufferedWriter(
           new OutputStreamWriter(mreznaUticnica.getOutputStream(), Charset.forName("UTF-8")));
 
-      // String zahtjev = "TEST"; // TODO ovdje treba stvarni zahtjev prema opisu
-
       pisac.write(zahtjev);
       pisac.flush();
       mreznaUticnica.shutdownOutput();
 
-      // var poruka i while true
+
       var poruka = new StringBuilder();
       while (true) {
         var red = citac.readLine();
         if (red == null)
           break;
 
-        poruka.append("RED: " + red);
+        poruka.append(red);
       }
 
       Logger.getGlobal().log(Level.INFO, "Odgovor:" + poruka);
-      mreznaUticnica.shutdownInput();// prebacujemo se s primanja na slanje
-      mreznaUticnica.close(); // zatvara konekciju klijent-posluzitelj
-      // dretva zavrsava
+      mreznaUticnica.shutdownInput();
+      mreznaUticnica.close();
 
     } catch (IOException e) {
       // TODO Auto-generated catch block

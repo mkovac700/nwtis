@@ -17,7 +17,8 @@ import org.foi.nwtis.mkovac.zadaca_1.pomocnici.CitanjeLokacija;
 import org.foi.nwtis.mkovac.zadaca_1.pomocnici.CitanjeUredaja;
 
 /**
- * Klasa GlavniPosluzitelj koja je zadužena za otvaranje veze na određenim mrežnim vratima
+ * Klasa GlavniPosluzitelj zadužena je za otvaranje veze na određenim mrežnim vratima. Na
+ * poslužitelja se mogu spojiti klijenti ili SimulatorMeteo koji šalju različite zahtjeve za obradu.
  * 
  * @author Marijan Kovač
  *
@@ -35,6 +36,11 @@ public class GlavniPosluzitelj {
   private int brojCekaca = 10;
   private boolean kraj = false;
 
+  /**
+   * Konstruktor za GlavniPosluzitelj
+   * 
+   * @param konfig Objekt tipa Konfiguracija s postavkama
+   */
   public GlavniPosluzitelj(Konfiguracija konfig) {
     this.konfig = konfig;
     this.ispis = Integer.parseInt(konfig.dajPostavku("ispis"));
@@ -42,6 +48,10 @@ public class GlavniPosluzitelj {
     this.brojCekaca = Integer.parseInt(konfig.dajPostavku("brojCekaca"));
   }
 
+  /**
+   * Učitava podatke o korisnicima, lokacijama i uređajima iz .csv datoteke u odgovarajuće kolekcije
+   * te potom otvara mrežna vrata.
+   */
   public void pokreniPosluzitelja() {
     try {
       ucitajKorisnike();
@@ -54,6 +64,11 @@ public class GlavniPosluzitelj {
     }
   }
 
+  /**
+   * Učitava podatke o uređajima iz .csv datoteke u odgovarajuću kolekciju.
+   * 
+   * @throws IOException Baca iznimku ukoliko čitanje datoteke nije uspjelo.
+   */
   private void ucitajUredaje() throws IOException {
     var nazivDatoteke = this.konfig.dajPostavku("datotekaUredaja");
     var citacUredaja = new CitanjeUredaja();
@@ -66,6 +81,11 @@ public class GlavniPosluzitelj {
     }
   }
 
+  /**
+   * Učitava podatke o lokacijama iz .csv datoteke u odgovarajuću kolekciju.
+   * 
+   * @throws IOException Baca iznimku ukoliko čitanje datoteke nije uspjelo.
+   */
   private void ucitajLokacije() throws IOException {
     var nazivDatoteke = this.konfig.dajPostavku("datotekaLokacija");
     var citacLokacija = new CitanjeLokacija();
@@ -80,9 +100,9 @@ public class GlavniPosluzitelj {
   }
 
   /**
-   * Učitava sve korisnike iz CSV datoteke koja je definirana u postavci datotekaKorisnika
+   * Učitava podatke o uređajima iz .csv datoteke u odgovarajuću kolekciju.
    * 
-   * @throws IOException baca iznimku ako je problem s učitavanjem
+   * @throws IOException Baca iznimku ukoliko čitanje datoteke nije uspjelo.
    */
   public void ucitajKorisnike() throws IOException {
     var nazivDatoteke = this.konfig.dajPostavku("datotekaKorisnika");
@@ -97,25 +117,46 @@ public class GlavniPosluzitelj {
     }
   }
 
+  /**
+   * Otvara mrežna vrata te čeka na spajanje klijenata. Nakon spajanja klijenta daljnji se rad
+   * prebacuje u dretvu MrezniRadnik koja obrađuje dolazne zahtjeve.
+   * 
+   * @see MrezniRadnik
+   */
   public void otvoriMreznaVrata() {
     try (var posluzitelj = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       int brojacDretvi = 0;
+      List<Thread> dretve = new ArrayList<>();
+
       while (!this.kraj) {
-        var uticnica = posluzitelj.accept(); // program stoji i ceka da dode zahtjev (od
-                                             // SimulatorMeteo ili GlavniKlijent)
+
+        var uticnica = posluzitelj.accept();
+
         var dretva = new MrezniRadnik(uticnica, konfig);
 
         dretva.korisnici = this.korisnici;
         dretva.lokacije = this.lokacije;
         dretva.uredaji = this.uredaji;
+        dretva.kraj = this.kraj;
 
         dretva.listaOcitanja = this.listaOcitanja;
 
         dretva.setName("mkovac_" + brojacDretvi++);
         dretva.start();
 
+        dretve.add(dretva);
       }
 
+      posluzitelj.close();
+
+      for (Thread d : dretve) {
+        try {
+          d.join();
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
 
     } catch (IOException e) {
       // TODO Auto-generated catch block

@@ -25,6 +25,16 @@ import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 import org.foi.nwtis.mkovac.zadaca_1.podaci.Udaljenost;
 
+/**
+ * Klasa PosluziteljUdaljenosti zadužena je za izračunavanje udaljenosti između dviju lokacija na
+ * temelju njihove geografske širine i geografske dužine. Izračun se obavlja korištenjem haversine
+ * formule. Program pamti zadnjih nekoliko izračuna, te ima mogućnost spremanja istih u datoteku.
+ * Svoj rad započinje učitavanjem konfiguracijskih postavki. Klasa ima ulogu poslužitelja na koji se
+ * mogu spajati klijenti putem mrežne utičnice.
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class PosluziteljUdaljenosti {
 
   private int mreznaVrata = 8000;
@@ -37,6 +47,12 @@ public class PosluziteljUdaljenosti {
   private List<Udaljenost> listaUdaljenosti = new ArrayList<>();
   List<Udaljenost> tmp;
 
+  /**
+   * Glavna funkcija koja služi za pokretanje programa PosluziteljUdaljenosti
+   * 
+   * @param args Naziv konfiguracijske datoteke s postavkama za pokretanje programa. Dozvoljeni
+   *        formati za datoteku su: .txt | .xml | .bin | .json | .yaml
+   */
   public static void main(String[] args) {
     var pu = new PosluziteljUdaljenosti();
 
@@ -56,10 +72,23 @@ public class PosluziteljUdaljenosti {
 
   }
 
+  /**
+   * Učitava postavke iz datoteke u objekt Konfiguracija
+   * 
+   * @param datoteka Datoteka s konfiguracijskim postavkama
+   * @return Vraća objekt tipa Konfiguracija
+   * @throws NeispravnaKonfiguracija Baca iznimku ako učitavanje postavki nije uspjelo
+   */
   private Konfiguracija ucitajPostavke(String string) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(string);
   }
 
+  /**
+   * Funkcija provjerava je li ulazni argument ispravan.
+   * 
+   * @param args Ulazni argument
+   * @return Vraća true ako je u redu, inače false.
+   */
   private static boolean provjeriArgumente(String[] args) {
     if (args.length != 1)
       return false;
@@ -75,6 +104,13 @@ public class PosluziteljUdaljenosti {
     return status;
   }
 
+  /**
+   * Funkcija obavlja pokretanje poslužitelja. Vrši učitavanje konfiguracijskih postavki, priprema
+   * datoteku za serijalizaciju podataka o izračunima te otvara mrežna vrata.
+   * 
+   * @param konf Objekt s postavkama učitanim iz konfiguracijske datoteke
+   * @see otvoriMreznaVrata
+   */
   private void pokreniPosluziteljaUdaljenosti(Konfiguracija konf) {
     // ucitat postavke
     mreznaVrata = Integer.parseInt(konf.dajPostavku("mreznaVrata"));
@@ -82,7 +118,6 @@ public class PosluziteljUdaljenosti {
     brojZadnjihSpremljenih = Integer.parseInt(konf.dajPostavku("brojZadnjihSpremljenih"));
     datotekaSerijalizacija = konf.dajPostavku("datotekaSerijalizacija");
 
-    // pripremit dat serial
     try {
       ucitajDatotekuSerijalizacija(datotekaSerijalizacija);
     } catch (IOException | ClassNotFoundException e) {
@@ -90,21 +125,25 @@ public class PosluziteljUdaljenosti {
       e.printStackTrace();
     }
 
-    // otvorit port
     otvoriMreznaVrata();
   }
 
+  /**
+   * Učitava binarnu datoteku te obavlja deserijalizaciju podataka u listu s podacima.
+   * 
+   * @param nazivDatoteke Naziv binarne datoteke
+   * @throws IOException Baca iznimku ako datoteka ne postoji ili ju nije moguće otvoriti
+   * @throws ClassNotFoundException Baca iznimku ako se ne može obaviti cast objekta iz datoteke u
+   *         listu
+   */
   private void ucitajDatotekuSerijalizacija(String nazivDatoteke)
       throws IOException, ClassNotFoundException {
     var putanja = Path.of(nazivDatoteke);
 
-    if (Files.exists(putanja) && (Files.isDirectory(putanja) || !Files.isReadable(putanja))) {
+    if (!Files.exists(putanja) || Files.isDirectory(putanja) || !Files.isReadable(putanja)) {
       throw new IOException(
           "Datoteka '" + nazivDatoteke + "' nije datoteka ili nije moguće otvoriti!");
     }
-
-    // TODO dodati kreiranje datoteke ako ne postoji, automatski se moze napraviti ako se odmah
-    // nesto ide upisivati s writerom, ali ovdje to nije slucaj pa se mora koristiti file create
 
     if (putanja.toFile().length() != 0) {
       ObjectInputStream citac = new ObjectInputStream(new FileInputStream(putanja.toFile()));
@@ -116,6 +155,13 @@ public class PosluziteljUdaljenosti {
 
   }
 
+  /**
+   * Učitava binarnu datoteku te obavlja serijalizaciju podataka iz liste s podacima.
+   * 
+   * @param nazivDatoteke Naziv binarne datoteke
+   * @throws IOException Baca iznimku ako datoteka ne postoji ili ju nije moguće otvoriti
+   * 
+   */
   private void spremiDatotekuSerijalizacija(String nazivDatoteke) throws IOException {
     var putanja = Path.of(nazivDatoteke);
 
@@ -131,16 +177,17 @@ public class PosluziteljUdaljenosti {
     pisac.close();
   }
 
+  /**
+   * Otvara mrežna vrata te čeka na spajanje klijenata. Obrađuje dolazni zahtjev na način da obavlja
+   * izračun udaljenosti ili sprema nedavno primljene podatke u datoteku.
+   * 
+   * @see obradiZahtjev
+   */
   private void otvoriMreznaVrata() {
     try (ServerSocket posluzitelj = new ServerSocket(this.mreznaVrata, this.brojCekaca)) {
       while (true) {
-        System.out.println("čekam zahtjev...");
-        Socket uticnica = posluzitelj.accept(); // program stoji i ceka da dode zahtjev
-        /*
-         * var dretva = new MrezniRadnik(uticnica, konfig); dretva.start();
-         */
+        Socket uticnica = posluzitelj.accept();
 
-        // nakon dolaska samo treba obraditi?
         var citac = new BufferedReader(
             new InputStreamReader(uticnica.getInputStream(), Charset.forName("UTF-8")));
         var pisac = new BufferedWriter(
@@ -171,16 +218,24 @@ public class PosluziteljUdaljenosti {
     }
   }
 
+  /**
+   * Obrađuje dolazni zahtjev na temelju pripremljenih dozvoljenih zahtjeva. Ukoliko se zahtijeva
+   * izračun udaljenosti, provjerava ima li već nedavno izračunatu udaljenost za isti zahtjev te ako
+   * nema obavlja izračun. Ukoliko se zahtijeva spremanje, sprema nedavno primljene podatke u
+   * datoteku.
+   * 
+   * @param zahtjev Dolazni formatirani zahtjev
+   * @return Vraća traženi podatak klijentu ako je uspješno ili grešku.
+   */
   private String obradiZahtjev(String zahtjev) {
     String regex1 =
         "UDALJENOST ((\\d*\\.)?\\d+) ((\\d*\\.)?\\d+) ((\\d*\\.)?\\d+) ((\\d*\\.)?\\d+)$";
 
     String regex2 = "UDALJENOST SPREMI$";
 
-    if (provjeriIzraz(zahtjev, regex1)) { // UDALJENOST 46.30771 16.33808 46.02419 15.90968
-      var podaci = zahtjev.split(" "); // podaci[0] komanda
+    if (provjeriIzraz(zahtjev, regex1)) {
+      var podaci = zahtjev.split(" ");
 
-      // TODO provjeru postojanja izdvojiti u funkc
       boolean postoji = false;
       String udaljenost = "";
 
@@ -195,7 +250,7 @@ public class PosluziteljUdaljenosti {
 
       if (postoji) {
         return "OK " + String.format("%.2f", Double.parseDouble(udaljenost));
-      } else { // izracunaj udaljenost
+      } else {
         double rezultat = izracunajUdaljenost(podaci);
         if (listaUdaljenosti.size() == brojZadnjihSpremljenih)
           listaUdaljenosti.remove(0);
@@ -205,7 +260,7 @@ public class PosluziteljUdaljenosti {
         return "OK " + String.format("%.2f", rezultat);
       }
 
-    } else if (provjeriIzraz(zahtjev, regex2)) { // UDALJENOST SPREMI
+    } else if (provjeriIzraz(zahtjev, regex2)) {
       try {
         spremiDatotekuSerijalizacija(datotekaSerijalizacija);
       } catch (IOException e) {
@@ -218,17 +273,24 @@ public class PosluziteljUdaljenosti {
     }
   }
 
+  /**
+   * Računa udaljenost na temelju podataka iz dolaznog zahtjeva. Računanje se obavlja korištenjem
+   * haversine formule. Više na: https://www.geeksforgeeks.org/program-distance-two-points-earth/
+   * 
+   * @param podaci Podaci s geografskom širinom i geografskom dužinom iz dolaznog zahtjeva
+   * @return Vraća udaljenost u kilometrima (km)
+   */
   private double izracunajUdaljenost(String[] podaci) {
     System.out.println(Double.parseDouble(podaci[1]) + " " + Double.parseDouble(podaci[2]) + " "
         + Double.parseDouble(podaci[3]) + " " + Double.parseDouble(podaci[4]));
 
-    double gpsSirina1 = Math.toRadians(Double.parseDouble(podaci[1])); // latitude = sirina
-    double gpsDuzina1 = Math.toRadians(Double.parseDouble(podaci[2])); // longitude = duzina
+    double gpsSirina1 = Math.toRadians(Double.parseDouble(podaci[1]));
+    double gpsDuzina1 = Math.toRadians(Double.parseDouble(podaci[2]));
     double gpsSirina2 = Math.toRadians(Double.parseDouble(podaci[3]));
     double gpsDuzina2 = Math.toRadians(Double.parseDouble(podaci[4]));
 
-    double sirina = gpsSirina2 - gpsSirina1; // lat
-    double duzina = gpsDuzina2 - gpsDuzina1; // lon
+    double sirina = gpsSirina2 - gpsSirina1;
+    double duzina = gpsDuzina2 - gpsDuzina1;
 
     double a = Math.pow(Math.sin(sirina / 2), 2)
         + Math.cos(gpsSirina1) * Math.cos(gpsSirina2) * Math.pow(Math.sin(duzina / 2), 2);
@@ -238,8 +300,14 @@ public class PosluziteljUdaljenosti {
     return c * r;
   }
 
+  /**
+   * Provjerava korektnost izraza korištenjem dozvoljenih izraza (eng. Regular expression)
+   * 
+   * @param string Izraz koji se provjerava
+   * @param regex Regularni izraz s kojim se provjerava
+   * @return Vraća true ako je u redu, inače false
+   */
   private boolean provjeriIzraz(String string, String regex) {
-    // String regex = "\\w+.(txt|xml|bin|json|yaml)$";
     String s = string.trim();
 
     Pattern pattern = Pattern.compile(regex);
