@@ -159,7 +159,7 @@ public class GlavniKlijent {
   /**
    * Provjerava korektnost izraza korištenjem dozvoljenih izraza (eng. Regular expression)
    * 
-   * @param string Izraz koji se provjerava
+   * @param izraz Izraz koji se provjerava
    * @param regex Regularni izraz s kojim se provjerava
    * @return Vraća true ako je u redu, inače false
    */
@@ -177,7 +177,7 @@ public class GlavniKlijent {
   /**
    * Razdvaja izraz po grupama korištenjem dozvoljenih izraza (eng. Regular expression)
    * 
-   * @param string Izraz koji se provjerava
+   * @param izraz Izraz koji se provjerava
    * @param regex Regularni izraz s kojim se provjerava
    * @return Vraća polje s razdvojenim dijelovima izraza
    */

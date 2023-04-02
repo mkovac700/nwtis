@@ -208,7 +208,7 @@ public class MrezniRadnik extends Thread {
       }
     }
 
-    if (provjeriIzraz(zahtjev, regex4)) { // max
+    if (provjeriIzraz(zahtjev, regex4)) {
       var podaci = zahtjev.split(" ");
 
       if (!autenticirajKorisnika(podaci[1], podaci[3]))
@@ -237,8 +237,8 @@ public class MrezniRadnik extends Thread {
       }
     }
 
-    if (provjeriIzraz(zahtjev, regex5)) { // alarm
-      var podaci = razdvojiIzraz(zahtjev, regex5); // 0 = SVI; 2 = korime; 4 = lozinka; 6 = lokacija
+    if (provjeriIzraz(zahtjev, regex5)) {
+      var podaci = razdvojiIzraz(zahtjev, regex5);
 
       if (!autenticirajKorisnika(podaci[2], podaci[4]))
         return "ERROR 21 Korisnik ne postoji ili lozinka nije ispravna";
@@ -247,7 +247,6 @@ public class MrezniRadnik extends Thread {
         return "ERROR 24 Lokacija ne postoji";
 
       String komanda = podaci[5];
-      // String kljuc = pronadiUredaj(podaci[6]);// podaci[6]
       String kljuc = podaci[6];
 
       Ocitanje ocitanje = vratiOcitanje(komanda, kljuc);
@@ -342,7 +341,7 @@ public class MrezniRadnik extends Thread {
 
       pisac.write(zahtjev);
       pisac.flush();
-      mreznaUticnica.shutdownOutput();// sa slanja na primanje
+      mreznaUticnica.shutdownOutput();
 
       var poruka = new StringBuilder();
       while (true) {
@@ -354,7 +353,7 @@ public class MrezniRadnik extends Thread {
 
       odgovor = poruka.toString();
 
-      mreznaUticnica.shutdownInput(); // s primanja na slanje
+      mreznaUticnica.shutdownInput();
       mreznaUticnica.close();
 
     } catch (NumberFormatException | IOException e) {

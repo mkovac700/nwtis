@@ -67,7 +67,7 @@ public class PokretacPosluzitelja {
   /**
    * Učitava postavke iz datoteke u objekt Konfiguracija
    * 
-   * @param datoteka Datoteka s konfiguracijskim postavkama
+   * @param nazivDatoteke Datoteka s konfiguracijskim postavkama
    * @return Vraća objekt tipa Konfiguracija
    * @throws NeispravnaKonfiguracija Baca iznimku ako učitavanje postavki nije uspjelo
    */

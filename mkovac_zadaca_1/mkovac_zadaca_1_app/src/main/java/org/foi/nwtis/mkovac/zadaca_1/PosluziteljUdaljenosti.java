@@ -75,7 +75,7 @@ public class PosluziteljUdaljenosti {
   /**
    * Učitava postavke iz datoteke u objekt Konfiguracija
    * 
-   * @param datoteka Datoteka s konfiguracijskim postavkama
+   * @param string Datoteka s konfiguracijskim postavkama
    * @return Vraća objekt tipa Konfiguracija
    * @throws NeispravnaKonfiguracija Baca iznimku ako učitavanje postavki nije uspjelo
    */

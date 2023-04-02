@@ -97,7 +97,6 @@ public class SimulatorMeteo {
    * @see izracunajSpavanje
    */
   private void pokreniSimulator(Konfiguracija konf) throws IOException {
-    // preuzimanje postavki
     trajanjeSekunde = konf.dajPostavku("trajanjeSekunde");
     korisnickoIme = konf.dajPostavku("korisnickoIme");
     korisnickaLozinka = konf.dajPostavku("korisnickaLozinka");
@@ -106,9 +105,7 @@ public class SimulatorMeteo {
     maksCekanje = konf.dajPostavku("maksCekanje");
     brojPokusaja = Integer.parseInt(konf.dajPostavku("brojPokusaja"));
     datotekaProblema = konf.dajPostavku("datotekaProblema");
-    // TODO dodati ostale, myb u globalno i onda ucitavati putem zasebne funkcije!
 
-    // otvaranje datoteke
     var nazivDatoteke = konf.dajPostavku("datotekaMeteo");
     var putanja = Path.of(nazivDatoteke);
 
@@ -119,8 +116,7 @@ public class SimulatorMeteo {
 
     var citac = Files.newBufferedReader(putanja, Charset.forName("UTF-8"));
 
-    MeteoSimulacija prethodniMeteo = null; // klasa se moze kreirati na desni klik, pa onda odabrati
-                                           // i package u koji se zeli staviti
+    MeteoSimulacija prethodniMeteo = null;
 
     int rbroj = 0;
 
