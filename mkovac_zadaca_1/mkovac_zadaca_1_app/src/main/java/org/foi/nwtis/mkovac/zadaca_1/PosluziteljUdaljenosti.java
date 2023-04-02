@@ -66,8 +66,7 @@ public class PosluziteljUdaljenosti {
       Konfiguracija konf = pu.ucitajPostavke(args[0]);
       pu.pokreniPosluziteljaUdaljenosti(konf);
     } catch (NeispravnaKonfiguracija e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.SEVERE, "Greška u učitavanju postavki! " + e.getMessage());
     }
 
   }
@@ -121,8 +120,8 @@ public class PosluziteljUdaljenosti {
     try {
       ucitajDatotekuSerijalizacija(datotekaSerijalizacija);
     } catch (IOException | ClassNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.SEVERE,
+          "Greška u učitavanju datotekaSerijalizacija! " + e.getMessage());
     }
 
     otvoriMreznaVrata();
@@ -213,8 +212,7 @@ public class PosluziteljUdaljenosti {
 
       }
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
   }
 
@@ -281,8 +279,6 @@ public class PosluziteljUdaljenosti {
    * @return Vraća udaljenost u kilometrima (km)
    */
   private double izracunajUdaljenost(String[] podaci) {
-    System.out.println(Double.parseDouble(podaci[1]) + " " + Double.parseDouble(podaci[2]) + " "
-        + Double.parseDouble(podaci[3]) + " " + Double.parseDouble(podaci[4]));
 
     double gpsSirina1 = Math.toRadians(Double.parseDouble(podaci[1]));
     double gpsDuzina1 = Math.toRadians(Double.parseDouble(podaci[2]));

@@ -153,14 +153,12 @@ public class GlavniPosluzitelj {
         try {
           d.join();
         } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          Logger.getGlobal().log(Level.SEVERE, e.getMessage());
         }
       }
 
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
 
   }

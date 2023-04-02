@@ -234,13 +234,12 @@ public class GlavniKlijent {
         poruka.append(red);
       }
 
-      Logger.getGlobal().log(Level.INFO, "Odgovor:" + poruka);
+      Logger.getGlobal().log(Level.INFO, "Odgovor: " + poruka);
       mreznaUticnica.shutdownInput();
       mreznaUticnica.close();
 
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
 
   }

@@ -113,8 +113,7 @@ public class MrezniRadnik extends Thread {
       this.mreznaUticnica.close();
 
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
   }
 
@@ -151,7 +150,6 @@ public class MrezniRadnik extends Thread {
 
 
     if (provjeriIzraz(zahtjev, regex1)) {
-      System.out.println("test");
 
       var podaci = zahtjev.split(" ");
 
@@ -357,9 +355,10 @@ public class MrezniRadnik extends Thread {
       mreznaUticnica.close();
 
     } catch (NumberFormatException | IOException e) {
-      // TODO: handle exception
+
       odgovor = "ERROR 25 PosluziteljUdaljenosti ne radi";
-      e.printStackTrace();
+
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
 
     return odgovor;
@@ -412,9 +411,10 @@ public class MrezniRadnik extends Thread {
       mreznaUticnica.close();
 
     } catch (NumberFormatException | IOException e) {
-      // TODO: handle exception
+
       odgovor = "ERROR 25 PosluziteljUdaljenosti ne radi";
-      e.printStackTrace();
+
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
 
     return odgovor;

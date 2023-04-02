@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.foi.nwtis.mkovac.zadaca_1.pomocnici"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.foi.nwtis.mkovac.zadaca_1.podaci"},{"l":"org.foi.nwtis.mkovac.zadaca_1.pomocnici"}];updateSearchResults();

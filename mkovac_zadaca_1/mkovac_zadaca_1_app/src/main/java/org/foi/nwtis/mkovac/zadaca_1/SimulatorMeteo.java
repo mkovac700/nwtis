@@ -149,8 +149,7 @@ public class SimulatorMeteo {
               Thread.sleep(spavanjeKorigirano);
 
           } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Logger.getGlobal().log(Level.SEVERE, e.getMessage());
           }
         }
 
@@ -267,8 +266,6 @@ public class SimulatorMeteo {
 
     do {
 
-      System.out.println("Pokusaj br: " + pokusaj);
-
       try {
         var mreznaUticnica =
             new Socket(posluziteljGlavniAdresa, Integer.parseInt(posluziteljGlavniVrata));
@@ -318,20 +315,18 @@ public class SimulatorMeteo {
         mreznaUticnica.close();
 
       } catch (NumberFormatException | IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }
 
     } while (ponovno && pokusaj < brojPokusaja);
 
     if (pokusaj == brojPokusaja) {
-      System.out.println("Upis u datoteku");
 
       try {
         upisiDatotekaProblema(datotekaProblema, vazeciMeteo, problem);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        Logger.getGlobal().log(Level.SEVERE,
+            "Greška u upisivanju u datotekaProblema!" + e.getMessage());
       }
     }
   }
