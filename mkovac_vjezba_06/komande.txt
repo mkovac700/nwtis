@@ -1,0 +1,5 @@
+cd /opt/apache-tomcat-10.1.5/bin/
+./startup.sh
+
+http://localhost:8084/mkovac_vjezba_06_1/Vjezba_06_2?icaoFrom=LDZA&icaoTo=EGLL
+http://localhost:8084/manager

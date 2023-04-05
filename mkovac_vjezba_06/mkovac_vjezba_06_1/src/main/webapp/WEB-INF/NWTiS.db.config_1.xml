@@ -4,7 +4,7 @@
 <comment>NWTIS konfiguracija</comment>
 <entry key="server.database">jdbc:hsqldb:hsql://localhost:9001/</entry>
 <entry key="admin.username">SA</entry>
-<entry key="admin.password"></entry>
+<entry key="admin.password"/>
 <entry key="admin.database">nwtis_2</entry>
 <entry key="user.username">nwtis_2</entry>
 <entry key="user.password">nwtis#2</entry>
@@ -12,4 +12,4 @@
 <entry key="jdbc.mysql">com.mysql.jdbc.Driver</entry>
 <entry key="jdbc.derby">org.apache.derby.jdbc.ClientDriver</entry>
 <entry key="jdbc.hsqldb.hsql">org.hsqldb.jdbcDriver</entry>
-</properties> 
+</properties>
