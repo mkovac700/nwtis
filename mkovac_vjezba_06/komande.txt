@@ -7,3 +7,33 @@ http://localhost:8084/manager
 cd /opt/apache-tomcat-10.1.5/logs
 watch tail catalina.out
 watch -n 1 tail catalina.out
+
+---baza---
+cd /opt/hsqldb-2.7.1/hsqldb/data
+
+sudo java -classpath ../lib/hsqldb.jar org.hsqldb.server.Server \
+--database.0 file:nwtis_2 --dbname.0 nwtis_2 --port 9001
+
+---docker---
+ako se docker mreza nece pokrenut (na faksu):
+docker network ls
+docker network rm ldap_mreza_1
+
+pokretanje kontejnera:
+./pripremiMrezu.sh
+./pripremiSliku.sh 
+./pokreniSliku.sh
+
+gasenje i paljenje:
+docker stop mkovac_tomcat
+docker start mkovac_tomcat
+
+http://200.20.0.2:8080/
+
+
+---napomene---
+ispis3 i trazi3 i 06_5 je sve isto samo ideja da se ne koristi import nego java.util.List itd
+za deploy na docker server: samo u pom.xml od vjezba_06_1 promijeniti cargo.servlet.port na 8090 (localhost valjda ostaje iako moze i valjda 200.20.0.2 jer se radi mapiranje, vidi sliku na mob)
+napomena: baza ne radi na dockeru, jer je u db.config stavljen localhost:9001 (ideja: ne moze se iz dockera van)
+
+jsp koji ce prikazati prvih deset naziva aerodroma  
