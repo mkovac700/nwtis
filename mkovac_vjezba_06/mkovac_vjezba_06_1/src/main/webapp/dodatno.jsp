@@ -17,16 +17,16 @@
 	  %>
 	  	Javila se greška u radu <%= greska %>
 	  <%
-	  
-	}
-	
-	var podaci = (java.util.List<mkovac_vjezba_06.Aerodrom>) request.getAttribute("podaci");
-	if(podaci!=null){
-%>
+	  }
+	  	
+	  	var podaci = (java.util.List<org.foi.nwtis.mkovac.vjezba_06.Aerodrom>) request.getAttribute("podaci");
+	  	if(podaci!=null){
+	  %>
 
 <table border=1>
 	<tr><th>ICAO</th><th>Name</th></tr>
-	<% for(mkovac_vjezba_06.Aerodrom u : podaci){ 
+	<%
+	for(org.foi.nwtis.mkovac.vjezba_06.Aerodrom u : podaci){
 	%>
 		<tr><td><%= u.icao() %></td><td><%= u.name() %></td></tr>
 	<% } } %>

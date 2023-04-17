@@ -1,4 +1,4 @@
-package mkovac_vjezba_06;
+package org.foi.nwtis.mkovac.vjezba_06;
 
 public class DretvaVremena extends Thread {
   private static int brojDretve = 0;

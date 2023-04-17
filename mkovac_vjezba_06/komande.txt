@@ -20,7 +20,7 @@ docker network ls
 docker network rm ldap_mreza_1
 
 pokretanje kontejnera:
-./pripremiMrezu.sh
+./pripremiMrezu.sh 
 ./pripremiSliku.sh 
 ./pokreniSliku.sh
 

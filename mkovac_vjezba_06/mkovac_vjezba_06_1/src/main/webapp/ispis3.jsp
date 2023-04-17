@@ -14,17 +14,17 @@
 	  %>
 	  	Javila se greška u radu <%= greska %>
 	  <%
-	  
-	}
-	
-	var podaci = (java.util.List<mkovac_vjezba_06.Udaljenost>) request.getAttribute("podaci");
-	float ukupnoKm = 0;
-%>
+	  }
+	  	
+	  	var podaci = (java.util.List<org.foi.nwtis.mkovac.vjezba_06.Udaljenost>) request.getAttribute("podaci");
+	  	float ukupnoKm = 0;
+	  %>
 
 <table border=1>
 	<tr><th>Država</th><th>Udaljenost (km)</th></tr>
-	<%for(mkovac_vjezba_06.Udaljenost u : podaci){ 
-		ukupnoKm+= u.km();
+	<%
+	for(org.foi.nwtis.mkovac.vjezba_06.Udaljenost u : podaci){ 
+			ukupnoKm+= u.km();
 	%>
 		<tr><td><%= u.drzava() %></td><td><%= u.km() %></td></tr>
 	<% }%>

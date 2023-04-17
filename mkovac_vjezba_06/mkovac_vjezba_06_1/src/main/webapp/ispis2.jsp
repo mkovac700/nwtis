@@ -1,5 +1,5 @@
 <%@page import="java.util.List"%>
-<%@page import="mkovac_vjezba_06.Udaljenost"%>
+<%@page import="org.foi.nwtis.mkovac.vjezba_06.Udaljenost"%>
 <%@page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>

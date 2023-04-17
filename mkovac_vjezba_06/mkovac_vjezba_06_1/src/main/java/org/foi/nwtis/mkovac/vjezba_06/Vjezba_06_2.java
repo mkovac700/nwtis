@@ -1,4 +1,4 @@
-package mkovac_vjezba_06;
+package org.foi.nwtis.mkovac.vjezba_06;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -6,12 +6,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 import org.foi.nwtis.PostavkeBazaPodataka;
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebInitParam;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,13 +20,12 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class Vjezba_06_1
  */
-@WebServlet(name = "Vjezba_06_4", urlPatterns = {"/Vjezba_06_4"},
+@WebServlet(name = "Vjezba_06_2", urlPatterns = {"/Vjezba_06_2"},
     initParams = {@WebInitParam(name = "konfiguracija",
         value = "NWTiS.db.config_1.xml")})
-public class Vjezba_06_4 extends HttpServlet {
+public class Vjezba_06_2 extends HttpServlet {
 
-
-  private static final long serialVersionUID = -67067521182996033L;
+  private static final long serialVersionUID = 3959461751817702496L;
   private PostavkeBazaPodataka konfBP;
 
   /**
@@ -53,7 +50,7 @@ public class Vjezba_06_4 extends HttpServlet {
     String icaoFrom = request.getParameter("icaoFrom");
     String icaoTo = request.getParameter("icaoTo");
 
-    ispisiUdaljenosti(icaoFrom, icaoTo, request, response);
+    ispisiUdaljenosti(icaoFrom, icaoTo, response);
 
 
   }
@@ -89,15 +86,12 @@ public class Vjezba_06_4 extends HttpServlet {
   }
 
   private void ispisiUdaljenosti(String icaoForm, String icaoTo,
-      HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+      HttpServletResponse response) {
     String url = this.konfBP.getServerDatabase();
     String korime = this.konfBP.getUserUsername();
     String lozinka = this.konfBP.getUserPassword();
     String driver = this.konfBP.getDriverDatabase();
     String baza = this.konfBP.getUserDatabase();
-
-    var udaljenosti = new ArrayList<Udaljenost>();
 
     String query =
         "SELECT ICAO_FROM, ICAO_TO, COUNTRY, DIST_CTRY FROM AIRPORTS_DISTANCE_MATRIX WHERE ICAO_FROM = ? AND ICAO_TO = ?";
@@ -113,23 +107,26 @@ public class Vjezba_06_4 extends HttpServlet {
       stmt.setString(1, icaoForm);
       stmt.setString(2, icaoTo);
 
+      response.getWriter().append("<!doctype html>" + "<html><head>"
+          + "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>"
+          + "</head><body>");
+
       ResultSet rs = stmt.executeQuery();
       float ukupnoUdaljenost = 0;
       while (rs.next()) {
         String drzava = rs.getString("COUNTRY");
         float udaljenost = rs.getFloat("DIST_CTRY");
         ukupnoUdaljenost += udaljenost;
-
-        var u = new Udaljenost(drzava, udaljenost);
-        udaljenosti.add(u);
-
+        response.getWriter()
+            .append("<p>" + drzava + ": " + udaljenost + "</p>");
       }
       rs.close();
+      response.getWriter().append(
+          "<p>Ukupna udaljenost: " + ukupnoUdaljenost + "</p>");
 
-    } catch (SQLException | ClassNotFoundException e) {
+      response.getWriter().append("</body></html>");
+    } catch (SQLException | ClassNotFoundException | IOException e) {
       Logger.getGlobal().log(Level.INFO, e.getMessage());
-
-      request.setAttribute("greska", e.getMessage());
     } finally {
       try {
         if (stmt != null && !stmt.isClosed())
@@ -140,14 +137,8 @@ public class Vjezba_06_4 extends HttpServlet {
 
       } catch (SQLException e) {
         Logger.getGlobal().log(Level.SEVERE, e.getMessage());
-        request.setAttribute("greska", e.getMessage());
       }
     }
 
-    // salje podatke
-    request.setAttribute("podaci", udaljenosti);
-    RequestDispatcher rd =
-        this.getServletContext().getRequestDispatcher("/ispis2.jsp");
-    rd.forward(request, response);
   }
 }
