@@ -1,2 +1,65 @@
+#PAYARA
+
+#ovo vise ne iz nekog razloga
 cd /opt/payara-web-6.2023.1/glassfish/bin
 sudo ./startserv
+
+#ovo treba koristit (doma sve redom izvrsit iz zipa 4-prijelaz na 17):
+
+# Ako se želi privremeno promijeniti verzija JDK onda se trebaju izvršiti komande
+export JAVA_HOME=/usr/lib/jvm/jdk-17.0.2
+export PATH=/usr/lib/jvm/jdk-17.0.2/bin:$PATH
+
+sudo chmod -R g+w /opt/payara-web-6.2023.1/glassfish/domains/domain1/applications/
+sudo chmod -R g+w /opt/payara-web-6.2023.1/glassfish/domains/domain1/generated/
+
+cd /opt/payara-web-6.2023.1/glassfish/bin
+./asadmin start-domain
+
+#gašenje:
+netstat -tunlp
+sudo kill 4851 (PID=tamo gdje je port 4848)
+netstat -tunlp (da vidimo jel ugasen)
+
+#curl komande (za testiranje jel prolaze komande):
+curl -X OPTIONS -H "Accept: application/vnd.sun.wadl+xml" "http://localhost:8080/dkermek_zadaca_2_wa_1/api/aerodromi"
+
+curl -X GET -H "Accept: application/json" "http://localhost:8080/dkermek_zadaca_2_wa_1/api/aerodromi"
+curl -X GET -H "Accept: application/json" "http://localhost:8080/dkermek_zadaca_2_wa_1/api/aerodromi/LDZA"
+curl -X GET -H "Accept: application/json" "http://localhost:8080/dkermek_zadaca_2_wa_1/api/aerodromi/LDZA/LOWW"
+
+#BAZA
+cd /opt/hsqldb-2.7.1/hsqldb/data
+sudo java -classpath ../lib/hsqldb.jar org.hsqldb.server.Server \
+--database.0 file:nwtis_2 --dbname.0 nwtis_2 --port 9001
+
+#DOCKER POKRETANJE:
+iz roota!
+pripremiMrezu
+pripremiSliku
+pokreniSliku
+
+#DOCKER ERRORS&FIX:
+#1
+NWTiS_2@webpredmeti:~/mkovac/mkovac_zadaca_2$ scripts/pripremiMrezu.sh
+Error response from daemon: Pool overlaps with other one on this address space
+docker network ls
+NWTiS_2@webpredmeti:~/mkovac/mkovac_zadaca_2$ docker network rm dkermek_mreza_1
+dkermek_mreza_1
+
+#2
+NWTiS_2@webpredmeti:~/mkovac/mkovac_zadaca_2$ scripts/pokreniSliku.sh
+docker: Error response from daemon: Conflict. The container name "/nwtishsqldb_2" is already in use by container "22597ab98b230db0e17d801eec69e1aa9562dbc056061d3a3d80ca56666d2a59". You have to remove (or rename) that container to be able to reuse that name.
+See 'docker run --help'.
+NWTiS_2@webpredmeti:~/mkovac/mkovac_zadaca_2$ docker rm nwtishsqldb_2
+nwtishsqldb_2
+NWTiS_2@webpredmeti:~/mkovac/mkovac_zadaca_2$ docker rm nwtishsqldb_1
+nwtishsqldb_1
+
+#PRIVREMENO RJESENJE S LOKALNOM BAZOM JER DOCKER BAZA NIJE RADILA:
+1. pokrenut normalno db lokalno
+2. deployed resources, webapp, web-inf, glassfish bla bla .xml: 
+   200.20.0.3:9001 je ako ide preko dockera, ako ide lokalno onda mora ic localhost:9001
+   
+#FIX ZA BAZU NA DOCKERU:
+chmod 750 na onu datoteku docker entrypoint
