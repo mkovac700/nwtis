@@ -62,4 +62,7 @@ nwtishsqldb_1
    200.20.0.3:9001 je ako ide preko dockera, ako ide lokalno onda mora ic localhost:9001
    
 #FIX ZA BAZU NA DOCKERU:
-chmod 750 na onu datoteku docker entrypoint
+chmod 750 <naziv_datoteke> na onu datoteku docker entrypoint
+
+#generalna napomena:
+nakon svake izmjene koda, pokrenuti onu skriptu brisiPripremiPokreni
