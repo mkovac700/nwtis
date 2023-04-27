@@ -44,45 +44,38 @@ public class RestKlijentAerodroma {
 
     private final WebTarget webTarget;
     private final Client client;
-    private static final String BASE_URI =
-        "http://localhost:8080/mkovac_zadaca_2_wa_1/api";
+    private static final String BASE_URI = "http://200.20.0.4:8080/mkovac_zadaca_2_wa_1/api";
 
     public RestKKlijent() {
       client = ClientBuilder.newClient();
       webTarget = client.target(BASE_URI).path("aerodromi");
     }
 
-    public Aerodrom[] getAerodromi(int odBroja, int broj)
-        throws ClientErrorException {
+    public Aerodrom[] getAerodromi(int odBroja, int broj) throws ClientErrorException {
       WebTarget resource = webTarget;
 
-      Invocation.Builder request =
-          resource.request(MediaType.APPLICATION_JSON);
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
       if (request.get(String.class).isEmpty()) {
         return null;
       }
       Gson gson = new Gson();
-      Aerodrom[] aerodromi =
-          gson.fromJson(request.get(String.class), Aerodrom[].class);
+      Aerodrom[] aerodromi = gson.fromJson(request.get(String.class), Aerodrom[].class);
 
       return aerodromi;
     }
 
-    public Aerodrom getAerodrom(String icao)
-        throws ClientErrorException {
+    public Aerodrom getAerodrom(String icao) throws ClientErrorException {
       WebTarget resource = webTarget;
       resource = resource.path(
           // ako treba dodat jos / u path, onda se samo doda jos
           // /{1}/{2} tako nesto, ubacuje icao text u {0},{1} itd
           java.text.MessageFormat.format("{0}", new Object[] {icao}));
-      Invocation.Builder request =
-          resource.request(MediaType.APPLICATION_JSON);
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
       if (request.get(String.class).isEmpty()) {
         return null;
       }
       Gson gson = new Gson();
-      Aerodrom aerodrom =
-          gson.fromJson(request.get(String.class), Aerodrom.class);
+      Aerodrom aerodrom = gson.fromJson(request.get(String.class), Aerodrom.class);
       return aerodrom;
     }
 

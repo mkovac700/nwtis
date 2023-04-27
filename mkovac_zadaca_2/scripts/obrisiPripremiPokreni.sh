@@ -1,9 +1,11 @@
 #!/bin/bash
-echo "---POKRETAC DOCKER SERVER---"
+echo "---POKRETAC DOCKER BAZA---"
+echo "DOCKER NETWORK START:"
+./scripts/pripremiMrezu.sh
 echo "DOCKER STOP:"
-docker stop mkovac_payara_micro
+docker stop nwtishsqldb_2
 echo "DOCKER REMOVE:"
-docker rm mkovac_payara_micro
+docker rm nwtishsqldb_2
 echo "DOCKER PRIPREMI:"
 ./scripts/pripremiSliku.sh
 echo "DOCKER POKRENI:"

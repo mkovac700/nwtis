@@ -31,20 +31,15 @@ public class RestAerodromi {
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajSveAerodrome() {
     List<Aerodrom> aerodromi = new ArrayList<>();
-    Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR",
-        new Lokacija("0", "0"));
+    Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR", new Lokacija("0", "0"));
     aerodromi.add(ad);
-    ad = new Aerodrom("LDVA", "Airport Varaždin", "HR",
-        new Lokacija("0", "0"));
+    ad = new Aerodrom("LDVA", "Airport Varaždin", "HR", new Lokacija("0", "0"));
     aerodromi.add(ad);
-    ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE",
-        new Lokacija("0", "0"));
+    ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE", new Lokacija("0", "0"));
     aerodromi.add(ad);
-    ad = new Aerodrom("EDDB", "Airport Berlin", "DE",
-        new Lokacija("0", "0"));
+    ad = new Aerodrom("EDDB", "Airport Berlin", "DE", new Lokacija("0", "0"));
     aerodromi.add(ad);
-    ad = new Aerodrom("LOWW", "Airport Vienna", "AT",
-        new Lokacija("0", "0"));
+    ad = new Aerodrom("LOWW", "Airport Vienna", "AT", new Lokacija("0", "0"));
     aerodromi.add(ad);
 
     var gson = new Gson();
@@ -57,35 +52,43 @@ public class RestAerodromi {
   @Path("{icao}")
   @Produces(MediaType.APPLICATION_JSON)
   // TODO DORADITI!
-  public Response dajAerodrom(String icao) {
+  public Response dajAerodrom(@PathParam("icao") String icao) {
     List<Aerodrom> aerodromi = new ArrayList<>();
-    Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR",
-        new Lokacija("0", "0"));
+    Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR", new Lokacija("0", "0"));
     aerodromi.add(ad);
-    ad = new Aerodrom("LDVA", "Airport Varaždin", "HR",
-        new Lokacija("0", "0"));
+    ad = new Aerodrom("LDVA", "Airport Varaždin", "HR", new Lokacija("0", "0"));
     aerodromi.add(ad);
-    ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE",
-        new Lokacija("0", "0"));
+    ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE", new Lokacija("0", "0"));
     aerodromi.add(ad);
-    ad = new Aerodrom("EDDB", "Airport Berlin", "DE",
-        new Lokacija("0", "0"));
+    ad = new Aerodrom("EDDB", "Airport Berlin", "DE", new Lokacija("0", "0"));
     aerodromi.add(ad);
-    ad = new Aerodrom("LOWW", "Airport Vienna", "AT",
-        new Lokacija("0", "0"));
+    ad = new Aerodrom("LOWW", "Airport Vienna", "AT", new Lokacija("0", "0"));
     aerodromi.add(ad);
 
-    var gson = new Gson();
-    var jsonAerodromi = gson.toJson(aerodromi);
-    var odgovor = Response.ok().entity(jsonAerodromi).build();
-    return odgovor;
+    Aerodrom aerodrom = null;
+
+    for (Aerodrom a : aerodromi) {
+      if (a.getIcao().compareTo(icao) == 0) {
+        aerodrom = a;
+        break;
+      }
+    }
+
+    if (aerodrom == null) {
+      return Response.status(404).build();
+    } else {
+      var gson = new Gson();
+      var jsonAerodrmi = gson.toJson(aerodrom);
+      var odgovor = Response.ok().entity(jsonAerodrmi).build();
+
+      return odgovor;
+    }
   }
 
   @Path("{icaoOd}/{icaoDo}")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajUdaljenostiAerodroma(
-      @PathParam("icaoOd") String icaoFrom,
+  public Response dajUdaljenostiAerodroma(@PathParam("icaoOd") String icaoFrom,
       @PathParam("icaoDo") String icaoTo) {
     // vjezba_06_4:
 

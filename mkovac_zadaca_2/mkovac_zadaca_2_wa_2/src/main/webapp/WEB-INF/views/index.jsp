@@ -7,8 +7,8 @@
 <title>Početna</title>
 </head>
 <body>
- <a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/icao">Pregled jednog aerodroma</a>
- <a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/svi">Pregled svih aerodroma</a>
- <a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/udaljenosti2aerodroma">Pregled udaljenosti 2 aerodroma</a>
+	<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/svi">Pregled aerodroma</a><br/>
+	<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/icao">Pregled jednog aerodroma</a><br/>
+	<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/udaljenosti2aerodroma">Pregled udaljenosti 2 aerodroma</a><br/>
 </body>
 </html>
