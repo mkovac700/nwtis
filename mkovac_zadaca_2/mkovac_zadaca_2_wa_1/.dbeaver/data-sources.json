@@ -1,0 +1,47 @@
+{
+	"folders": {},
+	"connections": {
+		"hsqldb_server-187c295c1dc-254b8102b089da70": {
+			"provider": "generic",
+			"driver": "hsqldb_server",
+			"name": "HSQLDB-nwtis_2-SA",
+			"save-password": true,
+			"configuration": {
+				"host": "200.20.0.3",
+				"port": "9001",
+				"database": "nwtis_2",
+				"url": "jdbc:hsqldb:hsql://200.20.0.3:9001/nwtis_2",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"auth-model": "native",
+				"handlers": {}
+			}
+		},
+		"hsqldb_server-187c29a1758-4e3c2b5cbd634f18": {
+			"provider": "generic",
+			"driver": "hsqldb_server",
+			"name": "HSQLDB-nwtis_2-nwtis_2",
+			"save-password": true,
+			"configuration": {
+				"host": "200.20.0.3",
+				"port": "9001",
+				"database": "nwtis_2",
+				"url": "jdbc:hsqldb:hsql://200.20.0.3:9001/nwtis_2",
+				"configurationType": "MANUAL",
+				"type": "dev",
+				"auth-model": "native"
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Development",
+			"color": "255,255,255",
+			"description": "Regular development database",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false,
+			"auto-close-transactions": false
+		}
+	}
+}

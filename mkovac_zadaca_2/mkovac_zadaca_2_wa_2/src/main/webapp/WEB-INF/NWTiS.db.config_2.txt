@@ -1,0 +1,9 @@
+#NWTiS mkovac 2023.
+#Fri Apr 28 13:29:35 CEST 2023
+adresa.wa_1=http://200.20.0.4:8080/mkovac_zadaca_2_wa_1/api
+aplikacija.godina=2023
+aplikacija.verzija=1.00
+autor.ime=Marijan
+autor.predmet=NWTiS
+autor.prezime=Kovac
+stranica.brojRedova=15
