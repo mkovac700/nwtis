@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.podaci.Aerodrom;
+import org.foi.nwtis.podaci.Airport;
 import org.foi.nwtis.podaci.Lokacija;
 import org.foi.nwtis.podaci.Udaljenost;
 import com.google.gson.Gson;
@@ -17,6 +18,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -27,20 +29,61 @@ public class RestAerodromi {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /*
+   * @GET
+   * 
+   * @Produces(MediaType.APPLICATION_JSON) public Response dajSveAerodrome() { List<Aerodrom>
+   * aerodromi = new ArrayList<>(); Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR", new
+   * Lokacija("0", "0")); aerodromi.add(ad); ad = new Aerodrom("LDVA", "Airport Varaždin", "HR", new
+   * Lokacija("0", "0")); aerodromi.add(ad); ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE",
+   * new Lokacija("0", "0")); aerodromi.add(ad); ad = new Aerodrom("EDDB", "Airport Berlin", "DE",
+   * new Lokacija("0", "0")); aerodromi.add(ad); ad = new Aerodrom("LOWW", "Airport Vienna", "AT",
+   * new Lokacija("0", "0")); aerodromi.add(ad);
+   * 
+   * var gson = new Gson(); var jsonAerodromi = gson.toJson(aerodromi); var odgovor =
+   * Response.ok().entity(jsonAerodromi).build(); return odgovor; }
+   */
+
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajSveAerodrome() {
-    List<Aerodrom> aerodromi = new ArrayList<>();
-    Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("LDVA", "Airport Varaždin", "HR", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("EDDB", "Airport Berlin", "DE", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("LOWW", "Airport Vienna", "AT", new Lokacija("0", "0"));
-    aerodromi.add(ad);
+  public Response dajAerodrome(@QueryParam("odBroja") String odBroja,
+      @QueryParam("broj") String broj) {
+
+    int od = Integer.parseInt(odBroja);
+    int limit = Integer.parseInt(broj);
+
+    List<Airport> aerodromi = new ArrayList<>();
+
+    String query = "SELECT * FROM AIRPORTS LIMIT limit = ? OFFSET od = ?";
+
+    PreparedStatement stmt = null;
+    try (var con = ds.getConnection()) {
+      stmt = con.prepareStatement(query);
+      stmt.setInt(1, limit);
+      stmt.setInt(2, od - 1);
+
+      ResultSet rs = stmt.executeQuery();
+
+      while (rs.next()) {
+
+        var a = new Airport(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
+            rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
+            rs.getString(10), rs.getString(11), rs.getString(12));
+
+        aerodromi.add(a);
+      }
+      rs.close();
+    } catch (SQLException e) {
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
+    } finally {
+      try {
+        if (stmt != null && !stmt.isClosed())
+          stmt.close();
+
+      } catch (SQLException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+    }
 
     var gson = new Gson();
     var jsonAerodromi = gson.toJson(aerodromi);

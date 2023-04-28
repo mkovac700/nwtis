@@ -66,10 +66,14 @@ public class RestKlijentAerodroma {
 
     public Aerodrom getAerodrom(String icao) throws ClientErrorException {
       WebTarget resource = webTarget;
-      resource = resource.path(
-          // ako treba dodat jos / u path, onda se samo doda jos
-          // /{1}/{2} tako nesto, ubacuje icao text u {0},{1} itd
-          java.text.MessageFormat.format("{0}", new Object[] {icao}));
+      // 1. ako treba dodat jos / u path, onda se samo doda jos
+      // /{1}/{2} tako nesto, ubacuje icao text u {0},{1} itd
+      // tj. za npr GET {icao}/udaljenosti bi islo "{0}/udaljenosti"
+      // a za GET {icaoOd}/{icaoDo} bi islo {0}/{1}
+      // 2. za DELETE/{id} bi islo {0} kojem se proslijedi id, resource.request() i onda
+      // request.delete
+      // 3. za POST bi islo samo resource.request() i onda request.post
+      resource = resource.path(java.text.MessageFormat.format("{0}", new Object[] {icao}));
       Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
       if (request.get(String.class).isEmpty()) {
         return null;
