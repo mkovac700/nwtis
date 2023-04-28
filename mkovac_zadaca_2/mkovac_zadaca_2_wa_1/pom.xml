@@ -180,5 +180,10 @@
 			<artifactId>mkovac_zadaca_2_lib_2</artifactId>
 			<version>1.0.3</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.10.1</version>
+		</dependency>
 	</dependencies>
 </project>

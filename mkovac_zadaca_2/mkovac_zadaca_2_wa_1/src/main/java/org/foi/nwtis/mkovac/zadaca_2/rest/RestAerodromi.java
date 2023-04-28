@@ -29,38 +29,27 @@ public class RestAerodromi {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
-  /*
-   * @GET
-   * 
-   * @Produces(MediaType.APPLICATION_JSON) public Response dajSveAerodrome() { List<Aerodrom>
-   * aerodromi = new ArrayList<>(); Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR", new
-   * Lokacija("0", "0")); aerodromi.add(ad); ad = new Aerodrom("LDVA", "Airport Varaždin", "HR", new
-   * Lokacija("0", "0")); aerodromi.add(ad); ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE",
-   * new Lokacija("0", "0")); aerodromi.add(ad); ad = new Aerodrom("EDDB", "Airport Berlin", "DE",
-   * new Lokacija("0", "0")); aerodromi.add(ad); ad = new Aerodrom("LOWW", "Airport Vienna", "AT",
-   * new Lokacija("0", "0")); aerodromi.add(ad);
-   * 
-   * var gson = new Gson(); var jsonAerodromi = gson.toJson(aerodromi); var odgovor =
-   * Response.ok().entity(jsonAerodromi).build(); return odgovor; }
-   */
-
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajAerodrome(@QueryParam("odBroja") String odBroja,
+  public Response dajSveAerodrome(@QueryParam("odBroja") String odBroja,
       @QueryParam("broj") String broj) {
 
-    int od = Integer.parseInt(odBroja);
-    int limit = Integer.parseInt(broj);
+    int offset = 1, limit = 20;
+
+    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
+      offset = Integer.parseInt(odBroja);
+      limit = Integer.parseInt(broj);
+    }
 
     List<Airport> aerodromi = new ArrayList<>();
 
-    String query = "SELECT * FROM AIRPORTS LIMIT limit = ? OFFSET od = ?";
+    String query = "SELECT * FROM AIRPORTS LIMIT ? OFFSET ?";
 
     PreparedStatement stmt = null;
     try (var con = ds.getConnection()) {
       stmt = con.prepareStatement(query);
       stmt.setInt(1, limit);
-      stmt.setInt(2, od - 1);
+      stmt.setInt(2, offset - 1);
 
       ResultSet rs = stmt.executeQuery();
 
@@ -84,6 +73,9 @@ public class RestAerodromi {
         Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }
     }
+
+    if (aerodromi.isEmpty())
+      return Response.status(404, "Lista je prazna").build();
 
     var gson = new Gson();
     var jsonAerodromi = gson.toJson(aerodromi);
