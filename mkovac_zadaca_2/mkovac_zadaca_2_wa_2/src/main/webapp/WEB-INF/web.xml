@@ -5,7 +5,7 @@ xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/n
 version="6.0">
 	<context-param>
 	    <param-name>konfiguracija</param-name>
-	    <param-value>/WEB-INF/NWTiS.db.config_2.xml</param-value>
+	    <param-value>/WEB-INF/NWTiS.db.config_2.txt</param-value>
 	</context-param>
 	<listener>
 	    <listener-class>org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac</listener-class>

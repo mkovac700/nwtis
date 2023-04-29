@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import org.foi.nwtis.podaci.Airport;
 import org.foi.nwtis.podaci.Udaljenost;
 import org.foi.nwtis.podaci.UdaljenostAerodrom;
+import org.foi.nwtis.podaci.UdaljenostAerodromDrzava;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
@@ -53,7 +54,7 @@ public class RestAerodromi {
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
-
+        // TODO promijeniti na Aerodrom+Lokacija
         var a = new Airport(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
             rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
             rs.getString(10), rs.getString(11), rs.getString(12));
@@ -99,7 +100,7 @@ public class RestAerodromi {
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
-
+        // TODO promijeniti na Aerodrom+Lokacija
         aerodrom = new Airport(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
             rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
             rs.getString(10), rs.getString(11), rs.getString(12));
@@ -173,8 +174,8 @@ public class RestAerodromi {
     }
 
     var gson = new Gson();
-    var jsonAerodromi = gson.toJson(udaljenosti);
-    var odgovor = Response.ok().entity(jsonAerodromi).build();
+    var jsonUdaljenosti = gson.toJson(udaljenosti);
+    var odgovor = Response.ok().entity(jsonUdaljenosti).build();
     return odgovor;
   }
 
@@ -227,8 +228,8 @@ public class RestAerodromi {
     }
 
     var gson = new Gson();
-    var jsonAerodromi = gson.toJson(udaljenosti);
-    var odgovor = Response.ok().entity(jsonAerodromi).build();
+    var jsonUdaljenosti = gson.toJson(udaljenosti);
+    var odgovor = Response.ok().entity(jsonUdaljenosti).build();
     return odgovor;
   }
 
@@ -236,7 +237,44 @@ public class RestAerodromi {
   @Path("{icao}/najduljiPutDrzave")
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajNajduljiPutDrzave(@PathParam("icao") String icao) {
-    return null;
+
+    UdaljenostAerodromDrzava udaljenost = null;
+
+    String query =
+        "SELECT ICAO_FROM, ICAO_TO, COUNTRY, DIST_CTRY FROM AIRPORTS_DISTANCE_MATRIX WHERE ICAO_FROM = ? ORDER BY DIST_CTRY DESC LIMIT 1";
+
+    PreparedStatement stmt = null;
+    try (var con = ds.getConnection()) {
+      stmt = con.prepareStatement(query);
+      stmt.setString(1, icao);
+
+      ResultSet rs = stmt.executeQuery();
+      while (rs.next()) {
+        String icaoTo = rs.getString("ICAO_TO");
+        String drzava = rs.getString("COUNTRY");
+        float km = rs.getFloat("DIST_CTRY");
+
+        udaljenost = new UdaljenostAerodromDrzava(icaoTo, drzava, km);
+
+      }
+      rs.close();
+
+    } catch (SQLException e) {
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
+    } finally {
+      try {
+        if (stmt != null && !stmt.isClosed())
+          stmt.close();
+
+      } catch (SQLException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+    }
+
+    var gson = new Gson();
+    var jsonUdaljenost = gson.toJson(udaljenost);
+    var odgovor = Response.ok().entity(jsonUdaljenost).build();
+    return odgovor;
   }
 
 }

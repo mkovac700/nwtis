@@ -8,7 +8,9 @@ import org.foi.nwtis.NeispravnaKonfiguracija;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 
+@WebListener
 public class MvcAplikacijaSlusac implements ServletContextListener {
   private static ServletContext servletContext;
 
@@ -19,13 +21,15 @@ public class MvcAplikacijaSlusac implements ServletContextListener {
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     servletContext = sce.getServletContext();
-    String nazivDatoteke = servletContext.getInitParameter("konfiguracija");
+    String nazivDatoteke =
+        servletContext.getRealPath(servletContext.getInitParameter("konfiguracija"));
     Konfiguracija konfig = null;
     try {
-      konfig = ucitajPostavke(nazivDatoteke);
+      konfig = ucitajPostavke(nazivDatoteke); // nazivDatoteke
     } catch (NeispravnaKonfiguracija e) {
       Logger.getGlobal().log(Level.SEVERE,
           "Pogreška kod učitavanja postavki iz datoteke!" + e.getMessage());
+      return;
     }
     servletContext.setAttribute("konfig", konfig);
     Logger.getGlobal().log(Level.INFO, "Postavke uspješno učitane!");
