@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.podaci.Airport;
-import org.foi.nwtis.podaci.Lokacija;
 import org.foi.nwtis.podaci.Udaljenost;
+import org.foi.nwtis.podaci.UdaljenostAerodrom;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
@@ -74,6 +73,7 @@ public class RestAerodromi {
       }
     }
 
+    // TODO mozda najbolje izbacit van nakon testiranja
     if (aerodromi.isEmpty())
       return Response.status(404, "Lista je prazna").build();
 
@@ -86,44 +86,51 @@ public class RestAerodromi {
   @GET
   @Path("{icao}")
   @Produces(MediaType.APPLICATION_JSON)
-  // TODO DORADITI!
   public Response dajAerodrom(@PathParam("icao") String icao) {
-    List<Aerodrom> aerodromi = new ArrayList<>();
-    Aerodrom ad = new Aerodrom("LDZA", "Airport Zagreb", "HR", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("LDVA", "Airport Varaždin", "HR", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("EDDF", "Airport Frankfurt", "DE", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("EDDB", "Airport Berlin", "DE", new Lokacija("0", "0"));
-    aerodromi.add(ad);
-    ad = new Aerodrom("LOWW", "Airport Vienna", "AT", new Lokacija("0", "0"));
-    aerodromi.add(ad);
+    Airport aerodrom = null;
 
-    Aerodrom aerodrom = null;
+    String query = "SELECT * FROM AIRPORTS WHERE ICAO = ?";
 
-    for (Aerodrom a : aerodromi) {
-      if (a.getIcao().compareTo(icao) == 0) {
-        aerodrom = a;
-        break;
+    PreparedStatement stmt = null;
+    try (var con = ds.getConnection()) {
+      stmt = con.prepareStatement(query);
+      stmt.setString(1, icao);
+
+      ResultSet rs = stmt.executeQuery();
+
+      while (rs.next()) {
+
+        aerodrom = new Airport(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
+            rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
+            rs.getString(10), rs.getString(11), rs.getString(12));
+      }
+      rs.close();
+    } catch (SQLException e) {
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
+    } finally {
+      try {
+        if (stmt != null && !stmt.isClosed())
+          stmt.close();
+
+      } catch (SQLException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }
     }
 
-    if (aerodrom == null) {
-      return Response.status(404).build();
-    } else {
-      var gson = new Gson();
-      var jsonAerodrmi = gson.toJson(aerodrom);
-      var odgovor = Response.ok().entity(jsonAerodrmi).build();
+    // TODO mozda najbolje izbacit van nakon testiranja
+    if (aerodrom == null)
+      return Response.status(404, "Nema podatka za dani upit").build();
 
-      return odgovor;
-    }
+    var gson = new Gson();
+    var jsonAerodrom = gson.toJson(aerodrom);
+    var odgovor = Response.ok().entity(jsonAerodrom).build();
+    return odgovor;
   }
 
-  @Path("{icaoOd}/{icaoDo}")
   @GET
+  @Path("{icaoOd}/{icaoDo}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajUdaljenostiAerodroma(@PathParam("icaoOd") String icaoFrom,
+  public Response dajUdaljenostiIzmeđuDvaAerodroma(@PathParam("icaoOd") String icaoFrom,
       @PathParam("icaoDo") String icaoTo) {
     // vjezba_06_4:
 
@@ -133,11 +140,9 @@ public class RestAerodromi {
         "SELECT ICAO_FROM, ICAO_TO, COUNTRY, DIST_CTRY FROM AIRPORTS_DISTANCE_MATRIX WHERE ICAO_FROM = ? AND ICAO_TO = ?";
 
     // Connection con = null;
+    // ODRADUJE SPAJANJE PREKO glassfish-resources.xml UMJESTO RUCNOG KAK SMO IMALI U 06_4
     PreparedStatement stmt = null;
-    try (var con = ds.getConnection()) { // ODRADUJE SPAJANJE PREKO
-                                         // glassfish-resources.xml
-                                         // UMJESTO RUCNOG KAK SMO
-                                         // IMALI U 06_4
+    try (var con = ds.getConnection()) {
       stmt = con.prepareStatement(query);
       stmt.setString(1, icaoFrom);
       stmt.setString(2, icaoTo);
@@ -173,6 +178,65 @@ public class RestAerodromi {
     return odgovor;
   }
 
+  @GET
+  @Path("{icao}/udaljenosti")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response dajUdaljenostiIzmeđuSvihAerodroma(@PathParam("icao") String icao,
+      @QueryParam("odBroja") String odBroja, @QueryParam("broj") String broj) {
 
+    List<UdaljenostAerodrom> udaljenosti = new ArrayList<UdaljenostAerodrom>();
+
+    int offset = 1, limit = 20;
+
+    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
+      offset = Integer.parseInt(odBroja);
+      limit = Integer.parseInt(broj);
+    }
+
+    String query =
+        "SELECT DISTINCT ICAO_FROM, ICAO_TO, DIST_TOT FROM AIRPORTS_DISTANCE_MATRIX WHERE ICAO_FROM = ? LIMIT ? OFFSET ?";
+
+    PreparedStatement stmt = null;
+    try (var con = ds.getConnection()) {
+      stmt = con.prepareStatement(query);
+      stmt.setString(1, icao);
+      stmt.setInt(2, limit);
+      stmt.setInt(3, offset - 1);
+
+      ResultSet rs = stmt.executeQuery();
+      while (rs.next()) {
+        String icaoTo = rs.getString("ICAO_TO");
+        float udaljenost = rs.getFloat("DIST_TOT");
+
+        var u = new UdaljenostAerodrom(icaoTo, udaljenost);
+        udaljenosti.add(u);
+
+      }
+      rs.close();
+
+    } catch (SQLException e) {
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
+    } finally {
+      try {
+        if (stmt != null && !stmt.isClosed())
+          stmt.close();
+
+      } catch (SQLException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+    }
+
+    var gson = new Gson();
+    var jsonAerodromi = gson.toJson(udaljenosti);
+    var odgovor = Response.ok().entity(jsonAerodromi).build();
+    return odgovor;
+  }
+
+  @GET
+  @Path("{icao}/najduljiPutDrzave")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response dajNajduljiPutDrzave(@PathParam("icao") String icao) {
+    return null;
+  }
 
 }
