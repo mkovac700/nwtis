@@ -33,6 +33,7 @@ public class OSKlijentDemo {
         System.out.println("Broj letova: " + avioniPolasci.size());
         for (LetAviona a : avioniPolasci) {
           System.out.println("Avion: " + a.getIcao24() + " Odredište: " + a.getEstArrivalAirport());
+
         }
       }
     } catch (NwtisRestIznimka e) {
