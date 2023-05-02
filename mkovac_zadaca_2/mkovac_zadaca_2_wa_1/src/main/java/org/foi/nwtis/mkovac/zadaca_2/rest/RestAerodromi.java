@@ -37,8 +37,12 @@ public class RestAerodromi {
     int offset = 1, limit = 20;
 
     if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
-      offset = Integer.parseInt(odBroja);
-      limit = Integer.parseInt(broj);
+      try {
+        offset = Integer.parseInt(odBroja);
+        limit = Integer.parseInt(broj);
+      } catch (NumberFormatException e) {
+        return Response.status(404, "Neispravni parametri").build();
+      }
     }
 
     List<Airport> aerodromi = new ArrayList<>();
