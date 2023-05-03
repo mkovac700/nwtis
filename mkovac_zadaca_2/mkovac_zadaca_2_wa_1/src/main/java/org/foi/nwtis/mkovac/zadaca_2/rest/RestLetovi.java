@@ -1,11 +1,16 @@
 package org.foi.nwtis.mkovac.zadaca_2.rest;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.foi.nwtis.Konfiguracija;
@@ -13,11 +18,15 @@ import org.foi.nwtis.mkovac.zadaca_2.slusaci.RestServisSlusac;
 import org.foi.nwtis.rest.klijenti.NwtisRestIznimka;
 import org.foi.nwtis.rest.klijenti.OSKlijent;
 import org.foi.nwtis.rest.podaci.LetAviona;
+import org.foi.nwtis.rest.podaci.LetAvionaID;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -43,22 +52,22 @@ public class RestLetovi {
     this.lozinka = konf.dajPostavku("OpenSkyNetwork.lozinka");
   }
 
-  @GET
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response test() {
-    String korisnik = konf.dajPostavku("OpenSkyNetwork.korisnik");
-    String lozinka = konf.dajPostavku("OpenSkyNetwork.lozinka");
-
-    List<String> temp = new ArrayList<String>();
-    temp.add(korisnik);
-    temp.add(lozinka);
-
-    var gson = new Gson();
-    var jsonAerodrmi = gson.toJson(temp);
-    var odgovor = Response.ok().entity(jsonAerodrmi).build();
-
-    return odgovor;
-  }
+  // @GET
+  // @Produces(MediaType.APPLICATION_JSON)
+  // public Response test() {
+  // String korisnik = konf.dajPostavku("OpenSkyNetwork.korisnik");
+  // String lozinka = konf.dajPostavku("OpenSkyNetwork.lozinka");
+  //
+  // List<String> temp = new ArrayList<String>();
+  // temp.add(korisnik);
+  // temp.add(lozinka);
+  //
+  // var gson = new Gson();
+  // var jsonAerodrmi = gson.toJson(temp);
+  // var odgovor = Response.ok().entity(jsonAerodrmi).build();
+  //
+  // return odgovor;
+  // }
 
   @GET
   @Path("{icao}")
@@ -70,11 +79,13 @@ public class RestLetovi {
     String regex =
         "(0[1-9]|[1-2][0-9]|3[01])\\.(0[1-9]|1[012])\\.(19[7-9][0-9]|20[0-2][0-9]|203[0-7])";
     if (dan == null || dan.isEmpty() || !provjeriIzraz(dan, regex))
-      return Response.status(404, "Dan nije unesen ili nije u formatu dd.mm.gggg").build();
+      return Response
+          .status(404, "Dan nije unesen ili nije u formatu dd.mm.gggg").build();
 
     int offset = 1, limit = 20;
 
-    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
+    if ((odBroja != null && !odBroja.isEmpty())
+        && (broj != null && !broj.isEmpty())) {
       try {
         offset = Integer.parseInt(odBroja);
         limit = Integer.parseInt(broj);
@@ -138,18 +149,21 @@ public class RestLetovi {
   @GET
   @Path("{icaoOd}/{icaoDo}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajLetoveOdDoAerodromaNaDan(@PathParam("icaoOd") String icaoOd,
-      @PathParam("icaoDo") String icaoDo, @QueryParam("dan") String dan,
-      @QueryParam("odBroja") String odBroja, @QueryParam("broj") String broj) {
+  public Response dajLetoveOdDoAerodromaNaDan(
+      @PathParam("icaoOd") String icaoOd, @PathParam("icaoDo") String icaoDo,
+      @QueryParam("dan") String dan, @QueryParam("odBroja") String odBroja,
+      @QueryParam("broj") String broj) {
 
     String regex =
         "(0[1-9]|[1-2][0-9]|3[01])\\.(0[1-9]|1[012])\\.(19[7-9][0-9]|20[0-2][0-9]|203[0-7])";
     if (dan == null || dan.isEmpty() || !provjeriIzraz(dan, regex))
-      return Response.status(404, "Dan nije unesen ili nije u formatu dd.mm.gggg").build();
+      return Response
+          .status(404, "Dan nije unesen ili nije u formatu dd.mm.gggg").build();
 
     int offset = 1, limit = 20;
 
-    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
+    if ((odBroja != null && !odBroja.isEmpty())
+        && (broj != null && !broj.isEmpty())) {
       try {
         offset = Integer.parseInt(odBroja);
         limit = Integer.parseInt(broj);
@@ -178,8 +192,8 @@ public class RestLetovi {
       // offset - 1 + limit);
 
       avioniPolasci = osKlijent.getDepartures(icaoOd, odVremena, doVremena);
-      avioniPolasci.removeIf(
-          ap -> ap.getEstArrivalAirport() == null || !ap.getEstArrivalAirport().equals(icaoDo));
+      avioniPolasci.removeIf(ap -> ap.getEstArrivalAirport() == null
+          || !ap.getEstArrivalAirport().equals(icaoDo));
       // avioniPolasci.removeIf(ap -> !ap.getEstArrivalAirport().equals(icaoDo));
 
       System.out.println("Broj stvarnih podataka: " + avioniPolasci.size());
@@ -210,6 +224,116 @@ public class RestLetovi {
     var jsonAvioniPolasci = gson.toJson(avioniPolasci);
     var odgovor = Response.ok().entity(jsonAvioniPolasci).build();
 
+    return odgovor;
+  }
+
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response dodajLet(String let) {
+    LetAviona letAviona = null;
+    Gson gson = new Gson();
+    try {
+      letAviona = gson.fromJson(let, LetAviona.class);
+    } catch (JsonSyntaxException e) {
+      return Response.status(404, e.getMessage()).build();
+    }
+
+    String query =
+        "INSERT INTO LETOVI_POLASCI (ICAO24, FIRSTSEEN, ESTDEPARTUREAIRPORT, LASTSEEN, ESTARRIVALAIRPORT, CALLSIGN, ESTDEPARTUREAIRPORTHORIZDISTANCE, ESTDEPARTUREAIRPORTVERTDISTANCE, ESTARRIVALAIRPORTHORIZDISTANCE, ESTARRIVALAIRPORTVERTDISTANCE, DEPARTUREAIRPORTCANDIDATESCOUNT, ARRIVALAIRPORTCANDIDATESCOUNT, STORED) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)";
+
+    PreparedStatement stmt = null;
+    int result = 0;
+    String poruka;
+    try (var con = ds.getConnection()) {
+      stmt = con.prepareStatement(query);
+      stmt.setString(1, letAviona.getIcao24());
+      stmt.setInt(2, letAviona.getFirstSeen());
+      stmt.setString(3, letAviona.getEstDepartureAirport());
+      stmt.setInt(4, letAviona.getLastSeen());
+      stmt.setString(5, letAviona.getEstArrivalAirport());
+      stmt.setString(6, letAviona.getCallsign());
+      stmt.setInt(7, letAviona.getEstDepartureAirportHorizDistance());
+      stmt.setInt(8, letAviona.getEstDepartureAirportVertDistance());
+      stmt.setInt(9, letAviona.getEstArrivalAirportHorizDistance());
+      stmt.setInt(10, letAviona.getEstArrivalAirportVertDistance());
+      stmt.setInt(11, letAviona.getDepartureAirportCandidatesCount());
+      stmt.setInt(12, letAviona.getArrivalAirportCandidatesCount());
+
+      result = stmt.executeUpdate();
+
+    } catch (SQLException e) {
+      return Response.status(404, "SQL: " + e.getMessage()).build();
+    } finally {
+      try {
+        if (stmt != null && !stmt.isClosed())
+          stmt.close();
+
+      } catch (SQLException e) {
+        return Response.status(404, "SQL: " + e.getMessage()).build();
+      }
+    }
+
+    if (result > 0)
+      poruka = "Uspješno dodavanje zapisa u bazu podataka!";
+    else
+      poruka = "Neuspješno dodavanje zapisa u bazu podataka!";
+
+    return Response.ok().entity(poruka).build();
+  }
+
+  @GET
+  @Path("/spremljeni")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response dajSpremljeneLetove() {
+
+    List<LetAviona> letoviAviona = new ArrayList<LetAviona>();
+
+    String query = "SELECT * FROM LETOVI_POLASCI";
+
+    PreparedStatement stmt = null;
+    try (var con = ds.getConnection()) {
+      stmt = con.prepareStatement(query);
+
+      ResultSet rs = stmt.executeQuery();
+      while (rs.next()) {
+        String icaoTo = rs.getString("ICAO_TO");
+        float udaljenost = rs.getFloat("DIST_TOT");
+
+        LetAviona letAviona = new LetAviona();
+        LetAvionaID letAvionaID = new LetAvionaID(); // 0 je ID, onda dalje ide
+        letAviona.setIcao24(rs.getString(0));
+        letAviona.setFirstSeen(rs.getInt(1));
+        letAviona.setEstDepartureAirport(rs.getString(2));
+        letAviona.setLastSeen(rs.getInt(3));
+        letAviona.setEstArrivalAirport(rs.getString(4));
+        letAviona.setCallsign(rs.getString(5));
+        letAviona.setEstDepartureAirportHorizDistance(rs.getInt(6));
+        letAviona.setEstDepartureAirportVertDistance(rs.getInt(7));
+        letAviona.setEstArrivalAirportHorizDistance(rs.getInt(8));
+        letAviona.setEstArrivalAirportVertDistance(rs.getInt(9));
+        letAviona.setDepartureAirportCandidatesCount(rs.getInt(10));
+        letAviona.setArrivalAirportCandidatesCount(rs.getInt(11));
+
+        letoviAviona.add(letAviona);
+
+      }
+      rs.close();
+
+    } catch (SQLException e) {
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
+    } finally {
+      try {
+        if (stmt != null && !stmt.isClosed())
+          stmt.close();
+
+      } catch (SQLException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+    }
+
+    var gson = new Gson();
+    var jsonLetoviAviona = gson.toJson(letoviAviona);
+    var odgovor = Response.ok().entity(jsonLetoviAviona).build();
     return odgovor;
   }
 
