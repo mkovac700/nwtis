@@ -40,33 +40,18 @@ public class RestLetovi {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   private javax.sql.DataSource ds;
 
-  private ServletContext context = RestServisSlusac.getServletContext();
-  private Konfiguracija konf = (Konfiguracija) context.getAttribute("konfig");
+  private ServletContext context;
+  private Konfiguracija konf;
 
   private String korisnik;
   private String lozinka;
 
   public RestLetovi() {
+    context = RestServisSlusac.getServletContext();
+    konf = (Konfiguracija) context.getAttribute("konfig");
     this.korisnik = konf.dajPostavku("OpenSkyNetwork.korisnik");
     this.lozinka = konf.dajPostavku("OpenSkyNetwork.lozinka");
   }
-
-  // @GET
-  // @Produces(MediaType.APPLICATION_JSON)
-  // public Response test() {
-  // String korisnik = konf.dajPostavku("OpenSkyNetwork.korisnik");
-  // String lozinka = konf.dajPostavku("OpenSkyNetwork.lozinka");
-  //
-  // List<String> temp = new ArrayList<String>();
-  // temp.add(korisnik);
-  // temp.add(lozinka);
-  //
-  // var gson = new Gson();
-  // var jsonAerodrmi = gson.toJson(temp);
-  // var odgovor = Response.ok().entity(jsonAerodrmi).build();
-  //
-  // return odgovor;
-  // }
 
   @GET
   @Path("{icao}")

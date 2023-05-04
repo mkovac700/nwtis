@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.foi.nwtis.podaci.Airport;
+import org.foi.nwtis.podaci.Aerodrom;
+import org.foi.nwtis.podaci.Lokacija;
 import org.foi.nwtis.podaci.Udaljenost;
 import org.foi.nwtis.podaci.UdaljenostAerodrom;
 import org.foi.nwtis.podaci.UdaljenostAerodromDrzava;
@@ -36,7 +37,8 @@ public class RestAerodromi {
 
     int offset = 1, limit = 20;
 
-    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
+    if ((odBroja != null && !odBroja.isEmpty())
+        && (broj != null && !broj.isEmpty())) {
       try {
         offset = Integer.parseInt(odBroja);
         limit = Integer.parseInt(broj);
@@ -45,9 +47,10 @@ public class RestAerodromi {
       }
     }
 
-    List<Airport> aerodromi = new ArrayList<>();
+    List<Aerodrom> aerodromi = new ArrayList<>();
 
-    String query = "SELECT * FROM AIRPORTS LIMIT ? OFFSET ?";
+    String query =
+        "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES FROM AIRPORTS LIMIT ? OFFSET ?";
 
     PreparedStatement stmt = null;
     try (var con = ds.getConnection()) {
@@ -58,10 +61,11 @@ public class RestAerodromi {
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
-        // TODO promijeniti na Aerodrom+Lokacija
-        var a = new Airport(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-            rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
-            rs.getString(10), rs.getString(11), rs.getString(12));
+        String[] koordinate = rs.getString(4).split(",");
+
+        Aerodrom a =
+            new Aerodrom(rs.getString(1), rs.getString(2), rs.getString(3),
+                new Lokacija(koordinate[0].trim(), koordinate[1].trim()));
 
         aerodromi.add(a);
       }
@@ -92,9 +96,10 @@ public class RestAerodromi {
   @Path("{icao}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajAerodrom(@PathParam("icao") String icao) {
-    Airport aerodrom = null;
+    Aerodrom aerodrom = null;
 
-    String query = "SELECT * FROM AIRPORTS WHERE ICAO = ?";
+    String query =
+        "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES FROM AIRPORTS WHERE ICAO = ?";
 
     PreparedStatement stmt = null;
     try (var con = ds.getConnection()) {
@@ -104,10 +109,11 @@ public class RestAerodromi {
       ResultSet rs = stmt.executeQuery();
 
       while (rs.next()) {
-        // TODO promijeniti na Aerodrom+Lokacija
-        aerodrom = new Airport(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-            rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9),
-            rs.getString(10), rs.getString(11), rs.getString(12));
+        String[] koordinate = rs.getString(4).split(",");
+
+        aerodrom =
+            new Aerodrom(rs.getString(1), rs.getString(2), rs.getString(3),
+                new Lokacija(koordinate[0].trim(), koordinate[1].trim()));
       }
       rs.close();
     } catch (SQLException e) {
@@ -135,7 +141,8 @@ public class RestAerodromi {
   @GET
   @Path("{icaoOd}/{icaoDo}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajUdaljenostiIzmeđuDvaAerodroma(@PathParam("icaoOd") String icaoFrom,
+  public Response dajUdaljenostiIzmeđuDvaAerodroma(
+      @PathParam("icaoOd") String icaoFrom,
       @PathParam("icaoDo") String icaoTo) {
     // vjezba_06_4:
 
@@ -186,14 +193,16 @@ public class RestAerodromi {
   @GET
   @Path("{icao}/udaljenosti")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajUdaljenostiIzmeđuSvihAerodroma(@PathParam("icao") String icao,
-      @QueryParam("odBroja") String odBroja, @QueryParam("broj") String broj) {
+  public Response dajUdaljenostiIzmeđuSvihAerodroma(
+      @PathParam("icao") String icao, @QueryParam("odBroja") String odBroja,
+      @QueryParam("broj") String broj) {
 
     List<UdaljenostAerodrom> udaljenosti = new ArrayList<UdaljenostAerodrom>();
 
     int offset = 1, limit = 20;
 
-    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
+    if ((odBroja != null && !odBroja.isEmpty())
+        && (broj != null && !broj.isEmpty())) {
       offset = Integer.parseInt(odBroja);
       limit = Integer.parseInt(broj);
     }

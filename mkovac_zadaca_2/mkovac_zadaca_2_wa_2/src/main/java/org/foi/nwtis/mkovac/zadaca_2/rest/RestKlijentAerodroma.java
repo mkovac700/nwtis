@@ -8,6 +8,7 @@ import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.podaci.Info;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.client.Client;
@@ -67,7 +68,7 @@ public class RestKlijentAerodroma {
 
     private final WebTarget webTarget;
     private final Client client;
-    private static final String BASE_URI = wa_1; // "http://200.20.0.4:8080/mkovac_zadaca_2_wa_1/api"
+    private static final String BASE_URI = wa_1;// wa_1 // "http://200.20.0.4:8080/mkovac_zadaca_2_wa_1/api"
 
     public RestKKlijent() {
       client = ClientBuilder.newClient();
@@ -78,13 +79,21 @@ public class RestKlijentAerodroma {
         throws ClientErrorException {
       WebTarget resource = webTarget;
 
+      resource =
+          resource.queryParam("odBroja", odBroja).queryParam("broj", broj);
+
       Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
       if (request.get(String.class).isEmpty()) {
         return null;
       }
       Gson gson = new Gson();
-      Aerodrom[] aerodromi =
-          gson.fromJson(request.get(String.class), Aerodrom[].class);
+      Aerodrom[] aerodromi = null;
+      try {
+        aerodromi = gson.fromJson(request.get(String.class), Aerodrom[].class);
+      } catch (JsonSyntaxException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
 
       return aerodromi;
     }
