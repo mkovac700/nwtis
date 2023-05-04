@@ -9,8 +9,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.foi.nwtis.Konfiguracija;
@@ -25,6 +23,7 @@ import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -242,7 +241,7 @@ public class RestLetovi {
         "INSERT INTO LETOVI_POLASCI (ICAO24, FIRSTSEEN, ESTDEPARTUREAIRPORT, LASTSEEN, ESTARRIVALAIRPORT, CALLSIGN, ESTDEPARTUREAIRPORTHORIZDISTANCE, ESTDEPARTUREAIRPORTVERTDISTANCE, ESTARRIVALAIRPORTHORIZDISTANCE, ESTARRIVALAIRPORTVERTDISTANCE, DEPARTUREAIRPORTCANDIDATESCOUNT, ARRIVALAIRPORTCANDIDATESCOUNT, STORED) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)";
 
     PreparedStatement stmt = null;
-    int result = 0;
+    int rezultat = 0;
     String poruka;
     try (var con = ds.getConnection()) {
       stmt = con.prepareStatement(query);
@@ -259,7 +258,7 @@ public class RestLetovi {
       stmt.setInt(11, letAviona.getDepartureAirportCandidatesCount());
       stmt.setInt(12, letAviona.getArrivalAirportCandidatesCount());
 
-      result = stmt.executeUpdate();
+      rezultat = stmt.executeUpdate();
 
     } catch (SQLException e) {
       return Response.status(404, "SQL: " + e.getMessage()).build();
@@ -273,7 +272,7 @@ public class RestLetovi {
       }
     }
 
-    if (result > 0)
+    if (rezultat > 0)
       poruka = "Uspješno dodavanje zapisa u bazu podataka!";
     else
       poruka = "Neuspješno dodavanje zapisa u bazu podataka!";
@@ -296,38 +295,36 @@ public class RestLetovi {
 
       ResultSet rs = stmt.executeQuery();
       while (rs.next()) {
-        String icaoTo = rs.getString("ICAO_TO");
-        float udaljenost = rs.getFloat("DIST_TOT");
-
-        LetAviona letAviona = new LetAviona();
         LetAvionaID letAvionaID = new LetAvionaID(); // 0 je ID, onda dalje ide
-        letAviona.setIcao24(rs.getString(0));
-        letAviona.setFirstSeen(rs.getInt(1));
-        letAviona.setEstDepartureAirport(rs.getString(2));
-        letAviona.setLastSeen(rs.getInt(3));
-        letAviona.setEstArrivalAirport(rs.getString(4));
-        letAviona.setCallsign(rs.getString(5));
-        letAviona.setEstDepartureAirportHorizDistance(rs.getInt(6));
-        letAviona.setEstDepartureAirportVertDistance(rs.getInt(7));
-        letAviona.setEstArrivalAirportHorizDistance(rs.getInt(8));
-        letAviona.setEstArrivalAirportVertDistance(rs.getInt(9));
-        letAviona.setDepartureAirportCandidatesCount(rs.getInt(10));
-        letAviona.setArrivalAirportCandidatesCount(rs.getInt(11));
 
-        letoviAviona.add(letAviona);
+        letAvionaID.setId(rs.getLong(1));
+        letAvionaID.setIcao24(rs.getString(2));
+        letAvionaID.setFirstSeen(rs.getInt(3));
+        letAvionaID.setEstDepartureAirport(rs.getString(4));
+        letAvionaID.setLastSeen(rs.getInt(5));
+        letAvionaID.setEstArrivalAirport(rs.getString(6));
+        letAvionaID.setCallsign(rs.getString(7));
+        letAvionaID.setEstDepartureAirportHorizDistance(rs.getInt(8));
+        letAvionaID.setEstDepartureAirportVertDistance(rs.getInt(9));
+        letAvionaID.setEstArrivalAirportHorizDistance(rs.getInt(10));
+        letAvionaID.setEstArrivalAirportVertDistance(rs.getInt(11));
+        letAvionaID.setDepartureAirportCandidatesCount(rs.getInt(12));
+        letAvionaID.setArrivalAirportCandidatesCount(rs.getInt(13));
+
+        letoviAviona.add(letAvionaID);
 
       }
       rs.close();
 
     } catch (SQLException e) {
-      Logger.getGlobal().log(Level.INFO, e.getMessage());
+      return Response.status(404, "SQL: " + e.getMessage()).build();
     } finally {
       try {
         if (stmt != null && !stmt.isClosed())
           stmt.close();
 
       } catch (SQLException e) {
-        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+        return Response.status(404, "SQL: " + e.getMessage()).build();
       }
     }
 
@@ -335,6 +332,36 @@ public class RestLetovi {
     var jsonLetoviAviona = gson.toJson(letoviAviona);
     var odgovor = Response.ok().entity(jsonLetoviAviona).build();
     return odgovor;
+  }
+
+  @DELETE
+  @Path("{id}")
+  public Response obrisiLet(@PathParam("id") int id) {
+    String query = "DELETE FROM LETOVI_POLASCI WHERE ID = ?";
+
+    PreparedStatement stmt = null;
+    int rezultat = 0;
+    try (var con = ds.getConnection()) {
+      stmt = con.prepareStatement(query);
+      stmt.setInt(1, id);
+
+      rezultat = stmt.executeUpdate();
+
+
+    } catch (SQLException e) {
+      return Response.status(404, "SQL: " + e.getMessage()).build();
+    } finally {
+      try {
+        if (stmt != null && !stmt.isClosed())
+          stmt.close();
+
+      } catch (SQLException e) {
+        return Response.status(404, "SQL: " + e.getMessage()).build();
+      }
+    }
+
+    return Response.ok().entity("Zapis uspješno obrisan!").build();
+
   }
 
   /**
