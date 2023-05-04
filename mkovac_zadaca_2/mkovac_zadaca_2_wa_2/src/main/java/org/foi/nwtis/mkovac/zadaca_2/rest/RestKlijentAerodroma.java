@@ -3,8 +3,12 @@ package org.foi.nwtis.mkovac.zadaca_2.rest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.foi.nwtis.Konfiguracija;
+import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
 import org.foi.nwtis.podaci.Aerodrom;
+import org.foi.nwtis.podaci.Info;
 import com.google.gson.Gson;
+import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -14,7 +18,26 @@ import jakarta.ws.rs.core.MediaType;
 
 public class RestKlijentAerodroma {
 
-  public RestKlijentAerodroma() {}
+  private ServletContext context;
+  private Konfiguracija konf;
+  private static String wa_1;
+
+  public RestKlijentAerodroma() {
+    context = MvcAplikacijaSlusac.getServletContext();
+    konf = (Konfiguracija) context.getAttribute("konfig");
+    wa_1 = konf.dajPostavku("adresa.wa_1");
+  }
+
+  public Info getInfo() {
+    String autorIme = konf.dajPostavku("autor.ime");
+    String autorPrezime = konf.dajPostavku("autor.prezime");
+    String autorPredmet = konf.dajPostavku("autor.predmet");
+    String aplikacijaGodina = konf.dajPostavku("aplikacija.godina");
+    String aplikacijaVerzija = konf.dajPostavku("aplikacija.verzija");
+
+    return new Info(autorIme, autorPrezime, autorPredmet, aplikacijaGodina,
+        aplikacijaVerzija);
+  }
 
   public List<Aerodrom> getAerodromi(int odBroja, int broj) {
     RestKKlijent rc = new RestKKlijent();
@@ -44,14 +67,15 @@ public class RestKlijentAerodroma {
 
     private final WebTarget webTarget;
     private final Client client;
-    private static final String BASE_URI = "http://200.20.0.4:8080/mkovac_zadaca_2_wa_1/api";
+    private static final String BASE_URI = wa_1; // "http://200.20.0.4:8080/mkovac_zadaca_2_wa_1/api"
 
     public RestKKlijent() {
       client = ClientBuilder.newClient();
       webTarget = client.target(BASE_URI).path("aerodromi");
     }
 
-    public Aerodrom[] getAerodromi(int odBroja, int broj) throws ClientErrorException {
+    public Aerodrom[] getAerodromi(int odBroja, int broj)
+        throws ClientErrorException {
       WebTarget resource = webTarget;
 
       Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
@@ -59,7 +83,8 @@ public class RestKlijentAerodroma {
         return null;
       }
       Gson gson = new Gson();
-      Aerodrom[] aerodromi = gson.fromJson(request.get(String.class), Aerodrom[].class);
+      Aerodrom[] aerodromi =
+          gson.fromJson(request.get(String.class), Aerodrom[].class);
 
       return aerodromi;
     }
@@ -73,13 +98,15 @@ public class RestKlijentAerodroma {
       // 2. za DELETE/{id} bi islo {0} kojem se proslijedi id, resource.request() i onda
       // request.delete
       // 3. za POST bi islo samo resource.request() i onda request.post
-      resource = resource.path(java.text.MessageFormat.format("{0}", new Object[] {icao}));
+      resource = resource
+          .path(java.text.MessageFormat.format("{0}", new Object[] {icao}));
       Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
       if (request.get(String.class).isEmpty()) {
         return null;
       }
       Gson gson = new Gson();
-      Aerodrom aerodrom = gson.fromJson(request.get(String.class), Aerodrom.class);
+      Aerodrom aerodrom =
+          gson.fromJson(request.get(String.class), Aerodrom.class);
       return aerodrom;
     }
 

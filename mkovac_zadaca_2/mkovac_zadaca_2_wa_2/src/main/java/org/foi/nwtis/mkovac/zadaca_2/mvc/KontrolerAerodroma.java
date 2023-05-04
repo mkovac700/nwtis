@@ -1,11 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project
- * Properties. To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * To change this license header, choose License Headers in Project Properties. To change this
+ * template file, choose Tools | Templates and open the template in the editor.
  */
 package org.foi.nwtis.mkovac.zadaca_2.mvc;
 
 import org.foi.nwtis.mkovac.zadaca_2.rest.RestKlijentAerodroma;
+import org.foi.nwtis.podaci.Info;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.mvc.Controller;
@@ -30,8 +30,12 @@ public class KontrolerAerodroma {
   @GET
   @Path("pocetak")
   @View("index.jsp")
-  // /aerodromi/pocetak
-  public void pocetak() {}
+  public void pocetak() { // /aerodromi/pocetak
+
+    RestKlijentAerodroma rca = new RestKlijentAerodroma();
+    Info info = rca.getInfo();
+    model.put("info", info);
+  }
 
   @GET
   @Path("svi")
@@ -62,8 +66,7 @@ public class KontrolerAerodroma {
   @GET
   @Path("udaljenosti2aerodroma")
   @View("aerodromiUdaljenosti.jsp")
-  public void getAerodromiUdaljenost(
-      @QueryParam("icaoOd") String icaoOd,
+  public void getAerodromiUdaljenost(@QueryParam("icaoOd") String icaoOd,
       @QueryParam("icaoDo") String icaoDo) {}
 
 }

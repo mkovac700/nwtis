@@ -9,20 +9,18 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
+import lombok.Getter;
 
 @WebListener
 public class MvcAplikacijaSlusac implements ServletContextListener {
+  @Getter
   private static ServletContext servletContext;
-
-  public static ServletContext getServletContext() {
-    return servletContext;
-  }
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     servletContext = sce.getServletContext();
-    String nazivDatoteke =
-        servletContext.getRealPath(servletContext.getInitParameter("konfiguracija"));
+    String nazivDatoteke = servletContext
+        .getRealPath(servletContext.getInitParameter("konfiguracija"));
     Konfiguracija konfig = null;
     try {
       konfig = ucitajPostavke(nazivDatoteke); // nazivDatoteke
@@ -48,7 +46,8 @@ public class MvcAplikacijaSlusac implements ServletContextListener {
    * @return Vraća objekt tipa Konfiguracija
    * @throws NeispravnaKonfiguracija Baca iznimku ako učitavanje postavki nije uspjelo
    */
-  private Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
+  private Konfiguracija ucitajPostavke(String nazivDatoteke)
+      throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
 
   }
