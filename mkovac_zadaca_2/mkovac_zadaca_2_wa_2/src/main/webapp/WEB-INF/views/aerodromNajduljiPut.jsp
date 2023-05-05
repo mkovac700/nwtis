@@ -11,9 +11,17 @@
 <h1>Najdulji put</h1>
 <%
 UdaljenostAerodromDrzava uad = (UdaljenostAerodromDrzava)request.getAttribute("udaljenostAerodromDrzava");
+String icao = "";
+String drzava = "";
+float km = 0;
+if(uad != null){
+  icao = uad.icao();
+  drzava = uad.drzava();
+  km = uad.km();
+}
 %>
-icao: <%= uad.icao() %> <br>
-Drzava:  <%= uad.drzava() %><br>
-km: <%= uad.km() %>
+ICAO: <%= icao %> <br>
+Država:  <%= drzava %><br>
+Udaljenost (km): <%= km %>
 </body>
 </html>

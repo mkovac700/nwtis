@@ -9,6 +9,7 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_2.rest.RestKlijentAerodroma;
 import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
 import org.foi.nwtis.podaci.Aerodrom;
+import org.foi.nwtis.podaci.Udaljenost;
 import org.foi.nwtis.podaci.UdaljenostAerodrom;
 import org.foi.nwtis.podaci.UdaljenostAerodromDrzava;
 import jakarta.enterprise.context.RequestScoped;
@@ -161,12 +162,25 @@ public class KontrolerAerodroma {
     }
   }
 
-
-
   @GET
   @Path("udaljenosti2aerodroma")
   @View("aerodromiUdaljenosti.jsp")
   public void getAerodromiUdaljenost(@QueryParam("icaoOd") String icaoOd,
-      @QueryParam("icaoDo") String icaoDo) {}
+      @QueryParam("icaoDo") String icaoDo) {
 
+    String greska = null;
+
+    System.out.println("icao od: " + icaoOd);
+    System.out.println("icao do: " + icaoDo);
+
+    try {
+      RestKlijentAerodroma rca = new RestKlijentAerodroma();
+      List<Udaljenost> udaljenost2Aerodroma =
+          rca.getUdaljenost2Aerodroma(icaoOd, icaoDo);
+      model.put("udaljenost2Aerodroma", udaljenost2Aerodroma);
+      model.put("greska", greska);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }
