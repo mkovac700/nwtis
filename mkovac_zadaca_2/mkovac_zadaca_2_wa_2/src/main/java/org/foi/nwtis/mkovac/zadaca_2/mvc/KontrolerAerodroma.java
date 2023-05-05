@@ -9,7 +9,8 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_2.rest.RestKlijentAerodroma;
 import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
 import org.foi.nwtis.podaci.Aerodrom;
-import org.foi.nwtis.podaci.Info;
+import org.foi.nwtis.podaci.UdaljenostAerodrom;
+import org.foi.nwtis.podaci.UdaljenostAerodromDrzava;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.mvc.Controller;
@@ -18,6 +19,7 @@ import jakarta.mvc.View;
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
 /**
@@ -48,29 +50,33 @@ public class KontrolerAerodroma {
   public void pocetak() { // /aerodromi/pocetak
 
     RestKlijentAerodroma rca = new RestKlijentAerodroma();
-    Info info = rca.getInfo();
+    String[] info = rca.getInfo();
     model.put("info", info);
   }
 
   @GET
   @Path("svi")
   @View("aerodromi.jsp")
-  public void getAerodromi(@QueryParam("odBroja") String odBroja) {
+  public void getAerodromi(@QueryParam("stranica") String stranica) {
 
     String greska = null;
 
+    int brojStranice = 1;
     int pocetak = 1;
     int broj = brojRedova;
 
-    if (odBroja != null && !odBroja.isEmpty()) {
+    if (stranica != null && !stranica.isEmpty()) {
       try {
-        pocetak = Integer.parseInt(odBroja);
-        if (pocetak < 1)
-          pocetak = 1;
+        brojStranice = Integer.parseInt(stranica);
+
+        if (brojStranice < 1)
+          brojStranice = 1;
       } catch (NumberFormatException e) {
-        greska = "Neispravni parametri!";
+        brojStranice = 1;
       }
     }
+
+    pocetak = (brojStranice - 1) * broj + 1; // brojStranice * broj + 1
 
     System.out.println("Poc: " + pocetak);
     System.out.println("Kraj: " + broj);
@@ -87,9 +93,9 @@ public class KontrolerAerodroma {
   }
 
   @GET
-  @Path("icao")
+  @Path("{icao}")
   @View("aerodrom.jsp")
-  public void getAerodrom(@QueryParam("icao") String icao) {
+  public void getAerodrom(@PathParam("icao") String icao) {
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
       var aerodrom = rca.getAerodrom(icao);
@@ -98,6 +104,64 @@ public class KontrolerAerodroma {
       e.printStackTrace();
     }
   }
+
+  @GET
+  @Path("{icao}/najduljiPutDrzave")
+  @View("aerodromNajduljiPut.jsp")
+  public void getUdaljenostiAerodromDrzava(@PathParam("icao") String icao) {
+    try {
+      RestKlijentAerodroma rca = new RestKlijentAerodroma();
+      UdaljenostAerodromDrzava udaljenostAerodromDrzava =
+          rca.getUdaljenostAerodromDrzava(icao);
+      model.put("udaljenostAerodromDrzava", udaljenostAerodromDrzava);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @GET
+  @Path("{icao}/udaljenosti")
+  @View("aerodromUdaljenosti.jsp")
+  public void getAerodromUdaljenosti(@PathParam("icao") String icao,
+      @QueryParam("stranica") String stranica) {
+    String greska = null;
+
+    int brojStranice = 1;
+    int pocetak = 1;
+    int broj = brojRedova;
+
+    model.put("icao", icao);
+
+    if (stranica != null && !stranica.isEmpty()) {
+      try {
+        brojStranice = Integer.parseInt(stranica);
+
+        if (brojStranice < 1)
+          brojStranice = 1;
+      } catch (NumberFormatException e) {
+        brojStranice = 1;
+      }
+    }
+
+    pocetak = (brojStranice - 1) * broj + 1; // brojStranice * broj + 1
+
+    System.out.println("Poc: " + pocetak);
+    System.out.println("Kraj: " + broj);
+
+    try {
+      RestKlijentAerodroma rca = new RestKlijentAerodroma();
+      List<UdaljenostAerodrom> udaljenostAerodromi =
+          rca.getAerodromiUdaljenost(icao, pocetak, broj);
+      model.put("udaljenostAerodromi", udaljenostAerodromi);
+
+      model.put("greska", greska);
+      model.put("brojRedova", brojRedova);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+
 
   @GET
   @Path("udaljenosti2aerodroma")

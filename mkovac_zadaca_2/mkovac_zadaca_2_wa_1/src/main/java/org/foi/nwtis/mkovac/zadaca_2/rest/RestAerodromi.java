@@ -197,7 +197,7 @@ public class RestAerodromi {
       @PathParam("icao") String icao, @QueryParam("odBroja") String odBroja,
       @QueryParam("broj") String broj) {
 
-    List<UdaljenostAerodrom> udaljenosti = new ArrayList<UdaljenostAerodrom>();
+    List<UdaljenostAerodrom> udaljenosti = new ArrayList<>();
 
     int offset = 1, limit = 20;
 
@@ -239,6 +239,9 @@ public class RestAerodromi {
         Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }
     }
+
+    if (udaljenosti.isEmpty())
+      return Response.status(404, "Lista je prazna").build();
 
     var gson = new Gson();
     var jsonUdaljenosti = gson.toJson(udaljenosti);

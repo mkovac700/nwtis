@@ -2,10 +2,10 @@
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <header>
-	Ime autora: ${info.autorIme}<br>
-	Prezime autora: ${info.autorPrezime}<br>
-	Predmet: ${info.autorPredmet}<br>
-	Godina izrade: ${info.aplikacijaGodina}<br>
-	Verzija: ${info.aplikacijaVerzija}<br>
+	Ime autora: ${info[0]}<br>
+	Prezime autora: ${info[1]}<br>
+	Predmet: ${info[2]}<br>
+	Godina izrade: ${info[3]}<br>
+	Verzija: ${info[4]}<br>
 	<br>
 </header>

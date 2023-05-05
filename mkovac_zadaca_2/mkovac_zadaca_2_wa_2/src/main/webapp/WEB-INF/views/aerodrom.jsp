@@ -8,8 +8,9 @@
 </head>
 <body>
 <h1>Jedan aerodrom</h1>
-icao: ${aerodrom.icao}
-Naziv: ${aerodrom.naziv}
-Drzava: ${aerodrom.drzava}
+icao: ${aerodrom.icao} <br>
+Naziv: ${aerodrom.naziv} <br>
+Drzava: ${aerodrom.drzava} <br>
+Lokacija: ${aerodrom.lokacija.latitude}, ${aerodrom.lokacija.longitude}
 </body>
 </html>

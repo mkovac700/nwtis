@@ -6,7 +6,8 @@ import java.util.List;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
 import org.foi.nwtis.podaci.Aerodrom;
-import org.foi.nwtis.podaci.Info;
+import org.foi.nwtis.podaci.UdaljenostAerodrom;
+import org.foi.nwtis.podaci.UdaljenostAerodromDrzava;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import jakarta.servlet.ServletContext;
@@ -29,15 +30,16 @@ public class RestKlijentAerodroma {
     wa_1 = konf.dajPostavku("adresa.wa_1");
   }
 
-  public Info getInfo() {
-    String autorIme = konf.dajPostavku("autor.ime");
-    String autorPrezime = konf.dajPostavku("autor.prezime");
-    String autorPredmet = konf.dajPostavku("autor.predmet");
-    String aplikacijaGodina = konf.dajPostavku("aplikacija.godina");
-    String aplikacijaVerzija = konf.dajPostavku("aplikacija.verzija");
+  public String[] getInfo() {
+    String[] info = new String[5];
 
-    return new Info(autorIme, autorPrezime, autorPredmet, aplikacijaGodina,
-        aplikacijaVerzija);
+    info[0] = konf.dajPostavku("autor.ime");
+    info[1] = konf.dajPostavku("autor.prezime");
+    info[2] = konf.dajPostavku("autor.predmet");
+    info[3] = konf.dajPostavku("aplikacija.godina");
+    info[4] = konf.dajPostavku("aplikacija.verzija");
+
+    return info;
   }
 
   public List<Aerodrom> getAerodromi(int odBroja, int broj) {
@@ -62,6 +64,29 @@ public class RestKlijentAerodroma {
     Aerodrom k = rc.getAerodrom(icao);
     rc.close();
     return k;
+  }
+
+  public List<UdaljenostAerodrom> getAerodromiUdaljenost(String icao,
+      int odBroja, int broj) {
+    RestKKlijent rc = new RestKKlijent();
+    UdaljenostAerodrom[] json_AerodromiUdaljenost =
+        rc.getAerodromiUdaljenost(icao, odBroja, broj);
+    List<UdaljenostAerodrom> udaljenostAerodromi;
+    if (json_AerodromiUdaljenost == null) {
+      udaljenostAerodromi = new ArrayList<>();
+    } else {
+      udaljenostAerodromi = Arrays.asList(json_AerodromiUdaljenost);
+    }
+    rc.close();
+
+    return udaljenostAerodromi;
+  }
+
+  public UdaljenostAerodromDrzava getUdaljenostAerodromDrzava(String icao) {
+    RestKKlijent rc = new RestKKlijent();
+    UdaljenostAerodromDrzava uad = rc.getUdaljenostAerodromDrzava(icao);
+    rc.close();
+    return uad;
   }
 
   static class RestKKlijent {
@@ -117,6 +142,54 @@ public class RestKlijentAerodroma {
       Aerodrom aerodrom =
           gson.fromJson(request.get(String.class), Aerodrom.class);
       return aerodrom;
+    }
+
+
+    public UdaljenostAerodrom[] getAerodromiUdaljenost(String icao, int odBroja,
+        int broj) throws ClientErrorException {
+      WebTarget resource = webTarget;
+
+      resource = resource
+          .path(java.text.MessageFormat.format("{0}", new Object[] {icao}))
+          .path("udaljenosti").queryParam("odBroja", odBroja)
+          .queryParam("broj", broj);
+
+      System.out.println("Putanja: " + resource.toString());
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+      if (request.get(String.class).isEmpty()) {
+        return null;
+      }
+      Gson gson = new Gson();
+      UdaljenostAerodrom[] udaljenostAerodromi = null;
+      try {
+        udaljenostAerodromi = gson.fromJson(request.get(String.class),
+            UdaljenostAerodrom[].class);
+      } catch (JsonSyntaxException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
+      System.out.println("JSON: " + request.get(String.class));
+
+      return udaljenostAerodromi;
+    }
+
+    public UdaljenostAerodromDrzava getUdaljenostAerodromDrzava(String icao)
+        throws ClientErrorException {
+      WebTarget resource = webTarget;
+
+      resource = resource
+          .path(java.text.MessageFormat.format("{0}", new Object[] {icao}))
+          .path("najduljiPutDrzave");
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+      if (request.get(String.class).isEmpty()) {
+        return null;
+      }
+      UdaljenostAerodromDrzava udaljenostAerodromDrzava = null;
+      Gson gson = new Gson();
+      udaljenostAerodromDrzava = gson.fromJson(request.get(String.class),
+          UdaljenostAerodromDrzava.class);
+      return udaljenostAerodromDrzava;
     }
 
     public void close() {
