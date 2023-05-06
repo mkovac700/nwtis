@@ -47,7 +47,8 @@ Stranica: <%=brStranice %>
 		}
 	}
 	else
-	  response.sendRedirect(request.getContextPath()+"/mvc/aerodromi/svi?stranica=1");
+	  if(brStranice != 1)
+	  	response.sendRedirect(request.getContextPath()+"/mvc/aerodromi/svi?stranica=1");
 	%>
 </table>
 <br>

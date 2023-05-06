@@ -15,7 +15,9 @@ import jakarta.mvc.Controller;
 import jakarta.mvc.Models;
 import jakarta.mvc.View;
 import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
@@ -42,7 +44,7 @@ public class KontrolerLetova {
   }
 
   @GET
-  @Path("letoviAerodrom")
+  @Path("aerodrom")
   @View("letoviAerodrom.jsp")
   public void getLetoviAerodrom(@QueryParam("stranica") String stranica,
       @QueryParam("icao") String icao, @QueryParam("dan") String dan) {
@@ -80,6 +82,24 @@ public class KontrolerLetova {
 
       model.put("greska", greska);
       model.put("brojRedova", brojRedova);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @POST
+  @View("letovi.jsp")
+  public void spremiLet(@FormParam("jsonLetAviona") String json_letAviona,
+      @FormParam("url") String url) {
+
+    System.out.println("JSON LET AVIONA: " + json_letAviona);
+
+    model.put("url", url);
+    String odgovor = null;
+    try {
+      RestKlijentLetova rca = new RestKlijentLetova();
+      odgovor = rca.spremiLet(json_letAviona);
+      model.put("odgovor", odgovor);
     } catch (Exception e) {
       e.printStackTrace();
     }

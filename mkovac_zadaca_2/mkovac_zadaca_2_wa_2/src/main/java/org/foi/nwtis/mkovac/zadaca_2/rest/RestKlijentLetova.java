@@ -11,9 +11,11 @@ import com.google.gson.JsonSyntaxException;
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 public class RestKlijentLetova {
 
@@ -41,6 +43,13 @@ public class RestKlijentLetova {
     rc.close();
 
     return letoviAviona;
+  }
+
+  public String spremiLet(String json_LetAviona) {
+    RestKKlijent rc = new RestKKlijent();
+    String odgovor = rc.spremiLet(json_LetAviona);
+    rc.close();
+    return odgovor;
   }
 
   static class RestKKlijent {
@@ -83,6 +92,23 @@ public class RestKlijentLetova {
       System.out.println("JSON: " + request.get(String.class));
 
       return letoviAviona;
+    }
+
+    public String spremiLet(String json_letAviona) {
+      WebTarget resource = webTarget;
+
+      Invocation.Builder request = resource.request();
+      Response response = request
+          .post(Entity.entity(json_letAviona, MediaType.APPLICATION_JSON));
+
+      String odgovor = null;
+
+      if (response.getStatus() == 200)
+        odgovor = response.readEntity(String.class);
+      else
+        odgovor = response.getStatusInfo().getReasonPhrase();
+
+      return odgovor;
     }
 
     public void close() {

@@ -1,4 +1,4 @@
 #NWTiS mkovac 2023.
 #Fri Apr 28 13:21:14 CEST 2023
-OpenSkyNetwork.korisnik=xxxx
-OpenSkyNetwork.lozinka=yyyy
+OpenSkyNetwork.korisnik=mkovac
+OpenSkyNetwork.lozinka=12345
