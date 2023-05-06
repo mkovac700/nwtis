@@ -1,8 +1,7 @@
+<%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="java.time.ZoneId"%>
 <%@page import="java.time.ZonedDateTime"%>
 <%@page import="java.time.Instant"%>
-<%@page import="java.time.format.DateTimeFormatter"%>
-<%@page import="java.time.ZoneOffset"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="org.foi.nwtis.rest.podaci.LetAviona"%>
 <%@page import="java.util.List"%>
@@ -12,16 +11,18 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Letovi s aerodroma na dan</title>
+<title>Letovi između aerodroma na dan</title>
 </head>
 <body>
-<h1>Letovi s aerodroma na dan</h1>
+<h1>Letovi između aerodroma na dan</h1>
 
 <%
-	String icao = "";
+	String icaoOd = "";
+	String icaoDo = "";
 	String dan = "";
 	
-	if (request.getParameter("icao") != null) icao = request.getParameter("icao");
+	if (request.getParameter("icaoOd") != null) icaoOd = request.getParameter("icaoOd");
+	if (request.getParameter("icaoDo") != null) icaoDo = request.getParameter("icaoDo");
 	if (request.getParameter("dan") != null) dan = request.getParameter("dan");
 	
 	int brStranice = 1; 
@@ -29,14 +30,16 @@
 	if(request.getParameter("stranica") != null){ //odBroja
 	  brStranice = Integer.parseInt(request.getParameter("stranica"));//odBroja
 	  if(brStranice < 1) 
-	    response.sendRedirect(request.getContextPath()+"/mvc/letovi/aerodrom?icao="+icao+"&dan="+dan+"&stranica=1");
+	    response.sendRedirect(request.getContextPath()+"/mvc/letovi/aerodromi?icaoOd="+icaoOd+"&icaoDo="+icaoDo+"&dan="+dan+"&stranica=1");
 	}
 %>
 
 <div style="display: flex;">
 <form action="" method="get">
-	  <label for="icao">ICAO:</label><br>
-	  <input type="text" id="icao" name="icao" value=<%=icao %>><br>
+	  <label for="icaoOd">ICAO od:</label><br>
+	  <input type="text" id="icaoOd" name="icaoOd" value=<%=icaoOd %>><br>
+	  <label for="icaoOd">ICAO do:</label><br>
+	  <input type="text" id="icaoDo" name="icaoDo" value=<%=icaoDo %>><br>
 	  <label for="dan">Dan:</label><br>
 	  <input type="text" id="dan" name="dan" placeholder="dd.MM.yyyy" value=<%=dan %>>
 	  <button type="submit">Pretraži</button>
@@ -48,14 +51,14 @@
 	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 	List<LetAviona> letoviAviona = (List<LetAviona>) request.getAttribute("letoviAviona");
 	
-	if((icao != null && !icao.isEmpty()) && (dan != null && !dan.isEmpty())){
+	if((icaoOd != null && !icaoOd.isEmpty()) && (icaoDo != null && !icaoDo.isEmpty()) && (dan != null && !dan.isEmpty())){
 	  %>
 	  Stranica: <%=brStranice %>
 	  <table border=1> 
 			<tr><th>ICAO24</th><th>Polazni aerodrom</th><th>Dolazni aerodrom</th><th>Vrijeme polaska (<%=ZoneId.systemDefault().getId() %>)</th><th>Vrijeme dolaska (<%=ZoneId.systemDefault().getId() %>)</th><th>Oznaka</th><th>Opcije</th></tr>
 	<%
 		if(letoviAviona != null){
-			for(LetAviona la : letoviAviona){ 
+		  for(LetAviona la : letoviAviona){ 
 			  String jsonLetAviona = gson.toJson(la);
 			  long firstSeen = la.getFirstSeen();
 			  long lastSeen = la.getLastSeen();
@@ -73,7 +76,7 @@
 		<td><%=la.getCallsign() %></td>
 		<td>
 			<form action="${pageContext.servletContext.contextPath}/mvc/letovi" method="post">
-		  		<input type="hidden" name="url" value='/mvc/letovi/aerodrom?icao=<%=icao %>&dan=<%=dan %>&stranica=<%=brStranice %>' />
+		  		<input type="hidden" name="url" value='/mvc/letovi/aerodromi?icaoOd=<%=icaoOd %>&icaoDo=<%=icaoDo %>&dan=<%=dan %>&stranica=<%=brStranice %>' />
 		  		<input type="hidden" name="jsonLetAviona" value='<%=jsonLetAviona %>' />
 		  		<button type="submit">Spremi</button>
 			</form>
@@ -84,25 +87,28 @@
 		}
 		else
 		  if(brStranice != 1) 
-		    response.sendRedirect(request.getContextPath()+"/mvc/letovi/aerodrom?icao="+icao+"&dan="+dan+"&stranica=1");
+		    response.sendRedirect(request.getContextPath()+"/mvc/letovi/aerodromi?icaoOd="+icaoOd+"&icaoDo="+icaoDo+"&dan="+dan+"&stranica=1");
 	%>
 	</table>
 	<br>
 	<div style="display: flex;"> <!-- justify-content: center;" -->
 		<form action="" method="get">
-		  	<input type="hidden" name="icao" value="<%=icao %>" />
+		  	<input type="hidden" name="icaoOd" value="<%=icaoOd %>" />
+		  	<input type="hidden" name="icaoDo" value="<%=icaoDo %>" />
 		  	<input type="hidden" name="dan" value="<%=dan %>" />
 		  	<input type="hidden" name="stranica" value="1" />
 		  	<button type="submit">Početak</button>
 		</form>
 		<form action="" method="get">
-			<input type="hidden" name="icao" value="<%=icao %>" />
+			<input type="hidden" name="icaoOd" value="<%=icaoOd %>" />
+			<input type="hidden" name="icaoDo" value="<%=icaoDo %>" />
 		  	<input type="hidden" name="dan" value="<%=dan %>" />
 		  	<input type="hidden" name="stranica" value="<%=brStranice-1 %>" />
 		  	<button type="submit">Prethodna stranica</button>
 		</form>
 		<form action="" method="get">
-			<input type="hidden" name="icao" value="<%=icao %>" />
+			<input type="hidden" name="icaoOd" value="<%=icaoOd %>" />
+			<input type="hidden" name="icaoDo" value="<%=icaoDo %>" />
 		  	<input type="hidden" name="dan" value="<%=dan %>" />
 		  	<input type="hidden" name="stranica" value="<%=brStranice+1 %>" />
 		  	<button type="submit">Sljedeća stranica</button>

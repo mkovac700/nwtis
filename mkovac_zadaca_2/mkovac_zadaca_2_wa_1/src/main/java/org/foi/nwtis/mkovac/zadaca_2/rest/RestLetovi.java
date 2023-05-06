@@ -98,6 +98,7 @@ public class RestLetovi {
       // offset - 1 + limit);
 
       avioniPolasci = osKlijent.getDepartures(icao, odVremena, doVremena);
+      avioniPolasci.removeIf(ap -> ap.getEstArrivalAirport() == null);
 
       System.out.println("Broj stvarnih podataka: " + avioniPolasci.size());
 

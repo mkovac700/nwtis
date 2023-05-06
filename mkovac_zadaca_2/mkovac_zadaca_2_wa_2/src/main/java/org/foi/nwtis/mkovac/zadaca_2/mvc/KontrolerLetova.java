@@ -9,6 +9,7 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_2.rest.RestKlijentLetova;
 import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
 import org.foi.nwtis.rest.podaci.LetAviona;
+import org.foi.nwtis.rest.podaci.LetAvionaID;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.mvc.Controller;
@@ -19,6 +20,7 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
 /**
@@ -87,8 +89,70 @@ public class KontrolerLetova {
     }
   }
 
+  @GET
+  @Path("aerodromi")
+  @View("letoviAerodromi.jsp")
+  public void getLetoviAerodrom(@QueryParam("stranica") String stranica,
+      @QueryParam("icaoOd") String icaoOd, @QueryParam("icaoDo") String icaoDo,
+      @QueryParam("dan") String dan) {
+
+    String greska = null;
+
+    int brojStranice = 1;
+    int pocetak = 1;
+    int broj = brojRedova;
+
+    model.put("icaoOd", icaoOd);
+    model.put("icaoDo", icaoDo);
+
+    if (stranica != null && !stranica.isEmpty()) {
+      try {
+        brojStranice = Integer.parseInt(stranica);
+
+        if (brojStranice < 1)
+          brojStranice = 1;
+      } catch (NumberFormatException e) {
+        brojStranice = 1;
+      }
+    }
+
+    pocetak = (brojStranice - 1) * broj + 1; // brojStranice * broj + 1
+
+    System.out.println("Poc: " + pocetak);
+    System.out.println("Kraj: " + broj);
+
+    try {
+      RestKlijentLetova rca = new RestKlijentLetova();
+      List<LetAviona> letoviAviona =
+          rca.dajLetoveAerodrom(icaoOd, icaoDo, dan, pocetak, broj);
+      model.put("letoviAviona", letoviAviona);
+
+      model.put("greska", greska);
+      model.put("brojRedova", brojRedova);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @GET
+  @Path("spremljeni")
+  @View("letoviSpremljeni.jsp")
+  public void getLetoviSpremljeni() {
+
+    String greska = null;
+
+    try {
+      RestKlijentLetova rca = new RestKlijentLetova();
+      List<LetAvionaID> letoviAviona = rca.dajSpremljeneLetove();
+      model.put("letoviAviona", letoviAviona);
+      model.put("greska", greska);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   @POST
-  @View("letovi.jsp")
+  @View("spremiLet.jsp")
   public void spremiLet(@FormParam("jsonLetAviona") String json_letAviona,
       @FormParam("url") String url) {
 
@@ -99,6 +163,22 @@ public class KontrolerLetova {
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
       odgovor = rca.spremiLet(json_letAviona);
+      model.put("odgovor", odgovor);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @POST
+  @Path("{id}")
+  @View("obrisiLet.jsp")
+  public void obrisiLet(@PathParam("id") int id, @FormParam("url") String url) {
+
+    model.put("url", url);
+    String odgovor = null;
+    try {
+      RestKlijentLetova rca = new RestKlijentLetova();
+      odgovor = rca.obrisiLet(id);
       model.put("odgovor", odgovor);
     } catch (Exception e) {
       e.printStackTrace();

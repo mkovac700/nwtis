@@ -4,14 +4,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Letovi</title>
+<title>Spremanje leta</title>
 </head>
 <body>
 <%
 	String odgovor = (String)request.getAttribute("odgovor");
 	String url = (String)request.getAttribute("url");
 %>
-<a href="${pageContext.servletContext.contextPath}">Početna stranica</a><br/> 
+<a href="${pageContext.servletContext.contextPath}">Početna stranica</a><br/>  
 <a href="${pageContext.servletContext.contextPath}<%=url %>">Povratak</a><br/> 
 <%= odgovor %>
 

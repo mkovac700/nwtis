@@ -6,6 +6,7 @@ import java.util.List;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
 import org.foi.nwtis.rest.podaci.LetAviona;
+import org.foi.nwtis.rest.podaci.LetAvionaID;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import jakarta.servlet.ServletContext;
@@ -45,9 +46,46 @@ public class RestKlijentLetova {
     return letoviAviona;
   }
 
+  public List<LetAviona> dajLetoveAerodrom(String icaoOd, String icaoDo,
+      String dan, int odBroja, int broj) {
+    RestKKlijent rc = new RestKKlijent();
+    LetAviona[] json_letoviAviona =
+        rc.dajLetoveAerodrom(icaoOd, icaoDo, dan, odBroja, broj);
+    List<LetAviona> letoviAviona;
+    if (json_letoviAviona == null) {
+      letoviAviona = new ArrayList<>();
+    } else {
+      letoviAviona = Arrays.asList(json_letoviAviona);
+    }
+    rc.close();
+
+    return letoviAviona;
+  }
+
+  public List<LetAvionaID> dajSpremljeneLetove() {
+    RestKKlijent rc = new RestKKlijent();
+    LetAvionaID[] json_letoviAviona = rc.dajSpremljeneLetove();
+    List<LetAvionaID> letoviAviona;
+    if (json_letoviAviona == null) {
+      letoviAviona = new ArrayList<>();
+    } else {
+      letoviAviona = Arrays.asList(json_letoviAviona);
+    }
+    rc.close();
+
+    return letoviAviona;
+  }
+
   public String spremiLet(String json_LetAviona) {
     RestKKlijent rc = new RestKKlijent();
     String odgovor = rc.spremiLet(json_LetAviona);
+    rc.close();
+    return odgovor;
+  }
+
+  public String obrisiLet(int id) {
+    RestKKlijent rc = new RestKKlijent();
+    String odgovor = rc.obrisiLet(id);
     rc.close();
     return odgovor;
   }
@@ -94,12 +132,89 @@ public class RestKlijentLetova {
       return letoviAviona;
     }
 
+    public LetAviona[] dajLetoveAerodrom(String icaoOd, String icaoDo,
+        String dan, int odBroja, int broj) {
+
+      WebTarget resource = webTarget;
+
+      if ((icaoOd == null || icaoOd.isEmpty())
+          || (icaoDo == null || icaoDo.isEmpty()))
+        return null;
+
+      resource = resource
+          .path(java.text.MessageFormat.format("{0}/{1}",
+              new Object[] {icaoOd, icaoDo}))
+          .queryParam("dan", dan).queryParam("odBroja", odBroja)
+          .queryParam("broj", broj);
+
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+      if (request.get(String.class).isEmpty()) {
+        return null;
+      }
+      Gson gson = new Gson();
+      LetAviona[] letoviAviona = null;
+      try {
+        letoviAviona =
+            gson.fromJson(request.get(String.class), LetAviona[].class);
+      } catch (JsonSyntaxException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
+      System.out.println("JSON: " + request.get(String.class));
+
+      return letoviAviona;
+
+    }
+
+    public LetAvionaID[] dajSpremljeneLetove() {
+      WebTarget resource = webTarget;
+
+      resource = resource.path("spremljeni");
+
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+      if (request.get(String.class).isEmpty()) {
+        return null;
+      }
+      Gson gson = new Gson();
+      LetAvionaID[] letoviAviona = null;
+      try {
+        letoviAviona =
+            gson.fromJson(request.get(String.class), LetAvionaID[].class);
+      } catch (JsonSyntaxException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
+      System.out.println("JSON: " + request.get(String.class));
+
+      return letoviAviona;
+    }
+
     public String spremiLet(String json_letAviona) {
       WebTarget resource = webTarget;
 
       Invocation.Builder request = resource.request();
       Response response = request
           .post(Entity.entity(json_letAviona, MediaType.APPLICATION_JSON));
+
+      String odgovor = null;
+
+      if (response.getStatus() == 200)
+        odgovor = response.readEntity(String.class);
+      else
+        odgovor = response.getStatusInfo().getReasonPhrase();
+
+      return odgovor;
+    }
+
+    public String obrisiLet(int id) {
+      WebTarget resource = webTarget;
+
+      resource = resource.path(Integer.toString(id));
+
+      Invocation.Builder request = resource.request();
+      Response response = request.delete();
 
       String odgovor = null;
 
