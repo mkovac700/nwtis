@@ -3,6 +3,8 @@ package org.foi.nwtis.mkovac.zadaca_2.rest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
 import org.foi.nwtis.podaci.Aerodrom;
@@ -19,6 +21,12 @@ import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 
+/**
+ * REST klijent aerodroma
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class RestKlijentAerodroma {
 
   private ServletContext context;
@@ -31,7 +39,12 @@ public class RestKlijentAerodroma {
     wa_1 = konf.dajPostavku("adresa.wa_1");
   }
 
-  public String[] getInfo() {
+  /**
+   * Dohvaća informacije o autoru i aplikaciji. Infomacije se učitavaju iz konteksta.
+   * 
+   * @return Vraća polje s podacima
+   */
+  public String[] dajInfo() {
     String[] info = new String[5];
 
     info[0] = konf.dajPostavku("autor.ime");
@@ -43,9 +56,21 @@ public class RestKlijentAerodroma {
     return info;
   }
 
-  public List<Aerodrom> getAerodromi(int odBroja, int broj) {
+  /**
+   * Dohvaća podatke o svim aerodromima u zadanom rasponu. Zadani raspon je 1, 20.
+   * 
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća kolekciju (listu) podataka
+   */
+  public List<Aerodrom> dajAerodromi(int odBroja, int broj) {
     RestKKlijent rc = new RestKKlijent();
-    Aerodrom[] json_Aerodromi = rc.getAerodromi(odBroja, broj);
+    Aerodrom[] json_Aerodromi = null;
+    try {
+      json_Aerodromi = rc.dajAerodromi(odBroja, broj);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
     List<Aerodrom> aerodromi;
     if (json_Aerodromi == null) {
       aerodromi = new ArrayList<>();
@@ -56,20 +81,50 @@ public class RestKlijentAerodroma {
     return aerodromi;
   }
 
-  public List<Aerodrom> getAerodromi() {
-    return this.getAerodromi(1, 20);
+  /**
+   * Dohvaća podatke o svim aerodromima u zadanom rasponu 1, 20.
+   * 
+   * @return Vraća kolekciju (listu) podataka
+   */
+  public List<Aerodrom> dajAerodromi() {
+    return this.dajAerodromi(1, 20);
   }
 
-  public Aerodrom getAerodrom(String icao) {
+  /**
+   * Dohvaća podatak o zadanom aerodromu.
+   * 
+   * @param icao Oznaka aerodroma
+   * @return Vraća jedan podatak
+   */
+  public Aerodrom dajAerodrom(String icao) {
     RestKKlijent rc = new RestKKlijent();
-    Aerodrom k = rc.getAerodrom(icao);
+    Aerodrom k = null;
+    try {
+      k = rc.dajAerodrom(icao);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
     rc.close();
     return k;
   }
 
-  public List<UdaljenostAerodrom> getAerodromiUdaljenost(String icao, int odBroja, int broj) {
+  /**
+   * Dohvaća podatke o udaljenosti od zadanog aerodroma do svih ostalih aerodroma u zadanom rasponu.
+   * Zadani raspon je 1, 20.
+   * 
+   * @param icao Oznaka aerodroma
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća kolekciju (listu) podataka
+   */
+  public List<UdaljenostAerodrom> dajAerodromiUdaljenost(String icao, int odBroja, int broj) {
     RestKKlijent rc = new RestKKlijent();
-    UdaljenostAerodrom[] json_AerodromiUdaljenost = rc.getAerodromiUdaljenost(icao, odBroja, broj);
+    UdaljenostAerodrom[] json_AerodromiUdaljenost = null;
+    try {
+      json_AerodromiUdaljenost = rc.dajAerodromiUdaljenost(icao, odBroja, broj);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
     List<UdaljenostAerodrom> udaljenostAerodromi;
     if (json_AerodromiUdaljenost == null) {
       udaljenostAerodromi = new ArrayList<>();
@@ -81,16 +136,39 @@ public class RestKlijentAerodroma {
     return udaljenostAerodromi;
   }
 
-  public UdaljenostAerodromDrzava getUdaljenostAerodromDrzava(String icao) {
+  /**
+   * Dohvaća podatak o najduljem putu unutar neke države od zadanog aerodroma.
+   * 
+   * @param icao Oznaka aerodroma
+   * @return Vraća jedan podatak
+   */
+  public UdaljenostAerodromDrzava dajUdaljenostAerodromDrzava(String icao) {
     RestKKlijent rc = new RestKKlijent();
-    UdaljenostAerodromDrzava uad = rc.getUdaljenostAerodromDrzava(icao);
+    UdaljenostAerodromDrzava uad = null;
+    try {
+      uad = rc.dajUdaljenostAerodromDrzava(icao);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
     rc.close();
     return uad;
   }
 
-  public List<Udaljenost> getUdaljenost2Aerodroma(String icaoOd, String icaoDo) {
+  /**
+   * Dohvaća podatke o udaljenosti između dva aerodroma.
+   * 
+   * @param icaoOd Oznaka polaznog aerodroma
+   * @param icaoDo Oznaka dolaznog aerodroma
+   * @return Vraća kolekciju (listu) podataka
+   */
+  public List<Udaljenost> dajUdaljenost2Aerodroma(String icaoOd, String icaoDo) {
     RestKKlijent rc = new RestKKlijent();
-    Udaljenost[] json_udaljenost2Aerodroma = rc.getUdaljenost2Aerodroma(icaoOd, icaoDo);
+    Udaljenost[] json_udaljenost2Aerodroma = null;
+    try {
+      json_udaljenost2Aerodroma = rc.dajUdaljenost2Aerodroma(icaoOd, icaoDo);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
     List<Udaljenost> udaljenost2Aerodroma;
     if (json_udaljenost2Aerodroma == null) {
       udaljenost2Aerodroma = new ArrayList<>();
@@ -102,19 +180,36 @@ public class RestKlijentAerodroma {
     return udaljenost2Aerodroma;
   }
 
+  /**
+   * Interna klasa za rad s klijentom REST servisa. Odrađuje slanje odgovarajućih zahtjeva prema
+   * REST servisu.
+   * 
+   * @author Marijan Kovač
+   *
+   */
   static class RestKKlijent {
 
     private final WebTarget webTarget;
     private final Client client;
-    private static final String BASE_URI = wa_1;// wa_1 //
-                                                // "http://200.20.0.4:8080/mkovac_zadaca_2_wa_1/api"
+    private static final String BASE_URI = wa_1;
 
+    /**
+     * Kreira instancu klijenta REST servisa i vezu prema REST servisu
+     */
     public RestKKlijent() {
       client = ClientBuilder.newClient();
       webTarget = client.target(BASE_URI).path("aerodromi");
     }
 
-    public Aerodrom[] getAerodromi(int odBroja, int broj) throws ClientErrorException {
+    /**
+     * Dohvaća podatke o svim aerodromima u zadanom rasponu. Zadani raspon je 1, 20.
+     * 
+     * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+     * @param broj Koliko podataka se želi dohvatiti
+     * @return Vraća kolekciju podataka
+     * @throws ClientErrorException Ukoliko se dogodi greška u radu REST klijenta
+     */
+    public Aerodrom[] dajAerodromi(int odBroja, int broj) throws ClientErrorException {
       WebTarget resource = webTarget;
 
       resource = resource.queryParam("odBroja", odBroja).queryParam("broj", broj);
@@ -128,14 +223,20 @@ public class RestKlijentAerodroma {
       try {
         aerodromi = gson.fromJson(request.get(String.class), Aerodrom[].class);
       } catch (JsonSyntaxException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }
 
       return aerodromi;
     }
 
-    public Aerodrom getAerodrom(String icao) throws ClientErrorException {
+    /**
+     * Dohvaća podatak o zadanom aerodromu.
+     * 
+     * @param icao Oznaka aerodroma
+     * @return Vraća jedan podatak
+     * @throws ClientErrorException Ukoliko se dogodi greška u radu REST klijenta
+     */
+    public Aerodrom dajAerodrom(String icao) throws ClientErrorException {
       WebTarget resource = webTarget;
 
       resource = resource.path(java.text.MessageFormat.format("{0}", new Object[] {icao}));
@@ -144,12 +245,26 @@ public class RestKlijentAerodroma {
         return null;
       }
       Gson gson = new Gson();
-      Aerodrom aerodrom = gson.fromJson(request.get(String.class), Aerodrom.class);
+      Aerodrom aerodrom = null;
+      try {
+        aerodrom = gson.fromJson(request.get(String.class), Aerodrom.class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
       return aerodrom;
     }
 
-
-    public UdaljenostAerodrom[] getAerodromiUdaljenost(String icao, int odBroja, int broj)
+    /**
+     * Dohvaća podatke o udaljenosti od zadanog aerodroma do svih ostalih aerodroma u zadanom
+     * rasponu. Zadani raspon je 1, 20.
+     * 
+     * @param icao Oznaka aerodroma
+     * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+     * @param broj Koliko podataka se želi dohvatiti
+     * @return Vraća kolekciju podataka
+     * @throws ClientErrorException Ukoliko se dogodi greška u radu REST klijenta
+     */
+    public UdaljenostAerodrom[] dajAerodromiUdaljenost(String icao, int odBroja, int broj)
         throws ClientErrorException {
       WebTarget resource = webTarget;
 
@@ -165,14 +280,20 @@ public class RestKlijentAerodroma {
       try {
         udaljenostAerodromi = gson.fromJson(request.get(String.class), UdaljenostAerodrom[].class);
       } catch (JsonSyntaxException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }
 
       return udaljenostAerodromi;
     }
 
-    public UdaljenostAerodromDrzava getUdaljenostAerodromDrzava(String icao)
+    /**
+     * Dohvaća podatak o najduljem putu unutar neke države od zadanog aerodroma.
+     * 
+     * @param icao Oznaka aerodroma
+     * @return Vraća jedan podatak
+     * @throws ClientErrorException Ukoliko se dogodi greška u radu REST klijenta
+     */
+    public UdaljenostAerodromDrzava dajUdaljenostAerodromDrzava(String icao)
         throws ClientErrorException {
       WebTarget resource = webTarget;
 
@@ -184,13 +305,26 @@ public class RestKlijentAerodroma {
       }
       UdaljenostAerodromDrzava udaljenostAerodromDrzava = null;
       Gson gson = new Gson();
-      udaljenostAerodromDrzava =
-          gson.fromJson(request.get(String.class), UdaljenostAerodromDrzava.class);
+      try {
+        udaljenostAerodromDrzava =
+            gson.fromJson(request.get(String.class), UdaljenostAerodromDrzava.class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
 
       return udaljenostAerodromDrzava;
     }
 
-    public Udaljenost[] getUdaljenost2Aerodroma(String icaoOd, String icaoDo) {
+    /**
+     * Dohvaća podatke o udaljenosti između dva aerodroma.
+     * 
+     * @param icaoOd Oznaka polaznog aerodroma
+     * @param icaoDo Oznaka dolaznog aerodroma
+     * @return Vraća kolekciju podataka
+     * @throws ClientErrorException Ukoliko se dogodi greška u radu REST klijenta
+     */
+    public Udaljenost[] dajUdaljenost2Aerodroma(String icaoOd, String icaoDo)
+        throws ClientErrorException {
       WebTarget resource = webTarget;
 
       if ((icaoOd == null || icaoDo == null) || (icaoOd.isEmpty() || icaoDo.isEmpty()))
@@ -209,15 +343,15 @@ public class RestKlijentAerodroma {
       try {
         udaljenost2Aerodroma = gson.fromJson(request.get(String.class), Udaljenost[].class);
       } catch (JsonSyntaxException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }
-
-      System.out.println("JSON: " + request.get(String.class));
 
       return udaljenost2Aerodroma;
     }
 
+    /**
+     * Zatvara klijent REST servisa
+     */
     public void close() {
       client.close();
     }

@@ -60,7 +60,7 @@
 		List<LetAviona> letoviAviona = (List<LetAviona>) request.getAttribute("letoviAviona");
 
 		if ((icao != null && !icao.isEmpty()) && (dan != null && !dan.isEmpty())) {
-		  if (letoviAviona != null) {
+		  if (letoviAviona != null && !letoviAviona.isEmpty()) {
 		%>
 		<table border=1>
 			<tr>

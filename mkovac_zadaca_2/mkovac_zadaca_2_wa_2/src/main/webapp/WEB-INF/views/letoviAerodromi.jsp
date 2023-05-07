@@ -65,7 +65,7 @@
 		if ((icaoOd != null && !icaoOd.isEmpty()) && (icaoDo != null && !icaoDo.isEmpty())
 		    && (dan != null && !dan.isEmpty())) {
 
-		  if (letoviAviona != null) {
+		  if (letoviAviona != null && !letoviAviona.isEmpty()) {
 		%>
 		<table border=1>
 			<tr>

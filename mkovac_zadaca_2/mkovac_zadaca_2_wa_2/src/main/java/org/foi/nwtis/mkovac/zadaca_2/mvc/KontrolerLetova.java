@@ -26,8 +26,10 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
 /**
- *
- * @author NWTiS
+ * Kontroler za MVC aplikaciju Letovi. Služi za preusmjeravanje do odgovarajućih stranica, prikaz
+ * stranica te učitavanje podataka za prikaz na stranici.
+ * 
+ * @author Marijan Kovač
  */
 @Controller
 @Path("letovi")
@@ -47,10 +49,17 @@ public class KontrolerLetova {
     brojRedova = Integer.parseInt(konf.dajPostavku("stranica.brojRedova"));
   }
 
+  /**
+   * Metoda za prikaz stranice s polascima sa zadanog aerodroma na određeni dan.
+   * 
+   * @param stranica Broj trenutne stranice za koju se dohvaćaju podaci.
+   * @param icao Oznaka aerodroma za koji se dohvaćaju podaci.
+   * @param dan Dan za koji se dohvaćaju podaci u formatu dd.MM.yyyy
+   */
   @GET
   @Path("aerodrom")
   @View("letoviAerodrom.jsp")
-  public void getLetoviAerodrom(@QueryParam("stranica") String stranica,
+  public void dajLetoviAerodrom(@QueryParam("stranica") String stranica,
       @QueryParam("icao") String icao, @QueryParam("dan") String dan) {
 
     String greska = null;
@@ -78,7 +87,7 @@ public class KontrolerLetova {
 
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
-      info = rca.getInfo();
+      info = rca.dajInfo();
       List<LetAviona> letoviAviona = rca.dajLetoveAerodrom(icao, dan, pocetak, broj);
       model.put("letoviAviona", letoviAviona);
 
@@ -89,10 +98,19 @@ public class KontrolerLetova {
     model.put("greska", greska);
   }
 
+  /**
+   * Metoda za prikaz stranice s polascima sa polazišnog aerodroma do odredišnog aerodroma na
+   * određeni dan.
+   * 
+   * @param stranica Broj trenutne stranice za koju se dohvaćaju podaci.
+   * @param icaoOd Oznaka polazišnog aerodroma za koji se dohvaćaju podaci.
+   * @param icaoDo Oznaka odredišnog aerodroma za koji se dohvaćaju podaci.
+   * @param dan Dan za koji se dohvaćaju podaci u formatu dd.MM.yyyy
+   */
   @GET
   @Path("aerodromi")
   @View("letoviAerodromi.jsp")
-  public void getLetoviAerodrom(@QueryParam("stranica") String stranica,
+  public void dajLetoviAerodrom(@QueryParam("stranica") String stranica,
       @QueryParam("icaoOd") String icaoOd, @QueryParam("icaoDo") String icaoDo,
       @QueryParam("dan") String dan) {
 
@@ -122,7 +140,7 @@ public class KontrolerLetova {
 
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
-      info = rca.getInfo();
+      info = rca.dajInfo();
       List<LetAviona> letoviAviona = rca.dajLetoveAerodrom(icaoOd, icaoDo, dan, pocetak, broj);
       model.put("letoviAviona", letoviAviona);
 
@@ -134,10 +152,13 @@ public class KontrolerLetova {
     model.put("greska", greska);
   }
 
+  /**
+   * Metoda za prikaz stranice sa spremljenim letovima.
+   */
   @GET
   @Path("spremljeni")
   @View("letoviSpremljeni.jsp")
-  public void getLetoviSpremljeni() {
+  public void dajLetoviSpremljeni() {
 
     String greska = null;
 
@@ -145,7 +166,7 @@ public class KontrolerLetova {
 
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
-      info = rca.getInfo();
+      info = rca.dajInfo();
       List<LetAvionaID> letoviAviona = rca.dajSpremljeneLetove();
       model.put("letoviAviona", letoviAviona);
       model.put("greska", greska);
@@ -156,6 +177,13 @@ public class KontrolerLetova {
     model.put("info", info);
   }
 
+  /**
+   * Metoda za slanje zahtjeva za spremanje odabranog leta u bazu podataka. Prikazuje stranicu s
+   * informacijama o uspjehu akcije.
+   * 
+   * @param json_letAviona Podaci o odabranom letu u JSON formatu
+   * @param url Trenutni URL stranice za preusmjeravanje (povratak) na prethodnu stranicu
+   */
   @POST
   @View("spremiLet.jsp")
   public void spremiLet(@FormParam("jsonLetAviona") String json_letAviona,
@@ -167,7 +195,7 @@ public class KontrolerLetova {
     String odgovor = null;
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
-      info = rca.getInfo();
+      info = rca.dajInfo();
       odgovor = rca.spremiLet(json_letAviona);
       model.put("odgovor", odgovor);
 
@@ -177,6 +205,13 @@ public class KontrolerLetova {
     model.put("info", info);
   }
 
+  /**
+   * Metoda za slanje zahtjeva za brisanje odabranog leta iz baze podataka. Prikazuje stranicu s
+   * informacijama o uspjehu akcije.
+   * 
+   * @param id ID leta koji se želi obrisati
+   * @param url Trenutni URL stranice za preusmjeravanje (povratak) na prethodnu stranicu
+   */
   @POST
   @Path("{id}")
   @View("obrisiLet.jsp")
@@ -187,7 +222,7 @@ public class KontrolerLetova {
     String odgovor = null;
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
-      info = rca.getInfo();
+      info = rca.dajInfo();
       odgovor = rca.obrisiLet(id);
       model.put("odgovor", odgovor);
 

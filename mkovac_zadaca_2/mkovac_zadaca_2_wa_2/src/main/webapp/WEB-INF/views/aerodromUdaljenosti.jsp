@@ -42,7 +42,7 @@
 		List<UdaljenostAerodrom> udaljenostAerodromi =
 		    (List<UdaljenostAerodrom>) request.getAttribute("udaljenostAerodromi");
 
-		if (udaljenostAerodromi != null) {
+		if (udaljenostAerodromi != null && !udaljenostAerodromi.isEmpty()) {
 		%>
 
 		<table border=1>

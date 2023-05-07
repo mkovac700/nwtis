@@ -26,8 +26,10 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 
 /**
- *
- * @author NWTiS
+ * Kontroler za MVC aplikaciju Aerodromi. Služi za preusmjeravanje do odgovarajućih stranica, prikaz
+ * stranica te učitavanje podataka za prikaz na stranici.
+ * 
+ * @author Marijan Kovač
  */
 @Controller
 @Path("aerodromi")
@@ -47,20 +49,28 @@ public class KontrolerAerodroma {
     brojRedova = Integer.parseInt(konf.dajPostavku("stranica.brojRedova"));
   }
 
+  /**
+   * Metoda za prikaz početne stranice.
+   */
   @GET
   @Path("pocetak")
   @View("index.jsp")
   public void pocetak() {
 
     RestKlijentAerodroma rca = new RestKlijentAerodroma();
-    String[] info = rca.getInfo();
+    String[] info = rca.dajInfo();
     model.put("info", info);
   }
 
+  /**
+   * Metoda za prikaz stranice sa svim aerodromima.
+   * 
+   * @param stranica Broj trenutne stranice za koju se dohvaćaju podaci.
+   */
   @GET
   @Path("svi")
   @View("aerodromi.jsp")
-  public void getAerodromi(@QueryParam("stranica") String stranica) {
+  public void dajAerodromi(@QueryParam("stranica") String stranica) {
 
     String greska = null;
 
@@ -85,8 +95,8 @@ public class KontrolerAerodroma {
 
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
-      info = rca.getInfo();
-      List<Aerodrom> aerodromi = rca.getAerodromi(pocetak, broj);
+      info = rca.dajInfo();
+      List<Aerodrom> aerodromi = rca.dajAerodromi(pocetak, broj);
       model.put("aerodromi", aerodromi);
     } catch (Exception e) {
       Logger.getGlobal().log(Level.INFO, e.getMessage());
@@ -95,34 +105,44 @@ public class KontrolerAerodroma {
     model.put("greska", greska);
   }
 
+  /**
+   * Metoda za prikaz stranice s podacima za jedan aerodrom.
+   * 
+   * @param icao Oznaka aerodroma za koji se dohvaćaju podaci.
+   */
   @GET
   @Path("{icao}")
   @View("aerodrom.jsp")
-  public void getAerodrom(@PathParam("icao") String icao) {
+  public void dajAerodrom(@PathParam("icao") String icao) {
     model.put("icao", icao);
     String[] info = null;
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
-      var aerodrom = rca.getAerodrom(icao);
+      var aerodrom = rca.dajAerodrom(icao);
       model.put("aerodrom", aerodrom);
-      info = rca.getInfo();
+      info = rca.dajInfo();
     } catch (Exception e) {
       Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
     model.put("info", info);
   }
 
+  /**
+   * Metoda za prikaz stranice s podacima o najduljem putu države
+   * 
+   * @param icao Oznaka aerodroma za koji se dohvaćaju podaci.
+   */
   @GET
   @Path("{icao}/najduljiPutDrzave")
   @View("aerodromNajduljiPut.jsp")
-  public void getUdaljenostiAerodromDrzava(@PathParam("icao") String icao) {
+  public void dajUdaljenostiAerodromDrzava(@PathParam("icao") String icao) {
     model.put("icao", icao);
     String[] info = null;
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
-      UdaljenostAerodromDrzava udaljenostAerodromDrzava = rca.getUdaljenostAerodromDrzava(icao);
+      UdaljenostAerodromDrzava udaljenostAerodromDrzava = rca.dajUdaljenostAerodromDrzava(icao);
       model.put("udaljenostAerodromDrzava", udaljenostAerodromDrzava);
-      info = rca.getInfo();
+      info = rca.dajInfo();
 
     } catch (Exception e) {
       Logger.getGlobal().log(Level.INFO, e.getMessage());
@@ -130,10 +150,16 @@ public class KontrolerAerodroma {
     model.put("info", info);
   }
 
+  /**
+   * Metoda za prikaz stranice s udaljenostima do svih aerodroma od odabranog aerodroma.
+   * 
+   * @param icao Oznaka aerodroma za koji se dohvaćaju podaci.
+   * @param stranica Broj trenutne stranice za koju se dohvaćaju podaci.
+   */
   @GET
   @Path("{icao}/udaljenosti")
   @View("aerodromUdaljenosti.jsp")
-  public void getAerodromUdaljenosti(@PathParam("icao") String icao,
+  public void dajAerodromUdaljenosti(@PathParam("icao") String icao,
       @QueryParam("stranica") String stranica) {
     String greska = null;
 
@@ -161,9 +187,9 @@ public class KontrolerAerodroma {
 
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
-      info = rca.getInfo();
+      info = rca.dajInfo();
       List<UdaljenostAerodrom> udaljenostAerodromi =
-          rca.getAerodromiUdaljenost(icao, pocetak, broj);
+          rca.dajAerodromiUdaljenost(icao, pocetak, broj);
       model.put("udaljenostAerodromi", udaljenostAerodromi);
     } catch (Exception e) {
       Logger.getGlobal().log(Level.INFO, e.getMessage());
@@ -172,10 +198,16 @@ public class KontrolerAerodroma {
     model.put("greska", greska);
   }
 
+  /**
+   * Metoda za prikaz stranice s udaljenostima između dvaju aerodroma
+   * 
+   * @param icaoOd Oznaka polazišnog aerodroma za koji se dohvaćaju podaci.
+   * @param icaoDo Oznaka odredišnog za koji se dohvaćaju podaci.
+   */
   @GET
   @Path("udaljenosti2aerodroma")
   @View("aerodromiUdaljenosti.jsp")
-  public void getAerodromiUdaljenost(@QueryParam("icaoOd") String icaoOd,
+  public void dajAerodromiUdaljenost(@QueryParam("icaoOd") String icaoOd,
       @QueryParam("icaoDo") String icaoDo) {
 
     String greska = null;
@@ -184,8 +216,8 @@ public class KontrolerAerodroma {
 
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
-      info = rca.getInfo();
-      List<Udaljenost> udaljenost2Aerodroma = rca.getUdaljenost2Aerodroma(icaoOd, icaoDo);
+      info = rca.dajInfo();
+      List<Udaljenost> udaljenost2Aerodroma = rca.dajUdaljenost2Aerodroma(icaoOd, icaoDo);
       model.put("udaljenost2Aerodroma", udaljenost2Aerodroma);
     } catch (Exception e) {
       Logger.getGlobal().log(Level.INFO, e.getMessage());
