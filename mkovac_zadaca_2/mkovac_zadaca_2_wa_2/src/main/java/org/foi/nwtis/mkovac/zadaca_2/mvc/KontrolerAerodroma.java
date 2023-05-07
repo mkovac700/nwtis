@@ -5,6 +5,8 @@
 package org.foi.nwtis.mkovac.zadaca_2.mvc;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_2.rest.RestKlijentAerodroma;
 import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
@@ -48,7 +50,7 @@ public class KontrolerAerodroma {
   @GET
   @Path("pocetak")
   @View("index.jsp")
-  public void pocetak() { // /aerodromi/pocetak
+  public void pocetak() {
 
     RestKlijentAerodroma rca = new RestKlijentAerodroma();
     String[] info = rca.getInfo();
@@ -61,6 +63,8 @@ public class KontrolerAerodroma {
   public void getAerodromi(@QueryParam("stranica") String stranica) {
 
     String greska = null;
+
+    String[] info = null;
 
     int brojStranice = 1;
     int pocetak = 1;
@@ -77,47 +81,53 @@ public class KontrolerAerodroma {
       }
     }
 
-    pocetak = (brojStranice - 1) * broj + 1; // brojStranice * broj + 1
-
-    System.out.println("Poc: " + pocetak);
-    System.out.println("Kraj: " + broj);
+    pocetak = (brojStranice - 1) * broj + 1;
 
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
+      info = rca.getInfo();
       List<Aerodrom> aerodromi = rca.getAerodromi(pocetak, broj);
       model.put("aerodromi", aerodromi);
-      model.put("greska", greska);
-      model.put("brojRedova", brojRedova);
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
+    model.put("greska", greska);
   }
 
   @GET
   @Path("{icao}")
   @View("aerodrom.jsp")
   public void getAerodrom(@PathParam("icao") String icao) {
+    model.put("icao", icao);
+    String[] info = null;
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
       var aerodrom = rca.getAerodrom(icao);
       model.put("aerodrom", aerodrom);
+      info = rca.getInfo();
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
   }
 
   @GET
   @Path("{icao}/najduljiPutDrzave")
   @View("aerodromNajduljiPut.jsp")
   public void getUdaljenostiAerodromDrzava(@PathParam("icao") String icao) {
+    model.put("icao", icao);
+    String[] info = null;
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
-      UdaljenostAerodromDrzava udaljenostAerodromDrzava =
-          rca.getUdaljenostAerodromDrzava(icao);
+      UdaljenostAerodromDrzava udaljenostAerodromDrzava = rca.getUdaljenostAerodromDrzava(icao);
       model.put("udaljenostAerodromDrzava", udaljenostAerodromDrzava);
+      info = rca.getInfo();
+
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
   }
 
   @GET
@@ -126,6 +136,8 @@ public class KontrolerAerodroma {
   public void getAerodromUdaljenosti(@PathParam("icao") String icao,
       @QueryParam("stranica") String stranica) {
     String greska = null;
+
+    String[] info = null;
 
     int brojStranice = 1;
     int pocetak = 1;
@@ -144,22 +156,20 @@ public class KontrolerAerodroma {
       }
     }
 
-    pocetak = (brojStranice - 1) * broj + 1; // brojStranice * broj + 1
+    pocetak = (brojStranice - 1) * broj + 1;
 
-    System.out.println("Poc: " + pocetak);
-    System.out.println("Kraj: " + broj);
 
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
+      info = rca.getInfo();
       List<UdaljenostAerodrom> udaljenostAerodromi =
           rca.getAerodromiUdaljenost(icao, pocetak, broj);
       model.put("udaljenostAerodromi", udaljenostAerodromi);
-
-      model.put("greska", greska);
-      model.put("brojRedova", brojRedova);
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
+    model.put("greska", greska);
   }
 
   @GET
@@ -170,17 +180,17 @@ public class KontrolerAerodroma {
 
     String greska = null;
 
-    System.out.println("icao od: " + icaoOd);
-    System.out.println("icao do: " + icaoDo);
+    String[] info = null;
 
     try {
       RestKlijentAerodroma rca = new RestKlijentAerodroma();
-      List<Udaljenost> udaljenost2Aerodroma =
-          rca.getUdaljenost2Aerodroma(icaoOd, icaoDo);
+      info = rca.getInfo();
+      List<Udaljenost> udaljenost2Aerodroma = rca.getUdaljenost2Aerodroma(icaoOd, icaoDo);
       model.put("udaljenost2Aerodroma", udaljenost2Aerodroma);
-      model.put("greska", greska);
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
+    model.put("greska", greska);
   }
 }

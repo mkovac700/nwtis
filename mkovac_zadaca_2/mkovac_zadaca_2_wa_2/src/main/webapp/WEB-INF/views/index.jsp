@@ -4,11 +4,16 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Početna</title>
+<title>Početna stranica</title>
 </head>
 <body>
-	<%@ include file="zaglavlje.jsp"%>
+	<header>
+		<h1>Početna stranica</h1>
+		<%@ include file="zaglavlje.jsp"%>
+	</header>
+	
 	<main>
+		
 		<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/svi">Pregled aerodroma</a><br/> 
 		<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/udaljenosti2aerodroma">Pregled udaljenosti između dva aerodroma</a><br/>
 		<a href="${pageContext.servletContext.contextPath}/mvc/letovi/aerodrom">Pregled polazaka/letova s aerodroma</a><br/>

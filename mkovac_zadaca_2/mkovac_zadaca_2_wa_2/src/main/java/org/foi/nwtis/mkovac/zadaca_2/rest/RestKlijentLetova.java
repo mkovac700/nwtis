@@ -30,6 +30,18 @@ public class RestKlijentLetova {
     wa_1 = konf.dajPostavku("adresa.wa_1");
   }
 
+  public String[] getInfo() {
+    String[] info = new String[5];
+
+    info[0] = konf.dajPostavku("autor.ime");
+    info[1] = konf.dajPostavku("autor.prezime");
+    info[2] = konf.dajPostavku("autor.predmet");
+    info[3] = konf.dajPostavku("aplikacija.godina");
+    info[4] = konf.dajPostavku("aplikacija.verzija");
+
+    return info;
+  }
+
   public List<LetAviona> dajLetoveAerodrom(String icao, String dan, int odBroja,
       int broj) {
     RestKKlijent rc = new RestKKlijent();

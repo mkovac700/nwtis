@@ -5,6 +5,8 @@
 package org.foi.nwtis.mkovac.zadaca_2.mvc;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_2.rest.RestKlijentLetova;
 import org.foi.nwtis.mkovac.zadaca_2.slusaci.MvcAplikacijaSlusac;
@@ -51,8 +53,9 @@ public class KontrolerLetova {
   public void getLetoviAerodrom(@QueryParam("stranica") String stranica,
       @QueryParam("icao") String icao, @QueryParam("dan") String dan) {
 
-
     String greska = null;
+
+    String[] info = null;
 
     int brojStranice = 1;
     int pocetak = 1;
@@ -71,22 +74,19 @@ public class KontrolerLetova {
       }
     }
 
-    pocetak = (brojStranice - 1) * broj + 1; // brojStranice * broj + 1
-
-    System.out.println("Poc: " + pocetak);
-    System.out.println("Kraj: " + broj);
+    pocetak = (brojStranice - 1) * broj + 1;
 
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
-      List<LetAviona> letoviAviona =
-          rca.dajLetoveAerodrom(icao, dan, pocetak, broj);
+      info = rca.getInfo();
+      List<LetAviona> letoviAviona = rca.dajLetoveAerodrom(icao, dan, pocetak, broj);
       model.put("letoviAviona", letoviAviona);
 
-      model.put("greska", greska);
-      model.put("brojRedova", brojRedova);
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
+    model.put("greska", greska);
   }
 
   @GET
@@ -97,6 +97,8 @@ public class KontrolerLetova {
       @QueryParam("dan") String dan) {
 
     String greska = null;
+
+    String[] info = null;
 
     int brojStranice = 1;
     int pocetak = 1;
@@ -116,22 +118,20 @@ public class KontrolerLetova {
       }
     }
 
-    pocetak = (brojStranice - 1) * broj + 1; // brojStranice * broj + 1
-
-    System.out.println("Poc: " + pocetak);
-    System.out.println("Kraj: " + broj);
+    pocetak = (brojStranice - 1) * broj + 1;
 
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
-      List<LetAviona> letoviAviona =
-          rca.dajLetoveAerodrom(icaoOd, icaoDo, dan, pocetak, broj);
+      info = rca.getInfo();
+      List<LetAviona> letoviAviona = rca.dajLetoveAerodrom(icaoOd, icaoDo, dan, pocetak, broj);
       model.put("letoviAviona", letoviAviona);
 
-      model.put("greska", greska);
-      model.put("brojRedova", brojRedova);
+
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
+    model.put("greska", greska);
   }
 
   @GET
@@ -141,14 +141,19 @@ public class KontrolerLetova {
 
     String greska = null;
 
+    String[] info = null;
+
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
+      info = rca.getInfo();
       List<LetAvionaID> letoviAviona = rca.dajSpremljeneLetove();
       model.put("letoviAviona", letoviAviona);
       model.put("greska", greska);
+
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
   }
 
   @POST
@@ -156,17 +161,20 @@ public class KontrolerLetova {
   public void spremiLet(@FormParam("jsonLetAviona") String json_letAviona,
       @FormParam("url") String url) {
 
-    System.out.println("JSON LET AVIONA: " + json_letAviona);
+    String[] info = null;
 
     model.put("url", url);
     String odgovor = null;
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
+      info = rca.getInfo();
       odgovor = rca.spremiLet(json_letAviona);
       model.put("odgovor", odgovor);
+
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
   }
 
   @POST
@@ -174,14 +182,19 @@ public class KontrolerLetova {
   @View("obrisiLet.jsp")
   public void obrisiLet(@PathParam("id") int id, @FormParam("url") String url) {
 
+    String[] info = null;
     model.put("url", url);
     String odgovor = null;
     try {
       RestKlijentLetova rca = new RestKlijentLetova();
+      info = rca.getInfo();
       odgovor = rca.obrisiLet(id);
       model.put("odgovor", odgovor);
+
+
     } catch (Exception e) {
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.INFO, e.getMessage());
     }
+    model.put("info", info);
   }
 }
