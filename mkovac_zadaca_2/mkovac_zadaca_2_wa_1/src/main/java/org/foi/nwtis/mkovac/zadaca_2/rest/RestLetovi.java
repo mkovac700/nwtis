@@ -33,6 +33,12 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * REST servis za letove
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @Path("letovi")
 @RequestScoped
 public class RestLetovi {
@@ -53,6 +59,18 @@ public class RestLetovi {
     this.lozinka = konf.dajPostavku("OpenSkyNetwork.lozinka");
   }
 
+  /**
+   * Vraća podatke o svim letovima s polaznog aerodroma na zadani dan u zadanom rasponu. Zadani
+   * raspon je 1, 20.
+   * 
+   * Napomena: ne uključuje letove kojima je nepoznat odredišni aerodrom!
+   * 
+   * @param icao Oznaka polaznog aerodroma
+   * @param dan Dan u formatu dd.MM.yyyy
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{icao}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -63,20 +81,18 @@ public class RestLetovi {
     String regex =
         "(0[1-9]|[1-2][0-9]|3[01])\\.(0[1-9]|1[012])\\.(19[7-9][0-9]|20[0-2][0-9]|203[0-7])";
     if (dan == null || dan.isEmpty() || !provjeriIzraz(dan, regex))
-      return Response
-          .status(404, "Dan nije unesen ili nije u formatu dd.mm.gggg").build();
+      return Response.status(400, "Dan nije unesen ili nije u formatu dd.mm.gggg").build();
 
     int offset = 1, limit = 20;
 
-    if ((odBroja != null && !odBroja.isEmpty())
-        && (broj != null && !broj.isEmpty())) {
+    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
       try {
         offset = Integer.parseInt(odBroja);
         limit = Integer.parseInt(broj);
         if (offset < 1 || limit < 1)
-          return Response.status(404, "Neispravni parametri").build();
+          return Response.status(400, "Neispravni parametri").build();
       } catch (NumberFormatException e) {
-        return Response.status(404, "Neispravni parametri").build();
+        return Response.status(400, "Neispravni parametri").build();
       }
     }
 
@@ -86,43 +102,31 @@ public class RestLetovi {
 
     long[] odVremenaDoVremena = konvertirajOdVremenaDoVremena(dan);
 
-    long odVremena = odVremenaDoVremena[0]; // 1677628800
-    long doVremena = odVremenaDoVremena[1]; // 1677715200
-
-    System.out.println("od vremena: " + odVremena);
-    System.out.println("do vremena: " + doVremena);
+    long odVremena = odVremenaDoVremena[0];
+    long doVremena = odVremenaDoVremena[1];
 
     try {
-
-      // avioniPolasci = osKlijent.getDepartures(icao, odVremena, doVremena).subList(offset - 1,
-      // offset - 1 + limit);
 
       avioniPolasci = osKlijent.getDepartures(icao, odVremena, doVremena);
       avioniPolasci.removeIf(ap -> ap.getEstArrivalAirport() == null);
 
-      System.out.println("Broj stvarnih podataka: " + avioniPolasci.size());
-
-      // ako offset prelazi velicinu liste, onda se odmah vraca 404 da nema podataka
-      if (offset > avioniPolasci.size()) {
-        System.out.println("test1");
+      if (offset > avioniPolasci.size())
         return Response.status(404, "Nema podataka").build();
-      }
 
-      // ako limit prelazi velicinu liste, onda vrati sublist do velicine liste
-      else if (offset - 1 + limit > avioniPolasci.size()) {
-        System.out.println("test2");
+      else if (offset - 1 + limit > avioniPolasci.size())
         avioniPolasci = avioniPolasci.subList(offset - 1, avioniPolasci.size());
-      }
 
-      // ako su offset i limit u granicama liste, onda vrati sublist u zadanim granicama
-      else {
-        System.out.println("test3");
+      else
         avioniPolasci = avioniPolasci.subList(offset - 1, offset - 1 + limit);
-      }
+
 
     } catch (NwtisRestIznimka e) {
       return Response.status(404, e.getMessage()).build();
     }
+
+    if (avioniPolasci == null)
+      return Response.status(404, "Nema podataka").build();
+
 
     var gson = new Gson();
     var jsonAvioniPolasci = gson.toJson(avioniPolasci);
@@ -131,31 +135,39 @@ public class RestLetovi {
     return odgovor;
   }
 
+  /**
+   * Vraća podatke o svim letovima od polaznog aerodroma do dolaznog aerodroma na zadani dan u
+   * zadanom rasponu. Zadani raspon je 1, 20.
+   * 
+   * @param icaoOd Oznaka polaznog aerodroma
+   * @param icaoDo Oznaka dolaznog aerodroma
+   * @param dan Dan u formatu dd.MM.yyyy
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{icaoOd}/{icaoDo}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajLetoveOdDoAerodromaNaDan(
-      @PathParam("icaoOd") String icaoOd, @PathParam("icaoDo") String icaoDo,
-      @QueryParam("dan") String dan, @QueryParam("odBroja") String odBroja,
-      @QueryParam("broj") String broj) {
+  public Response dajLetoveOdDoAerodromaNaDan(@PathParam("icaoOd") String icaoOd,
+      @PathParam("icaoDo") String icaoDo, @QueryParam("dan") String dan,
+      @QueryParam("odBroja") String odBroja, @QueryParam("broj") String broj) {
 
     String regex =
         "(0[1-9]|[1-2][0-9]|3[01])\\.(0[1-9]|1[012])\\.(19[7-9][0-9]|20[0-2][0-9]|203[0-7])";
     if (dan == null || dan.isEmpty() || !provjeriIzraz(dan, regex))
-      return Response
-          .status(404, "Dan nije unesen ili nije u formatu dd.mm.gggg").build();
+      return Response.status(400, "Dan nije unesen ili nije u formatu dd.mm.gggg").build();
 
     int offset = 1, limit = 20;
 
-    if ((odBroja != null && !odBroja.isEmpty())
-        && (broj != null && !broj.isEmpty())) {
+    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
       try {
         offset = Integer.parseInt(odBroja);
         limit = Integer.parseInt(broj);
         if (offset < 1 || limit < 1)
-          return Response.status(404, "Neispravni parametri").build();
+          return Response.status(400, "Neispravni parametri").build();
       } catch (NumberFormatException e) {
-        return Response.status(404, "Neispravni parametri").build();
+        return Response.status(400, "Neispravni parametri").build();
       }
     }
 
@@ -165,45 +177,30 @@ public class RestLetovi {
 
     long[] odVremenaDoVremena = konvertirajOdVremenaDoVremena(dan);
 
-    long odVremena = odVremenaDoVremena[0]; // 1677628800
-    long doVremena = odVremenaDoVremena[1]; // 1677715200
-
-    System.out.println("od vremena: " + odVremena);
-    System.out.println("do vremena: " + doVremena);
+    long odVremena = odVremenaDoVremena[0];
+    long doVremena = odVremenaDoVremena[1];
 
     try {
 
-      // avioniPolasci = osKlijent.getDepartures(icao, odVremena, doVremena).subList(offset - 1,
-      // offset - 1 + limit);
-
       avioniPolasci = osKlijent.getDepartures(icaoOd, odVremena, doVremena);
-      avioniPolasci.removeIf(ap -> ap.getEstArrivalAirport() == null
-          || !ap.getEstArrivalAirport().equals(icaoDo));
-      // avioniPolasci.removeIf(ap -> !ap.getEstArrivalAirport().equals(icaoDo));
+      avioniPolasci.removeIf(
+          ap -> ap.getEstArrivalAirport() == null || !ap.getEstArrivalAirport().equals(icaoDo));
 
-      System.out.println("Broj stvarnih podataka: " + avioniPolasci.size());
-
-      // ako offset prelazi velicinu liste, onda se odmah vraca 404 da nema podataka
-      if (offset > avioniPolasci.size()) {
-        System.out.println("test1");
+      if (offset > avioniPolasci.size())
         return Response.status(404, "Nema podataka").build();
-      }
 
-      // ako limit prelazi velicinu liste, onda vrati sublist do velicine liste
-      else if (offset - 1 + limit > avioniPolasci.size()) {
-        System.out.println("test2");
+      else if (offset - 1 + limit > avioniPolasci.size())
         avioniPolasci = avioniPolasci.subList(offset - 1, avioniPolasci.size());
-      }
 
-      // ako su offset i limit u granicama liste, onda vrati sublist u zadanim granicama
-      else {
-        System.out.println("test3");
+      else
         avioniPolasci = avioniPolasci.subList(offset - 1, offset - 1 + limit);
-      }
 
     } catch (NwtisRestIznimka e) {
       return Response.status(404, e.getMessage()).build();
     }
+
+    if (avioniPolasci == null)
+      return Response.status(404, "Nema podataka").build();
 
     var gson = new Gson();
     var jsonAvioniPolasci = gson.toJson(avioniPolasci);
@@ -212,6 +209,12 @@ public class RestLetovi {
     return odgovor;
   }
 
+  /**
+   * Sprema let u bazu podataka
+   * 
+   * @param let Podaci u letu u JSON formatu
+   * @return Vraća poruku o uspjehu ili pogrešku sa statusnim kodom i opisom.
+   */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public Response dodajLet(String let) {
@@ -227,8 +230,6 @@ public class RestLetovi {
         "INSERT INTO LETOVI_POLASCI (ICAO24, FIRSTSEEN, ESTDEPARTUREAIRPORT, LASTSEEN, ESTARRIVALAIRPORT, CALLSIGN, ESTDEPARTUREAIRPORTHORIZDISTANCE, ESTDEPARTUREAIRPORTVERTDISTANCE, ESTARRIVALAIRPORTHORIZDISTANCE, ESTARRIVALAIRPORTVERTDISTANCE, DEPARTUREAIRPORTCANDIDATESCOUNT, ARRIVALAIRPORTCANDIDATESCOUNT, STORED) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)";
 
     PreparedStatement stmt = null;
-    int rezultat = 0;
-    String poruka;
     try (var con = ds.getConnection()) {
       stmt = con.prepareStatement(query);
       stmt.setString(1, letAviona.getIcao24());
@@ -244,28 +245,28 @@ public class RestLetovi {
       stmt.setInt(11, letAviona.getDepartureAirportCandidatesCount());
       stmt.setInt(12, letAviona.getArrivalAirportCandidatesCount());
 
-      rezultat = stmt.executeUpdate();
+      stmt.executeUpdate();
 
     } catch (SQLException e) {
-      return Response.status(404, "SQL: " + e.getMessage()).build();
+      return Response.status(404, e.getMessage()).build();
     } finally {
       try {
         if (stmt != null && !stmt.isClosed())
           stmt.close();
 
       } catch (SQLException e) {
-        return Response.status(404, "SQL: " + e.getMessage()).build();
+        return Response.status(404, e.getMessage()).build();
       }
     }
 
-    if (rezultat > 0)
-      poruka = "Uspješno dodavanje zapisa u bazu podataka!";
-    else
-      poruka = "Neuspješno dodavanje zapisa u bazu podataka!";
-
-    return Response.ok().entity(poruka).build();
+    return Response.ok().entity("Zapis uspješno dodan!").build();
   }
 
+  /**
+   * Vraća podatke o spremljenim letovima u bazi podataka
+   * 
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("/spremljeni")
   @Produces(MediaType.APPLICATION_JSON)
@@ -281,7 +282,7 @@ public class RestLetovi {
 
       ResultSet rs = stmt.executeQuery();
       while (rs.next()) {
-        LetAvionaID letAvionaID = new LetAvionaID(); // 0 je ID, onda dalje ide
+        LetAvionaID letAvionaID = new LetAvionaID();
 
         letAvionaID.setId(rs.getLong(1));
         letAvionaID.setIcao24(rs.getString(2));
@@ -303,16 +304,19 @@ public class RestLetovi {
       rs.close();
 
     } catch (SQLException e) {
-      return Response.status(404, "SQL: " + e.getMessage()).build();
+      return Response.status(404, e.getMessage()).build();
     } finally {
       try {
         if (stmt != null && !stmt.isClosed())
           stmt.close();
 
       } catch (SQLException e) {
-        return Response.status(404, "SQL: " + e.getMessage()).build();
+        return Response.status(404, e.getMessage()).build();
       }
     }
+
+    if (letoviAviona.isEmpty())
+      return Response.status(404, "Nema podataka!").build();
 
     var gson = new Gson();
     var jsonLetoviAviona = gson.toJson(letoviAviona);
@@ -320,29 +324,33 @@ public class RestLetovi {
     return odgovor;
   }
 
+  /**
+   * Briše let iz baze podataka
+   * 
+   * @param id ID zapisa o letu
+   * @return Vraća poruku o uspjehu ili pogrešku sa statusnim kodom i opisom.
+   */
   @DELETE
   @Path("{id}")
   public Response obrisiLet(@PathParam("id") int id) {
     String query = "DELETE FROM LETOVI_POLASCI WHERE ID = ?";
 
     PreparedStatement stmt = null;
-    int rezultat = 0;
     try (var con = ds.getConnection()) {
       stmt = con.prepareStatement(query);
       stmt.setInt(1, id);
 
-      rezultat = stmt.executeUpdate();
-
+      stmt.executeUpdate();
 
     } catch (SQLException e) {
-      return Response.status(404, "SQL: " + e.getMessage()).build();
+      return Response.status(404, e.getMessage()).build();
     } finally {
       try {
         if (stmt != null && !stmt.isClosed())
           stmt.close();
 
       } catch (SQLException e) {
-        return Response.status(404, "SQL: " + e.getMessage()).build();
+        return Response.status(404, e.getMessage()).build();
       }
     }
 
@@ -369,12 +377,6 @@ public class RestLetovi {
 
     epochTime[0] = dateTime.toInstant().getEpochSecond();
     epochTime[1] = dateTime2.toInstant().getEpochSecond();
-
-    // LocalDateTime dateTime = date.atStartOfDay();
-    // LocalDateTime dateTime2 = date2.atStartOfDay();
-    //
-    // epochTime[0] = dateTime.toInstant(ZoneOffset.UTC).getEpochSecond();
-    // epochTime[1] = dateTime2.toInstant(ZoneOffset.UTC).getEpochSecond();
 
     return epochTime;
 

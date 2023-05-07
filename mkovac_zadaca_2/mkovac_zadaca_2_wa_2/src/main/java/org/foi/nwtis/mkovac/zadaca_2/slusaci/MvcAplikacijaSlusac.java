@@ -11,16 +11,28 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import lombok.Getter;
 
+/**
+ * Slušač za MVC aplikaciju
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @WebListener
 public class MvcAplikacijaSlusac implements ServletContextListener {
   @Getter
   private static ServletContext servletContext;
 
+  /**
+   * Osluškuje pokretanje aplikacije te vrši učitavanje konfiguracijskih postavki.
+   * 
+   * @param sce Događaj servlet konteksta
+   * 
+   */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     servletContext = sce.getServletContext();
-    String nazivDatoteke = servletContext
-        .getRealPath(servletContext.getInitParameter("konfiguracija"));
+    String nazivDatoteke =
+        servletContext.getRealPath(servletContext.getInitParameter("konfiguracija"));
     Konfiguracija konfig = null;
     try {
       konfig = ucitajPostavke(nazivDatoteke); // nazivDatoteke
@@ -33,6 +45,12 @@ public class MvcAplikacijaSlusac implements ServletContextListener {
     Logger.getGlobal().log(Level.INFO, "Postavke uspješno učitane!");
   }
 
+  /**
+   * Osluškuje gašenje aplikacije te gasi servlet kontekst.
+   * 
+   * @param sce Događaj servlet konteksta
+   * 
+   */
   @Override
   public void contextDestroyed(ServletContextEvent sce) {
     // TODO Auto-generated method stub
@@ -46,8 +64,7 @@ public class MvcAplikacijaSlusac implements ServletContextListener {
    * @return Vraća objekt tipa Konfiguracija
    * @throws NeispravnaKonfiguracija Baca iznimku ako učitavanje postavki nije uspjelo
    */
-  private Konfiguracija ucitajPostavke(String nazivDatoteke)
-      throws NeispravnaKonfiguracija {
+  private Konfiguracija ucitajPostavke(String nazivDatoteke) throws NeispravnaKonfiguracija {
     return KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
 
   }

@@ -23,6 +23,12 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+/**
+ * REST servis za aerodrome
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @RequestScoped
 @Path("aerodromi")
 public class RestAerodromi {
@@ -30,6 +36,13 @@ public class RestAerodromi {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Vraća podatke o svim aerodromima u zadanom rasponu. Zadani raspon je 1, 20.
+   * 
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajSveAerodrome(@QueryParam("odBroja") String odBroja,
@@ -37,20 +50,20 @@ public class RestAerodromi {
 
     int offset = 1, limit = 20;
 
-    if ((odBroja != null && !odBroja.isEmpty())
-        && (broj != null && !broj.isEmpty())) {
+    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
       try {
         offset = Integer.parseInt(odBroja);
         limit = Integer.parseInt(broj);
+        if (offset < 1 || limit < 1)
+          return Response.status(400, "Neispravni parametri").build();
       } catch (NumberFormatException e) {
-        return Response.status(404, "Neispravni parametri").build();
+        return Response.status(400, "Neispravni parametri").build();
       }
     }
 
     List<Aerodrom> aerodromi = new ArrayList<>();
 
-    String query =
-        "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES FROM AIRPORTS LIMIT ? OFFSET ?";
+    String query = "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES FROM AIRPORTS LIMIT ? OFFSET ?";
 
     PreparedStatement stmt = null;
     try (var con = ds.getConnection()) {
@@ -63,9 +76,8 @@ public class RestAerodromi {
       while (rs.next()) {
         String[] koordinate = rs.getString(4).split(",");
 
-        Aerodrom a =
-            new Aerodrom(rs.getString(1), rs.getString(2), rs.getString(3),
-                new Lokacija(koordinate[0].trim(), koordinate[1].trim()));
+        Aerodrom a = new Aerodrom(rs.getString(1), rs.getString(2), rs.getString(3),
+            new Lokacija(koordinate[0].trim(), koordinate[1].trim()));
 
         aerodromi.add(a);
       }
@@ -82,9 +94,8 @@ public class RestAerodromi {
       }
     }
 
-    // TODO mozda najbolje izbacit van nakon testiranja
     if (aerodromi.isEmpty())
-      return Response.status(404, "Lista je prazna").build();
+      return Response.status(404, "Nema podataka!").build();
 
     var gson = new Gson();
     var jsonAerodromi = gson.toJson(aerodromi);
@@ -92,14 +103,19 @@ public class RestAerodromi {
     return odgovor;
   }
 
+  /**
+   * Vraća podatak o zadanom aerodromu.
+   * 
+   * @param icao Oznaka aerodroma
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{icao}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajAerodrom(@PathParam("icao") String icao) {
     Aerodrom aerodrom = null;
 
-    String query =
-        "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES FROM AIRPORTS WHERE ICAO = ?";
+    String query = "SELECT ICAO, NAME, ISO_COUNTRY, COORDINATES FROM AIRPORTS WHERE ICAO = ?";
 
     PreparedStatement stmt = null;
     try (var con = ds.getConnection()) {
@@ -111,9 +127,8 @@ public class RestAerodromi {
       while (rs.next()) {
         String[] koordinate = rs.getString(4).split(",");
 
-        aerodrom =
-            new Aerodrom(rs.getString(1), rs.getString(2), rs.getString(3),
-                new Lokacija(koordinate[0].trim(), koordinate[1].trim()));
+        aerodrom = new Aerodrom(rs.getString(1), rs.getString(2), rs.getString(3),
+            new Lokacija(koordinate[0].trim(), koordinate[1].trim()));
       }
       rs.close();
     } catch (SQLException e) {
@@ -128,9 +143,8 @@ public class RestAerodromi {
       }
     }
 
-    // TODO mozda najbolje izbacit van nakon testiranja
     if (aerodrom == null)
-      return Response.status(404, "Nema podatka za dani upit").build();
+      return Response.status(404, "Nema podatka!").build();
 
     var gson = new Gson();
     var jsonAerodrom = gson.toJson(aerodrom);
@@ -138,33 +152,34 @@ public class RestAerodromi {
     return odgovor;
   }
 
+  /**
+   * Vraća podatke o udaljenosti između dva aerodroma.
+   * 
+   * @param icaoOd Oznaka polaznog aerodroma
+   * @param icaoDo Oznaka dolaznog aerodroma
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{icaoOd}/{icaoDo}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajUdaljenostiIzmeđuDvaAerodroma(
-      @PathParam("icaoOd") String icaoFrom,
-      @PathParam("icaoDo") String icaoTo) {
-    // vjezba_06_4:
+  public Response dajUdaljenostiIzmeđuDvaAerodroma(@PathParam("icaoOd") String icaoOd,
+      @PathParam("icaoDo") String icaoDo) {
 
     var udaljenosti = new ArrayList<Udaljenost>();
 
     String query =
         "SELECT ICAO_FROM, ICAO_TO, COUNTRY, DIST_CTRY FROM AIRPORTS_DISTANCE_MATRIX WHERE ICAO_FROM = ? AND ICAO_TO = ?";
 
-    // Connection con = null;
-    // ODRADUJE SPAJANJE PREKO glassfish-resources.xml UMJESTO RUCNOG KAK SMO IMALI U 06_4
     PreparedStatement stmt = null;
     try (var con = ds.getConnection()) {
       stmt = con.prepareStatement(query);
-      stmt.setString(1, icaoFrom);
-      stmt.setString(2, icaoTo);
+      stmt.setString(1, icaoOd);
+      stmt.setString(2, icaoDo);
 
       ResultSet rs = stmt.executeQuery();
-      float ukupnoUdaljenost = 0;
       while (rs.next()) {
         String drzava = rs.getString("COUNTRY");
         float udaljenost = rs.getFloat("DIST_CTRY");
-        ukupnoUdaljenost += udaljenost;
 
         var u = new Udaljenost(drzava, udaljenost);
         udaljenosti.add(u);
@@ -184,27 +199,43 @@ public class RestAerodromi {
       }
     }
 
+    if (udaljenosti.isEmpty())
+      return Response.status(404, "Nema podataka!").build();
+
     var gson = new Gson();
     var jsonUdaljenosti = gson.toJson(udaljenosti);
     var odgovor = Response.ok().entity(jsonUdaljenosti).build();
     return odgovor;
   }
 
+  /**
+   * Vraća podatke o udaljenosti od zadanog aerodroma do svih ostalih aerodroma u zadanom rasponu.
+   * Zadani raspon je 1, 20.
+   * 
+   * @param icao Oznaka aerodroma
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{icao}/udaljenosti")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response dajUdaljenostiIzmeđuSvihAerodroma(
-      @PathParam("icao") String icao, @QueryParam("odBroja") String odBroja,
-      @QueryParam("broj") String broj) {
+  public Response dajUdaljenostiIzmeđuSvihAerodroma(@PathParam("icao") String icao,
+      @QueryParam("odBroja") String odBroja, @QueryParam("broj") String broj) {
 
     List<UdaljenostAerodrom> udaljenosti = new ArrayList<>();
 
     int offset = 1, limit = 20;
 
-    if ((odBroja != null && !odBroja.isEmpty())
-        && (broj != null && !broj.isEmpty())) {
-      offset = Integer.parseInt(odBroja);
-      limit = Integer.parseInt(broj);
+    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
+      try {
+        offset = Integer.parseInt(odBroja);
+        limit = Integer.parseInt(broj);
+        if (offset < 1 || limit < 1)
+          return Response.status(400, "Neispravni parametri").build();
+      } catch (NumberFormatException e) {
+        return Response.status(400, "Neispravni parametri").build();
+      }
     }
 
     String query =
@@ -241,7 +272,7 @@ public class RestAerodromi {
     }
 
     if (udaljenosti.isEmpty())
-      return Response.status(404, "Lista je prazna").build();
+      return Response.status(404, "Nema podataka!").build();
 
     var gson = new Gson();
     var jsonUdaljenosti = gson.toJson(udaljenosti);
@@ -249,6 +280,12 @@ public class RestAerodromi {
     return odgovor;
   }
 
+  /**
+   * Vraća podatak o najduljem putu unutar neke države od zadanog aerodroma.
+   * 
+   * @param icao Oznaka aerodroma
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{icao}/najduljiPutDrzave")
   @Produces(MediaType.APPLICATION_JSON)
@@ -286,6 +323,9 @@ public class RestAerodromi {
         Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }
     }
+
+    if (udaljenost == null)
+      return Response.status(404, "Nema podatka!").build();
 
     var gson = new Gson();
     var jsonUdaljenost = gson.toJson(udaljenost);

@@ -9,15 +9,25 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
+import lombok.Getter;
 
+/**
+ * Slušač za REST servis
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @WebListener
 public class RestServisSlusac implements ServletContextListener {
+  @Getter
   private static ServletContext servletContext;
 
-  public static ServletContext getServletContext() {
-    return servletContext;
-  }
-
+  /**
+   * Osluškuje pokretanje aplikacije te vrši učitavanje konfiguracijskih postavki.
+   * 
+   * @param sce Događaj servlet konteksta
+   * 
+   */
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     servletContext = sce.getServletContext();
@@ -35,6 +45,12 @@ public class RestServisSlusac implements ServletContextListener {
     Logger.getGlobal().log(Level.INFO, "Postavke uspješno učitane!");
   }
 
+  /**
+   * Osluškuje gašenje aplikacije te gasi servlet kontekst.
+   * 
+   * @param sce Događaj servlet konteksta
+   * 
+   */
   @Override
   public void contextDestroyed(ServletContextEvent sce) {
     // TODO Auto-generated method stub
