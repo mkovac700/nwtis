@@ -25,6 +25,7 @@ public class SaljeJmsPoruku extends HttpServlet {
     if (poruka != null && !poruka.isEmpty()) {
       if (jmsPosiljatelj.saljiPoruku(poruka)) {
         System.out.println("Poruka je poslana!");
+        return;
       }
 
     }

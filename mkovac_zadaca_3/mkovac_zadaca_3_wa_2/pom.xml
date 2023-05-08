@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.foi.nwtis.mkovac</groupId>
-	<artifactId>mkovac_zadaca_3_wa_1</artifactId>
+	<artifactId>mkovac_zadaca_3_wa_2</artifactId>
 	<version>1.0.0</version>
 	<packaging>war</packaging>
-	<name>mkovac_zadaca_3_wa_1</name>
+	<name>mkovac_zadaca_3_wa_2</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>17</maven.compiler.source>
@@ -43,57 +43,9 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxws-maven-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>generate-wsdl</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>wsgen</goal>
-						</goals>
-						<configuration>
-							<sei>org.foi.nwtis.mkovac.zadaca_3.ws.WsAerodromi</sei>
-							<genWsdl>true</genWsdl>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.2.0</version>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>
- 								${project.build.directory}/libs
- 							</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>jaxws-maven-plugin</artifactId>
-					<dependencies>
-						<dependency>
-							<groupId>com.sun.xml.ws</groupId>
-							<artifactId>jaxws-tools</artifactId>
-							<version>3.0.0</version>
-						</dependency>
-					</dependencies>
-				</plugin>
 				<plugin>
 					<groupId>org.codehaus.cargo</groupId>
 					<artifactId>cargo-maven3-plugin</artifactId>
@@ -181,9 +133,42 @@
 							</execution>
 						</executions>
 					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>jaxws-maven-plugin</artifactId>
+						<version>2.6</version>
+						<executions>
+							<execution>
+								<id>import aerodromi</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>wsimport</goal>
+								</goals>
+								<configuration>
+									<wsdlDirectory>${basedir}/../mkovac_zadaca_3_wa_1/target/generated-sources/wsdl</wsdlDirectory>
+									<wsdlFiles>
+										<wsdlFile>Aerodromi.wsdl</wsdlFile>
+									</wsdlFiles>
+									<wsdlLocation>http://localhost:8080/mkovac_zadaca_3_wa_1/aerodromi?wsdl</wsdlLocation>
+									<packageName>org.foi.nwtis.mkovac.zadaca_3.ws.WsAerodromi.endpoint</packageName>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 				<pluginManagement>
 					<plugins>
+						<plugin>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>jaxws-maven-plugin</artifactId>
+							<dependencies>
+								<dependency>
+									<groupId>com.sun.xml.ws</groupId>
+									<artifactId>jaxws-tools</artifactId>
+									<version>3.0.0</version>
+								</dependency>
+							</dependencies>
+						</plugin>
 						<plugin>
 							<groupId>org.codehaus.cargo</groupId>
 							<artifactId>cargo-maven3-plugin</artifactId>
@@ -225,29 +210,9 @@
 			<version>1.18.26</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<version>2.7.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.foi.nwtis.mkovac</groupId>
 			<artifactId>mkovac_zadaca_3_lib_2</artifactId>
 			<version>1.0.4</version>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.xml.ws</groupId>
-			<artifactId>jakarta.xml.ws-api</artifactId>
-			<version>4.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
-			<version>3.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>3.0.0</version>
 		</dependency>
 	</dependencies>
 </project>

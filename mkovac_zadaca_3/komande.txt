@@ -1,4 +1,5 @@
 #SERVER
+!dodati dio za temp. prebacivanje na jdk17
 cd /opt/payara-full-6.2023.4/glassfish/bin
 ./asadmin start-domain
 

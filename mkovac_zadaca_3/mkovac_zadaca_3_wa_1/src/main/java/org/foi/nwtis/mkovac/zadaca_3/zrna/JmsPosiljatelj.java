@@ -6,9 +6,9 @@ import jakarta.jms.Connection;
 import jakarta.jms.ConnectionFactory;
 import jakarta.jms.JMSException;
 import jakarta.jms.MessageProducer;
-import jakarta.jms.ObjectMessage;
 import jakarta.jms.Queue;
 import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
 
 @Stateless
 public class JmsPosiljatelj {
@@ -26,11 +26,11 @@ public class JmsPosiljatelj {
       Session session =
           connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
       MessageProducer messageProducer = session.createProducer(queue);
-      ObjectMessage message = session.createObjectMessage();
+      TextMessage message = session.createTextMessage();
 
-      String poruka = "Ovo je poruka broj: " + brojPoruka;
+      String poruka = "Ovo je poruka broj: " + brojPoruka++;
 
-      message.setObject(poruka);
+      message.setText(poruka);
       // message.setStringProperty("poruka", poruka);
       messageProducer.send(message);
       messageProducer.close();
