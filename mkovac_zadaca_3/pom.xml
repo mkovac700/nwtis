@@ -11,12 +11,9 @@
 		<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 	<modules>
-		
 <module>mkovac_zadaca_3_lib_1</module>
 <module>mkovac_zadaca_3_lib_2</module>
 <module>mkovac_zadaca_3_wa_1</module>
-<!-- 
 <module>mkovac_zadaca_3_wa_2</module>
--->
 	</modules>
 </project>
