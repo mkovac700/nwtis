@@ -1,11 +1,12 @@
 package org.foi.nwtis.mkovac.zadaca_3.web;
 
 
+import org.foi.nwtis.mkovac.zadaca_3.ws.WsAerodromi.endpoint.Aerodromi;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.faces.annotation.View;
 import jakarta.inject.Inject;
 import jakarta.mvc.Controller;
 import jakarta.mvc.Models;
+import jakarta.mvc.View;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
@@ -20,7 +21,8 @@ import jakarta.xml.ws.WebServiceRef;
 @RequestScoped
 public class KontrolerAerodroma {
 
-  @WebServiceRef(wsdlLocation = "http://localhost:8080/mkovac_zadaca_3_wa_1/aerodromi?wsdl")
+  @WebServiceRef(
+      wsdlLocation = "http://localhost:8080/mkovac_zadaca_3_wa_1/aerodromi?wsdl")
   private Aerodromi service;
 
   @Inject
@@ -50,8 +52,8 @@ public class KontrolerAerodroma {
   public void getAerodrom(@QueryParam("icao") String icao) {
     try {
       var port = service.getWsAerodromiPort();
-      // var aerodrom = port.daj;
-      // model.put("aerodrom", aerodrom);
+      var aerodrom = port.dajAerodrom(icao);
+      model.put("aerodrom", aerodrom);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -60,7 +62,8 @@ public class KontrolerAerodroma {
   @GET
   @Path("udaljenosti2aerodroma")
   @View("aerodromiUdaljenosti.jsp")
-  public void getAerodromiUdaljenost(@QueryParam("icaoOd") String icaoOd,
+  public void getAerodromiUdaljenost(
+      @QueryParam("icaoOd") String icaoOd,
       @QueryParam("icaoDo") String icaoDo) {}
 
 }
