@@ -1,0 +1,10 @@
+#NWTiS mkovac 2023.
+#Wed May 17 15:30:51 CEST 2023
+preuzimanje.do=01.05.2023
+LocationIQ.apikey=pk.2707444539e32b80d5cf11c80ef16d77
+OpenWeatherMap.apikey=2ae2c6718a6b24cf5da0b758bea84e5e
+OpenSkyNetwork.lozinka=m43X7PxAgD
+ciklus.trajanje=300
+aerodromi.sakupljanje=LDZA LOWW EDDF EDDM
+preuzimanje.od=01.01.2023
+OpenSkyNetwork.korisnik=mkovac

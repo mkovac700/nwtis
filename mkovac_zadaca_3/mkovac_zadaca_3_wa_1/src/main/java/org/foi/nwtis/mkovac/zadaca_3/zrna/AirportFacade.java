@@ -1,11 +1,11 @@
 /*
- * To change this template, choose Tools | Templates and open the
- * template in the editor.
+ * To change this template, choose Tools | Templates and open the template in the editor.
  */
 package org.foi.nwtis.mkovac.zadaca_3.zrna;
 
 import java.util.List;
 import org.foi.nwtis.mkovac.zadaca_3.jpa.Airports;
+import org.foi.nwtis.mkovac.zadaca_3.jpa.AirportsDistanceMatrix;
 import org.foi.nwtis.podaci.Airport;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
@@ -63,6 +63,15 @@ public class AirportFacade {
     TypedQuery<Airports> q = em.createQuery(cq);
     q.setMaxResults(broj);
     q.setFirstResult(odBroja);
+    return q.getResultList();
+  }
+
+  public List<AirportsDistanceMatrix> findDistances(String icaoOd, String icaoDo) {
+    cb = em.getCriteriaBuilder();
+    CriteriaQuery<AirportsDistanceMatrix> cq = cb.createQuery(AirportsDistanceMatrix.class);
+    Root<AirportsDistanceMatrix> rt = cq.from(AirportsDistanceMatrix.class);
+    cq.select(rt).where(cb.equal(rt.get("ICAO_FROM"), icaoOd), cb.equal(rt.get("ICAO_TO"), icaoDo));
+    Query q = em.createQuery(cq);
     return q.getResultList();
   }
 

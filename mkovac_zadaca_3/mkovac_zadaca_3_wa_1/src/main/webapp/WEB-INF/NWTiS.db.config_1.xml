@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>NWTiS mkovac 2023.</comment>
+<entry key="preuzimanje.do">01.05.2023</entry>
+<entry key="LocationIQ.apikey">pk.2707444539e32b80d5cf11c80ef16d77</entry>
+<entry key="OpenWeatherMap.apikey">2ae2c6718a6b24cf5da0b758bea84e5e</entry>
+<entry key="OpenSkyNetwork.lozinka">m43X7PxAgD</entry>
+<entry key="ciklus.trajanje">300</entry>
+<entry key="aerodromi.sakupljanje">LDZA LOWW EDDF EDDM</entry>
+<entry key="preuzimanje.od">01.01.2023</entry>
+<entry key="OpenSkyNetwork.korisnik">mkovac</entry>
+</properties>
