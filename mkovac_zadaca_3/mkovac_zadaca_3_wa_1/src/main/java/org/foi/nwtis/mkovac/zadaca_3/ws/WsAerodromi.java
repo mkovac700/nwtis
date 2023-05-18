@@ -6,6 +6,7 @@ import org.foi.nwtis.mkovac.zadaca_3.jpa.Airports;
 import org.foi.nwtis.mkovac.zadaca_3.zrna.AirportFacade;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.podaci.Lokacija;
+import org.foi.nwtis.podaci.UdaljenostAerodromDrzavaKlasa;
 import org.foi.nwtis.podaci.UdaljenostAerodromKlasa;
 import org.foi.nwtis.podaci.UdaljenostKlasa;
 import jakarta.annotation.Resource;
@@ -73,6 +74,7 @@ public class WsAerodromi {
     return udaljenosti;
   }
 
+  @WebMethod
   public List<UdaljenostAerodromKlasa> dajSveUdaljenostiAerodromaJpa(@WebParam String icao,
       @WebParam int odBroja, @WebParam int broj) {
     if (icao == null || icao.trim().length() == 0 || odBroja < 1 || broj < 1)
@@ -89,4 +91,18 @@ public class WsAerodromi {
     return udaljenosti;
   }
 
+  @WebMethod
+  public UdaljenostAerodromDrzavaKlasa dajNajduljiPutDrzaveJpa(@WebParam String icao) {
+    if (icao == null || icao.trim().length() == 0)
+      return null;
+
+    UdaljenostAerodromDrzavaKlasa udaljenost = null;
+    var distances = airportFacade.findDistances(icao);
+
+    udaljenost = new UdaljenostAerodromDrzavaKlasa(distances[0].toString(), distances[1].toString(),
+        Float.parseFloat(distances[2].toString()));
+
+
+    return udaljenost;
+  }
 }

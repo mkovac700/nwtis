@@ -98,6 +98,21 @@ public class AirportFacade {
     return q.getResultList();
   }
 
+  public Object[] findDistances(String icao) {
+    cb = em.getCriteriaBuilder();
+    CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+    Root<AirportsDistanceMatrix> rt = cq.from(AirportsDistanceMatrix.class);
+    Join<AirportsDistanceMatrix, AirportsDistanceMatrixPK> join = rt.join("id");
+
+    cq.select(cb.array(join.get("icaoTo"), join.get("country"), rt.get("distCtry")))
+        .where(cb.equal(join.get("icaoFrom"), icao)).orderBy(cb.desc(rt.get("distCtry")));
+
+    Query q = em.createQuery(cq);
+    q.setMaxResults(1);
+
+    return (Object[]) q.getResultList().get(0);
+  }
+
   public int count() {
     cb = em.getCriteriaBuilder();
     CriteriaQuery<Long> cq = cb.createQuery(Long.class);

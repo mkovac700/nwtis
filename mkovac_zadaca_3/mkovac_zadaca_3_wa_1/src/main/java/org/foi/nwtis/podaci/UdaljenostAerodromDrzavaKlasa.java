@@ -5,7 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @AllArgsConstructor()
-public class UdaljenostKlasa {
+public class UdaljenostAerodromDrzavaKlasa {
+  @Getter
+  @Setter
+  private String icao;
   @Getter
   @Setter
   private String drzava;
@@ -13,9 +16,6 @@ public class UdaljenostKlasa {
   @Setter
   private float km;
 
-  public UdaljenostKlasa() {
-
-  }
-
+  public UdaljenostAerodromDrzavaKlasa() {}
 
 }
