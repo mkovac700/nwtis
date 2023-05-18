@@ -6,6 +6,7 @@ package org.foi.nwtis.mkovac.zadaca_3.zrna;
 import java.util.List;
 import org.foi.nwtis.mkovac.zadaca_3.jpa.Airports;
 import org.foi.nwtis.mkovac.zadaca_3.jpa.AirportsDistanceMatrix;
+import org.foi.nwtis.mkovac.zadaca_3.jpa.AirportsDistanceMatrixPK;
 import org.foi.nwtis.podaci.Airport;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
@@ -15,6 +16,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 
 /**
@@ -66,12 +68,33 @@ public class AirportFacade {
     return q.getResultList();
   }
 
-  public List<AirportsDistanceMatrix> findDistances(String icaoOd, String icaoDo) {
+  public List<Object[]> findDistances(String icaoOd, String icaoDo) {
     cb = em.getCriteriaBuilder();
-    CriteriaQuery<AirportsDistanceMatrix> cq = cb.createQuery(AirportsDistanceMatrix.class);
+    CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
     Root<AirportsDistanceMatrix> rt = cq.from(AirportsDistanceMatrix.class);
-    cq.select(rt).where(cb.equal(rt.get("ICAO_FROM"), icaoOd), cb.equal(rt.get("ICAO_TO"), icaoDo));
+    Join<AirportsDistanceMatrix, AirportsDistanceMatrixPK> join = rt.join("id");
+
+    cq.select(cb.array(rt.get("distCtry"), join.get("country")))
+        .where(cb.equal(join.get("icaoFrom"), icaoOd), cb.equal(join.get("icaoTo"), icaoDo));
+
     Query q = em.createQuery(cq);
+    return q.getResultList();
+  }
+
+  public List<Object[]> findDistances(String icao, int odBroja, int broj) {
+    cb = em.getCriteriaBuilder();
+    CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+    Root<AirportsDistanceMatrix> rt = cq.from(AirportsDistanceMatrix.class);
+    Join<AirportsDistanceMatrix, AirportsDistanceMatrixPK> join = rt.join("id");
+
+    cq.select(cb.array(rt.get("distTot"), join.get("icaoTo")))
+        .where(cb.equal(join.get("icaoFrom"), icao)).distinct(true)
+        .orderBy(cb.asc(join.get("icaoTo")));
+
+    Query q = em.createQuery(cq);
+    q.setMaxResults(broj);
+    q.setFirstResult(odBroja);
+
     return q.getResultList();
   }
 
