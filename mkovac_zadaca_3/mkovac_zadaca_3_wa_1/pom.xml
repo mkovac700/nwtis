@@ -25,6 +25,15 @@
 		<ServerEE.domainDir>${ServerEE.home}glassfish/domains</ServerEE.domainDir>
 		<ServerEE.containerName>${ServerEE.payara.containerName}</ServerEE.containerName>
 	</properties>
+	
+	<repositories>
+		<repository>
+			<id>NWTiS</id>
+			<name>NWTiS</name>
+			<url>http://nwtis.foi.hr:8088/repository/nwtis_2023/</url>
+		</repository>
+	</repositories>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -56,6 +65,18 @@
 						</goals>
 						<configuration>
 							<sei>org.foi.nwtis.mkovac.zadaca_3.ws.WsAerodromi</sei>
+							<genWsdl>true</genWsdl>
+						</configuration>
+					</execution>
+					
+					<execution>
+						<id>generate-wsdl-meteo</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>wsgen</goal>
+						</goals>
+						<configuration>
+							<sei>org.foi.nwtis.mkovac.zadaca_3.ws.WsMeteo</sei>
 							<genWsdl>true</genWsdl>
 						</configuration>
 					</execution>
@@ -247,6 +268,11 @@
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.foi.nwtis</groupId>
+			<artifactId>nwtis_rest_lib</artifactId>
 			<version>3.0.0</version>
 		</dependency>
 	</dependencies>
