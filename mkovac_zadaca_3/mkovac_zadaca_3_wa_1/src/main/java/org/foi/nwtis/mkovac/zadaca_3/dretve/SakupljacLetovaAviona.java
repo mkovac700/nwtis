@@ -1,8 +1,13 @@
 package org.foi.nwtis.mkovac.zadaca_3.dretve;
 
-public class SakupljacLetovaAviona extends Thread {
+import org.foi.nwtis.Konfiguracija;
 
-  public SakupljacLetovaAviona() {}
+public class SakupljacLetovaAviona extends Thread {
+  private Konfiguracija konfig;
+
+  public SakupljacLetovaAviona(Konfiguracija konfig) {
+    this.konfig = konfig;
+  }
 
   @Override
   public synchronized void start() {
