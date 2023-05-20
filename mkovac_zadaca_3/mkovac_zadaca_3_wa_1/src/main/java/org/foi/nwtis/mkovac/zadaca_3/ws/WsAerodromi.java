@@ -25,7 +25,7 @@ public class WsAerodromi {
   javax.sql.DataSource ds;
 
   @WebMethod
-  public List<Aerodrom> dajSveAerodromeJpa(@WebParam int odBroja, @WebParam int broj) {
+  public List<Aerodrom> dajSveAerodrome(@WebParam int odBroja, @WebParam int broj) {
 
     if (odBroja < 1 || broj < 1)
       return null;
@@ -45,7 +45,7 @@ public class WsAerodromi {
   }
 
   @WebMethod
-  public Aerodrom dajAerodromJpa(@WebParam String icao) {
+  public Aerodrom dajAerodrom(@WebParam String icao) {
     Aerodrom aerodrom = null;
     if (icao == null || icao.trim().length() == 0) {
       return aerodrom;
@@ -58,7 +58,7 @@ public class WsAerodromi {
   }
 
   @WebMethod
-  public List<UdaljenostKlasa> dajUdaljenostiAerodromaJpa(@WebParam String icaoOd,
+  public List<UdaljenostKlasa> dajUdaljenostiAerodroma(@WebParam String icaoOd,
       @WebParam String icaoDo) {
     if ((icaoOd == null || icaoOd.trim().length() == 0)
         || (icaoDo == null || icaoDo.trim().length() == 0))
@@ -75,7 +75,7 @@ public class WsAerodromi {
   }
 
   @WebMethod
-  public List<UdaljenostAerodromKlasa> dajSveUdaljenostiAerodromaJpa(@WebParam String icao,
+  public List<UdaljenostAerodromKlasa> dajSveUdaljenostiAerodroma(@WebParam String icao,
       @WebParam int odBroja, @WebParam int broj) {
     if (icao == null || icao.trim().length() == 0 || odBroja < 1 || broj < 1)
       return null;
@@ -92,7 +92,7 @@ public class WsAerodromi {
   }
 
   @WebMethod
-  public UdaljenostAerodromDrzavaKlasa dajNajduljiPutDrzaveJpa(@WebParam String icao) {
+  public UdaljenostAerodromDrzavaKlasa dajNajduljiPutDrzave(@WebParam String icao) {
     if (icao == null || icao.trim().length() == 0)
       return null;
 

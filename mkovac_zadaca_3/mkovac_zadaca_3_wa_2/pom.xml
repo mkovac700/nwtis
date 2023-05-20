@@ -26,6 +26,17 @@
 		<ServerEE.domainDir>${ServerEE.home}glassfish/domains</ServerEE.domainDir>
 		<ServerEE.containerName>${ServerEE.payara.containerName}</ServerEE.containerName>
 	</properties>
+	
+	<!-- 
+	<repositories>
+		<repository>
+			<id>NWTiS</id>
+			<name>NWTiS</name>
+			<url>http://nwtis.foi.hr:8088/repository/nwtis_2023/</url>
+		</repository>
+	</repositories>
+	-->
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -231,6 +242,22 @@
 			<artifactId>krazo-jersey</artifactId>
 			<version>3.0.1</version>
 		</dependency>
+		 
+		<dependency>
+			<groupId>org.foi.nwtis</groupId>
+			<artifactId>nwtis_rest_lib</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		
+		<!--
+		<dependency>
+			<groupId>org.foi.nwtis</groupId>
+			<artifactId>nwtis_rest_lib</artifactId>
+			<version>3.0.0</version>
+			<scope>system</scope>
+			<systemPath>/home/${env.USER}/lib/nwtis_rest_lib-3.0.0.jar</systemPath>
+		</dependency>
+		-->
 	</dependencies> 
   
 </project>
