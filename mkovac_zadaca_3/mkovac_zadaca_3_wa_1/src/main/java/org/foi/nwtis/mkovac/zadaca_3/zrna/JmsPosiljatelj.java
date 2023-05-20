@@ -23,12 +23,12 @@ public class JmsPosiljatelj {
     boolean status = true;
     try {
       Connection connection = connectionFactory.createConnection();
-      Session session =
-          connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+      Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
       MessageProducer messageProducer = session.createProducer(queue);
       TextMessage message = session.createTextMessage();
 
-      String poruka = "Ovo je poruka broj: " + brojPoruka++;
+      // String poruka = "Ovo je poruka broj: " + brojPoruka++;
+      String poruka = tekstPoruke;
 
       message.setText(poruka);
       // message.setStringProperty("poruka", poruka);

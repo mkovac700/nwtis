@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,12 +18,12 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "LETOVI_POLASCI")
-@NamedQuery(name = "LetoviPolasci.findAll",
-    query = "SELECT l FROM LetoviPolasci l")
+@NamedQuery(name = "LetoviPolasci.findAll", query = "SELECT l FROM LetoviPolasci l")
 public class LetoviPolasci implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(unique = true, nullable = false)
   private int id;
 
@@ -80,10 +82,8 @@ public class LetoviPolasci implements Serializable {
     return this.arrivalAirportCandidatesCount;
   }
 
-  public void setArrivalAirportCandidatesCount(
-      int arrivalAirportCandidatesCount) {
-    this.arrivalAirportCandidatesCount =
-        arrivalAirportCandidatesCount;
+  public void setArrivalAirportCandidatesCount(int arrivalAirportCandidatesCount) {
+    this.arrivalAirportCandidatesCount = arrivalAirportCandidatesCount;
   }
 
   public String getCallsign() {
@@ -98,10 +98,8 @@ public class LetoviPolasci implements Serializable {
     return this.departureAirportCandidatesCount;
   }
 
-  public void setDepartureAirportCandidatesCount(
-      int departureAirportCandidatesCount) {
-    this.departureAirportCandidatesCount =
-        departureAirportCandidatesCount;
+  public void setDepartureAirportCandidatesCount(int departureAirportCandidatesCount) {
+    this.departureAirportCandidatesCount = departureAirportCandidatesCount;
   }
 
   public String getEstArrivalAirport() {
@@ -116,40 +114,32 @@ public class LetoviPolasci implements Serializable {
     return this.estArrivalAirportHorizDistance;
   }
 
-  public void setEstArrivalAirportHorizDistance(
-      int estArrivalAirportHorizDistance) {
-    this.estArrivalAirportHorizDistance =
-        estArrivalAirportHorizDistance;
+  public void setEstArrivalAirportHorizDistance(int estArrivalAirportHorizDistance) {
+    this.estArrivalAirportHorizDistance = estArrivalAirportHorizDistance;
   }
 
   public int getEstArrivalAirportVertDistance() {
     return this.estArrivalAirportVertDistance;
   }
 
-  public void setEstArrivalAirportVertDistance(
-      int estArrivalAirportVertDistance) {
-    this.estArrivalAirportVertDistance =
-        estArrivalAirportVertDistance;
+  public void setEstArrivalAirportVertDistance(int estArrivalAirportVertDistance) {
+    this.estArrivalAirportVertDistance = estArrivalAirportVertDistance;
   }
 
   public int getEstDepartureAirportHorizDistance() {
     return this.estDepartureAirportHorizDistance;
   }
 
-  public void setEstDepartureAirportHorizDistance(
-      int estDepartureAirportHorizDistance) {
-    this.estDepartureAirportHorizDistance =
-        estDepartureAirportHorizDistance;
+  public void setEstDepartureAirportHorizDistance(int estDepartureAirportHorizDistance) {
+    this.estDepartureAirportHorizDistance = estDepartureAirportHorizDistance;
   }
 
   public int getEstDepartureAirportVertDistance() {
     return this.estDepartureAirportVertDistance;
   }
 
-  public void setEstDepartureAirportVertDistance(
-      int estDepartureAirportVertDistance) {
-    this.estDepartureAirportVertDistance =
-        estDepartureAirportVertDistance;
+  public void setEstDepartureAirportVertDistance(int estDepartureAirportVertDistance) {
+    this.estDepartureAirportVertDistance = estDepartureAirportVertDistance;
   }
 
   public int getFirstSeen() {

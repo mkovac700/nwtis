@@ -39,49 +39,49 @@ public class WsSlusac implements ServletContextListener {
   public void contextInitialized(ServletContextEvent sce) {
     servletContext = sce.getServletContext();
 
-    ucitajPostavke();
+    try {
+      ucitajPostavke();
+      Logger.getGlobal().log(Level.INFO, "Postavke uspješno učitane!");
+    } catch (NeispravnaKonfiguracija e) {
+      Logger.getGlobal().log(Level.SEVERE,
+          "Pogreška kod učitavanja postavki iz datoteke!" + e.getMessage());
+      return;
+    }
 
     pokreniSakupljacLetovaAviona();
   }
 
   private void pokreniSakupljacLetovaAviona() {
-    // TODO Auto-generated method stub
     sakupljacLetovaAviona = new SakupljacLetovaAviona(konfig);
     sakupljacLetovaAviona.start();
+    Logger.getGlobal().log(Level.INFO, "SakupljacLetovaAviona - start");
   }
 
   /**
-   * Osluškuje gašenje aplikacije te gasi servlet kontekst.
+   * Osluškuje gašenje aplikacije, zaustavlja dretvu SakupljacLetovaAviona te gasi servlet kontekst.
    * 
    * @param sce Događaj servlet konteksta
    * 
    */
   @Override
   public void contextDestroyed(ServletContextEvent sce) {
-    // TODO Auto-generated method stub
-    ServletContextListener.super.contextDestroyed(sce);
+    if (sakupljacLetovaAviona != null && sakupljacLetovaAviona.isAlive())
+      sakupljacLetovaAviona.interrupt();
 
-    // TODO zaustavi dretvu
+    ServletContextListener.super.contextDestroyed(sce);
   }
 
   /**
    * Učitava postavke iz datoteke u objekt Konfiguracija te dodaje objekt atributu Servlet konteksta
    */
-  private void ucitajPostavke() {
+  private void ucitajPostavke() throws NeispravnaKonfiguracija {
     // TODO napraviti throw new i preseliti gore samo try catch dio, tako da se ne poziva pokretanje
     // dretve ako je ucitavanje postavki bilo neuspjesno
     String nazivDatoteke =
         servletContext.getRealPath(servletContext.getInitParameter("konfiguracija"));
 
-    try {
-      konfig = KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
-    } catch (NeispravnaKonfiguracija e) {
-      Logger.getGlobal().log(Level.SEVERE,
-          "Pogreška kod učitavanja postavki iz datoteke!" + e.getMessage());
-      return;
-    }
-    servletContext.setAttribute("konfig", konfig);
-    Logger.getGlobal().log(Level.INFO, "Postavke uspješno učitane!");
+    konfig = KonfiguracijaApstraktna.preuzmiKonfiguraciju(nazivDatoteke);
 
+    servletContext.setAttribute("konfig", konfig);
   }
 }

@@ -4,8 +4,12 @@ import org.foi.nwtis.mkovac.zadaca_3.jpa.LetoviPolasci;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 
 /**
  * 
@@ -38,5 +42,15 @@ public class LetoviPolasciFacade {
 
   public LetoviPolasci find(Object id) {
     return em.find(LetoviPolasci.class, id);
+  }
+
+  public LetoviPolasci findLast() throws NoResultException {
+    cb = em.getCriteriaBuilder();
+    CriteriaQuery<LetoviPolasci> cq = cb.createQuery(LetoviPolasci.class);
+    Root<LetoviPolasci> root = cq.from(LetoviPolasci.class);
+    cq.orderBy(cb.desc(root.get("id")));
+    TypedQuery<LetoviPolasci> q = em.createQuery(cq);
+    q.setMaxResults(1);
+    return q.getSingleResult();
   }
 }
