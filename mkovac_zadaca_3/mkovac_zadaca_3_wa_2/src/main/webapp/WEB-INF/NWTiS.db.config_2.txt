@@ -1,0 +1,8 @@
+#NWTiS mkovac 2023.
+#Sun May 21 17:21:09 CEST 2023
+aplikacija.godina=2023.
+stranica.brojRedova=15
+aplikacija.verzija=1.00
+autor.prezime=Kovac
+autor.ime=Marijan
+autor.predmet=NWTiS

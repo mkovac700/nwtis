@@ -5,12 +5,6 @@ import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
-import org.foi.nwtis.mkovac.zadaca_3.dretve.SakupljacLetovaAviona;
-import org.foi.nwtis.mkovac.zadaca_3.zrna.AirportFacade;
-import org.foi.nwtis.mkovac.zadaca_3.zrna.JmsPosiljatelj;
-import org.foi.nwtis.mkovac.zadaca_3.zrna.LetoviPolasciFacade;
-import jakarta.ejb.EJB;
-import jakarta.inject.Inject;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -18,33 +12,20 @@ import jakarta.servlet.annotation.WebListener;
 import lombok.Getter;
 
 /**
- * Slušač za Web servis
+ * Slušač za MVC aplikaciju
  * 
  * @author Marijan Kovač
  *
  */
 @WebListener
-public class WsSlusac implements ServletContextListener {
-
+public class Slusac implements ServletContextListener {
   @Getter
   private static ServletContext servletContext;
 
   private Konfiguracija konfig;
 
-  private SakupljacLetovaAviona sakupljacLetovaAviona;
-
-  @Inject
-  LetoviPolasciFacade letoviPolasciFacade;
-
-  @Inject
-  AirportFacade airportFacade;
-
-  @EJB
-  JmsPosiljatelj jmsPosiljatelj;
-
   /**
-   * Osluškuje pokretanje aplikacije, vrši učitavanje konfiguracijskih postavki te pokreće dretvu
-   * SakupljacLetovaAviona.
+   * Osluškuje pokretanje aplikacije te vrši učitavanje konfiguracijskih postavki.
    * 
    * @param sce Događaj servlet konteksta
    * 
@@ -61,28 +42,16 @@ public class WsSlusac implements ServletContextListener {
           "Pogreška kod učitavanja postavki iz datoteke!" + e.getMessage());
       return;
     }
-
-    pokreniSakupljacLetovaAviona();
-  }
-
-  private void pokreniSakupljacLetovaAviona() {
-    sakupljacLetovaAviona =
-        new SakupljacLetovaAviona(konfig, letoviPolasciFacade, airportFacade, jmsPosiljatelj);
-    sakupljacLetovaAviona.start();
-    Logger.getGlobal().log(Level.INFO, "SakupljacLetovaAviona - start");
   }
 
   /**
-   * Osluškuje gašenje aplikacije, zaustavlja dretvu SakupljacLetovaAviona te gasi servlet kontekst.
+   * Osluškuje gašenje aplikacije te gasi servlet kontekst.
    * 
    * @param sce Događaj servlet konteksta
    * 
    */
   @Override
   public void contextDestroyed(ServletContextEvent sce) {
-    if (sakupljacLetovaAviona != null && sakupljacLetovaAviona.isAlive())
-      sakupljacLetovaAviona.interrupt();
-
     ServletContextListener.super.contextDestroyed(sce);
   }
 
