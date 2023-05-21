@@ -6,6 +6,11 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 import org.foi.nwtis.mkovac.zadaca_3.dretve.SakupljacLetovaAviona;
+import org.foi.nwtis.mkovac.zadaca_3.zrna.AirportFacade;
+import org.foi.nwtis.mkovac.zadaca_3.zrna.JmsPosiljatelj;
+import org.foi.nwtis.mkovac.zadaca_3.zrna.LetoviPolasciFacade;
+import jakarta.ejb.EJB;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -27,6 +32,15 @@ public class WsSlusac implements ServletContextListener {
   private Konfiguracija konfig;
 
   private SakupljacLetovaAviona sakupljacLetovaAviona;
+
+  @Inject
+  LetoviPolasciFacade letoviPolasciFacade;
+
+  @Inject
+  AirportFacade airportFacade;
+
+  @EJB
+  JmsPosiljatelj jmsPosiljatelj;
 
   /**
    * Osluškuje pokretanje aplikacije, vrši učitavanje konfiguracijskih postavki te pokreće dretvu
@@ -52,7 +66,8 @@ public class WsSlusac implements ServletContextListener {
   }
 
   private void pokreniSakupljacLetovaAviona() {
-    sakupljacLetovaAviona = new SakupljacLetovaAviona(konfig);
+    sakupljacLetovaAviona =
+        new SakupljacLetovaAviona(konfig, letoviPolasciFacade, airportFacade, jmsPosiljatelj);
     sakupljacLetovaAviona.start();
     Logger.getGlobal().log(Level.INFO, "SakupljacLetovaAviona - start");
   }

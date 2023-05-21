@@ -23,7 +23,6 @@ import org.foi.nwtis.rest.klijenti.NwtisRestIznimka;
 import org.foi.nwtis.rest.klijenti.OSKlijent;
 import org.foi.nwtis.rest.podaci.LetAviona;
 import jakarta.annotation.Resource;
-import jakarta.inject.Inject;
 import jakarta.persistence.NoResultException;
 
 public class SakupljacLetovaAviona extends Thread {
@@ -41,21 +40,30 @@ public class SakupljacLetovaAviona extends Thread {
 
   private boolean kraj = false;
 
-  @Inject
-  LetoviPolasciFacade letoviPolasciFacade;
+  // @Inject
+  // LetoviPolasciFacade letoviPolasciFacade;
+  //
+  // @Inject
+  // AirportFacade airportFacade;
 
-  @Inject
+  LetoviPolasciFacade letoviPolasciFacade;
   AirportFacade airportFacade;
+  JmsPosiljatelj jmsPosiljatelj;
 
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
-  public SakupljacLetovaAviona(Konfiguracija konfig) {
+  public SakupljacLetovaAviona(Konfiguracija konfig, LetoviPolasciFacade letoviPolasciFacade,
+      AirportFacade airportFacade, JmsPosiljatelj jmsPosiljatelj) {
     this.konfig = konfig;
     this.aerodromiSakupljanje = this.konfig.dajPostavku("aerodromi.sakupljanje").trim().split(" ");
     this.ciklusTrajanje = Integer.parseInt(this.konfig.dajPostavku("ciklus.trajanje"));
     this.preuzimanjeOd = this.konfig.dajPostavku("preuzimanje.od");
     this.preuzimanjeDo = this.konfig.dajPostavku("preuzimanje.do");
+
+    this.letoviPolasciFacade = letoviPolasciFacade;
+    this.airportFacade = airportFacade;
+    this.jmsPosiljatelj = jmsPosiljatelj;
   }
 
   @Override
@@ -66,6 +74,7 @@ public class SakupljacLetovaAviona extends Thread {
   @Override
   public void interrupt() {
     this.kraj = true;
+    Logger.getGlobal().log(Level.INFO, "Dretva zaustavljena!");
     super.interrupt();
   }
 
@@ -76,8 +85,8 @@ public class SakupljacLetovaAviona extends Thread {
       return;
     }
 
-    long pocetniDan = konvertirajDan(this.preuzimanjeOd);
-    long zavrsniDan = konvertirajDan(this.preuzimanjeDo); // dodajDan ako se ukljucuje i taj zadnji?
+    long pocetniDan = konvertirajDan(this.preuzimanjeOd); // this.preuzimanjeOd
+    long zavrsniDan = konvertirajDan(this.preuzimanjeDo); // this.preuzimanjeDo
     long trenutniDan; // za koji se preuzima
     long zadnjiDan; // iz baze podataka
 
@@ -103,7 +112,7 @@ public class SakupljacLetovaAviona extends Thread {
 
     OSKlijent osKlijent = new OSKlijent(osKorisnik, osLozinka);
 
-    JmsPosiljatelj jmsPosiljatelj = new JmsPosiljatelj();
+    Logger.getGlobal().log(Level.INFO, "Započeto preuzimanje letova...");
 
     while (!this.kraj && trenutniDan < zavrsniDan) {
       // početak ciklusa preuzimanja
@@ -166,12 +175,14 @@ public class SakupljacLetovaAviona extends Thread {
       long radnoVrijeme = zavrsnoVrijeme - pocetnoVrijeme;
       long spavanje = ciklusTrajanje * 1000 - radnoVrijeme;
 
+      System.out.println("Radno vrijeme: " + radnoVrijeme / (float) 1000);
+      System.out.println("Spavanje: " + spavanje / (float) 1000);
+
       if (spavanje > 0 && !this.kraj) {
         try {
           Thread.sleep(spavanje);
         } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          Logger.getGlobal().log(Level.WARNING, e.getMessage());
         }
       }
 
@@ -179,6 +190,7 @@ public class SakupljacLetovaAviona extends Thread {
       trenutniDan = dodajDan(trenutniDan);
 
     }
+    Logger.getGlobal().log(Level.INFO, "Završeno preuzimanje letova...");
   }
 
   private String konvertirajDan(long epoch) {
