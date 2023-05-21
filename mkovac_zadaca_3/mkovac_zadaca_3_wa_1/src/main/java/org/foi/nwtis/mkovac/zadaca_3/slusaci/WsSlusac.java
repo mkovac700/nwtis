@@ -62,7 +62,7 @@ public class WsSlusac implements ServletContextListener {
       return;
     }
 
-    pokreniSakupljacLetovaAviona();
+    // pokreniSakupljacLetovaAviona();
   }
 
   private void pokreniSakupljacLetovaAviona() {

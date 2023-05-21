@@ -110,7 +110,11 @@ public class AirportFacade {
     Query q = em.createQuery(cq);
     q.setMaxResults(1);
 
-    return (Object[]) q.getResultList().get(0);
+    var result = q.getResultList();
+    if (result.isEmpty())
+      return null;
+    else
+      return (Object[]) result.get(0);
   }
 
   public int count() {
