@@ -50,6 +50,7 @@
 				<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/<%= a.getIcao() %>">Pregled aerodroma</a>
 				<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/<%= a.getIcao() %>/udaljenosti">Pregled udaljenosti</a>
 				<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/<%= a.getIcao() %>/najduljiPutDrzave">Pregled najduljeg puta države</a>
+				<a href="${pageContext.servletContext.contextPath}/mvc/meteo/<%= a.getIcao() %>">Pregled meteoroloških podataka</a>
 			</td>
 		</tr>
 		<%
