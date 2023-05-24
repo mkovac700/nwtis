@@ -62,9 +62,12 @@ public class WsSlusac implements ServletContextListener {
       return;
     }
 
-    // pokreniSakupljacLetovaAviona();
+    pokreniSakupljacLetovaAviona();
   }
 
+  /**
+   * Obavlja pokretanje dretve za preuzimanje letova aviona
+   */
   private void pokreniSakupljacLetovaAviona() {
     sakupljacLetovaAviona =
         new SakupljacLetovaAviona(konfig, letoviPolasciFacade, airportFacade, jmsPosiljatelj);

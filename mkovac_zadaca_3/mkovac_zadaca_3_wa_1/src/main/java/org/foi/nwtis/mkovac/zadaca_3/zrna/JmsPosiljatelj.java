@@ -1,5 +1,7 @@
 package org.foi.nwtis.mkovac.zadaca_3.zrna;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
 import jakarta.jms.Connection;
@@ -10,6 +12,12 @@ import jakarta.jms.Queue;
 import jakarta.jms.Session;
 import jakarta.jms.TextMessage;
 
+/**
+ * Zrno za slanje JMS poruka
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @Stateless
 public class JmsPosiljatelj {
   public static int brojPoruka = 0;
@@ -19,6 +27,12 @@ public class JmsPosiljatelj {
   @Resource(mappedName = "jms/nwtis_queue_dz3")
   private Queue queue;
 
+  /**
+   * Kreira connection factory te šalje JMS poruku
+   * 
+   * @param tekstPoruke Tekst poruke
+   * @return true ako je u redu, inače false
+   */
   public boolean saljiPoruku(String tekstPoruke) {
     boolean status = true;
     try {
@@ -27,16 +41,14 @@ public class JmsPosiljatelj {
       MessageProducer messageProducer = session.createProducer(queue);
       TextMessage message = session.createTextMessage();
 
-      // String poruka = "Ovo je poruka broj: " + brojPoruka++;
       String poruka = tekstPoruke;
 
       message.setText(poruka);
-      // message.setStringProperty("poruka", poruka);
       messageProducer.send(message);
       messageProducer.close();
       connection.close();
     } catch (JMSException ex) {
-      ex.printStackTrace();
+      Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
       status = false;
     }
     return status;

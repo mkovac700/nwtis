@@ -16,6 +16,12 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.xml.ws.WebServiceRef;
 
+/**
+ * MVC kontroler za meteo
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @Controller
 @Path("meteo")
 @RequestScoped

@@ -9,6 +9,12 @@ import jakarta.jms.Message;
 import jakarta.jms.MessageListener;
 import jakarta.jms.TextMessage;
 
+/**
+ * Zrno za primanje JMS poruka
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @MessageDriven(mappedName = "jms/nwtis_queue_dz3",
     activationConfig = {
         @ActivationConfigProperty(propertyName = "acknowledgeMode",
@@ -20,6 +26,9 @@ public class JmsPrimatelj implements MessageListener {
   @EJB
   SakupljacJmsPoruka sakupljacJmsPoruka;
 
+  /**
+   * Osluškuje dolazak poruke te obavlja dodavanje poruke u SakupljacJmsPoruka
+   */
   @Override
   public void onMessage(Message message) {
     if (message instanceof TextMessage) {

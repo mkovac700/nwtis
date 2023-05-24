@@ -1,5 +1,7 @@
 package org.foi.nwtis.mkovac.zadaca_3.ws;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.zadaca_3.jpa.Airports;
 import org.foi.nwtis.mkovac.zadaca_3.slusaci.WsSlusac;
@@ -36,6 +38,13 @@ public class WsMeteo {
     this.LIQ_apiKey = konf.dajPostavku("LocationIQ.apikey");
   }
 
+  /**
+   * Dohvaća meteo podatke za zadanu adresu. Najprije traži geolokaciju za danu adresu, a potom
+   * traži meteo podatke za zadanu geolokaciju.
+   * 
+   * @param adresa Adresa za koju se traže meteo podaci
+   * @return Meteo podaci
+   */
   @WebMethod
   public MeteoPodaci dajMeteoAdresa(@WebParam String adresa) {
 
@@ -47,20 +56,24 @@ public class WsMeteo {
     try {
       lokacija = liqKlijent.getGeoLocation(adresa);
     } catch (NwtisRestIznimka e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.WARNING, e.getMessage());
     }
     OWMKlijent owmKlijent = new OWMKlijent(OWM_apiKey);
     MeteoPodaci mp = null;
     try {
       mp = owmKlijent.getRealTimeWeather(lokacija.getLatitude(), lokacija.getLongitude());
     } catch (NwtisRestIznimka e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.WARNING, e.getMessage());
     }
     return mp;
   }
 
+  /**
+   * Dohvaća meteo podatke za dani aerodrom.
+   * 
+   * @param icao Oznaka aerodroma za koji se traže meteo podaci
+   * @return Meteo podaci
+   */
   @WebMethod
   public MeteoPodaci dajMeteo(@WebParam String icao) {
     if (icao == null || icao.trim().length() == 0)
@@ -75,8 +88,7 @@ public class WsMeteo {
     try {
       mp = owmKlijent.getRealTimeWeather(lokacija.getLatitude(), lokacija.getLongitude());
     } catch (NwtisRestIznimka e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.getGlobal().log(Level.WARNING, e.getMessage());
     }
     return mp;
   }

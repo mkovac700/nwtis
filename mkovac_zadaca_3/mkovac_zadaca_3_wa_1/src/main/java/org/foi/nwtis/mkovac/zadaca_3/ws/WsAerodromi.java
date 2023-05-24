@@ -15,6 +15,12 @@ import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
 import jakarta.jws.WebService;
 
+/**
+ * Web servis aerodromi
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @WebService(serviceName = "aerodromi")
 public class WsAerodromi {
 
@@ -24,6 +30,13 @@ public class WsAerodromi {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Dohvaća sve aerodrome u zadanom rasponu.
+   * 
+   * @param odBroja redni broj od kojeg se dohvaćaju podaci
+   * @param broj koliko podataka se želi dohvatiti
+   * @return Kolekcija aerodroma
+   */
   @WebMethod
   public List<Aerodrom> dajSveAerodrome(@WebParam int odBroja, @WebParam int broj) {
 
@@ -44,6 +57,12 @@ public class WsAerodromi {
     return aerodromi;
   }
 
+  /**
+   * Dohvaća jedan aerodrom
+   * 
+   * @param icao Oznaka aerodroma
+   * @return Jedan aerodrom
+   */
   @WebMethod
   public Aerodrom dajAerodrom(@WebParam String icao) {
     Aerodrom aerodrom = null;
@@ -59,6 +78,13 @@ public class WsAerodromi {
     return aerodrom;
   }
 
+  /**
+   * Vraća udaljenosti između dva aerodroma
+   * 
+   * @param icaoOd Oznaka polaznog aerodroma
+   * @param icaoDo Oznaka dolaznog aerodroma
+   * @return Kolekcija podataka o udaljenosti
+   */
   @WebMethod
   public List<UdaljenostKlasa> dajUdaljenostiAerodroma(@WebParam String icaoOd,
       @WebParam String icaoDo) {
@@ -76,6 +102,14 @@ public class WsAerodromi {
     return udaljenosti;
   }
 
+  /**
+   * Vraća udaljenosti do svih aerodroma od zadanog aerodroma
+   * 
+   * @param icao Oznaka aerodroma
+   * @param odBroja redni broj od kojeg se dohvaćaju podaci
+   * @param broj koliko podataka se želi dohvatiti
+   * @return Kolekcija podataka o udaljenosti
+   */
   @WebMethod
   public List<UdaljenostAerodromKlasa> dajSveUdaljenostiAerodroma(@WebParam String icao,
       @WebParam int odBroja, @WebParam int broj) {
@@ -93,6 +127,12 @@ public class WsAerodromi {
     return udaljenosti;
   }
 
+  /**
+   * Vraća podatak o najduljem putu unutar neke države od zadanog aerodroma
+   * 
+   * @param icao Oznaka aerodroma
+   * @return Podatci o udaljenosti unutar neke države
+   */
   @WebMethod
   public UdaljenostAerodromDrzavaKlasa dajNajduljiPutDrzave(@WebParam String icao) {
     if (icao == null || icao.trim().length() == 0)

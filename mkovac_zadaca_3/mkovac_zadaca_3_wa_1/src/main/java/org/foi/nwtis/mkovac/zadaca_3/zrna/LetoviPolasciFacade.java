@@ -12,9 +12,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 /**
+ * Facade klasa za letove
  * 
  * @author Marijan Kovač
- *
  */
 @Stateless
 public class LetoviPolasciFacade {

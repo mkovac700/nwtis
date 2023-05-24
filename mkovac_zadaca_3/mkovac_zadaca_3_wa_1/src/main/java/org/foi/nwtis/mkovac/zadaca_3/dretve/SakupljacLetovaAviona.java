@@ -40,12 +40,6 @@ public class SakupljacLetovaAviona extends Thread {
 
   private boolean kraj = false;
 
-  // @Inject
-  // LetoviPolasciFacade letoviPolasciFacade;
-  //
-  // @Inject
-  // AirportFacade airportFacade;
-
   LetoviPolasciFacade letoviPolasciFacade;
   AirportFacade airportFacade;
   JmsPosiljatelj jmsPosiljatelj;
@@ -71,6 +65,9 @@ public class SakupljacLetovaAviona extends Thread {
     super.start();
   }
 
+  /**
+   * Signalizira kraj rada podizanjem zastavice te zaustavlja dretvu
+   */
   @Override
   public void interrupt() {
     this.kraj = true;
@@ -78,6 +75,13 @@ public class SakupljacLetovaAviona extends Thread {
     super.interrupt();
   }
 
+  /**
+   * Obavlja preuzimanje letova od zadanog početnog datuma do zadanog konačnog datuma ili dok nije
+   * podignuta zastavica za kraj rada. Preuzimanje se obavlja unutar ciklusa zadanog trajanja. Ako
+   * je preuzimanje za određeni dan završilo prije isteka ciklusa, dretva će mirovati preostalo
+   * vrijeme trajanja ciklusa. Ako je preuzimanje trajalo duže od zadanog ciklusa, tada se spavanje
+   * preskače i nastavlja rad s novim ciklusom.
+   */
   @Override
   public void run() {
     if (!provjeriFormatDatuma(this.preuzimanjeOd) || !provjeriFormatDatuma(this.preuzimanjeDo)) {
@@ -85,10 +89,10 @@ public class SakupljacLetovaAviona extends Thread {
       return;
     }
 
-    long pocetniDan = konvertirajDan(this.preuzimanjeOd); // this.preuzimanjeOd
-    long zavrsniDan = konvertirajDan(this.preuzimanjeDo); // this.preuzimanjeDo
-    long trenutniDan; // za koji se preuzima
-    long zadnjiDan; // iz baze podataka
+    long pocetniDan = konvertirajDan(this.preuzimanjeOd);
+    long zavrsniDan = konvertirajDan(this.preuzimanjeDo);
+    long trenutniDan;
+    long zadnjiDan;
 
     if (pocetniDan >= zavrsniDan) {
       Logger.getGlobal().log(Level.SEVERE,
@@ -115,25 +119,21 @@ public class SakupljacLetovaAviona extends Thread {
     Logger.getGlobal().log(Level.INFO, "Započeto preuzimanje letova...");
 
     while (!this.kraj && trenutniDan < zavrsniDan) {
-      // početak ciklusa preuzimanja
+      Logger.getGlobal().log(Level.INFO,
+          "Preuzimanje letova za dan " + konvertirajDan(trenutniDan));
+
       long pocetnoVrijeme = System.currentTimeMillis();
       long ukupno = 0;
 
-      // za svaki aerodrom iz polja aerodroma
-      // LDZA LOWW EDDF EDDM
       for (String aerodrom : aerodromiSakupljanje) {
-        // preuzmi letove za tekuci aerodrom za trenutni dan
         Airports airport = airportFacade.find(aerodrom);
         List<LetAviona> letoviAviona = null;
         try {
           letoviAviona = osKlijent.getDepartures(aerodrom, trenutniDan, dodajDan(trenutniDan));
           letoviAviona.removeIf(la -> la.getEstArrivalAirport() == null);
         } catch (NwtisRestIznimka e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          Logger.getGlobal().log(Level.WARNING, e.getMessage());
         }
-        // iteriraj po preuzetim letovima za aerodrom, pretvori u JPA tip i spremi u bazu preko
-        // CriteriaAPI
         if (letoviAviona != null) {
           for (LetAviona la : letoviAviona) {
             LetoviPolasci letoviPolasci = new LetoviPolasci();
@@ -162,21 +162,20 @@ public class SakupljacLetovaAviona extends Thread {
         }
       }
 
-      // šalji JMS poruku
       String poruka = "Na dan: " + konvertirajDan(trenutniDan) + " preuzeto ukupno " + ukupno
           + " letova aviona";
       if (jmsPosiljatelj.saljiPoruku(poruka)) {
-        System.out.println("Poruka je poslana!");
+        Logger.getGlobal().log(Level.INFO, "Poruka je poslana!");
       } else {
-        System.out.println("Greška kod slanja");
+        Logger.getGlobal().log(Level.SEVERE, "Greška kod slanja poruke!");
       }
 
       long zavrsnoVrijeme = System.currentTimeMillis();
       long radnoVrijeme = zavrsnoVrijeme - pocetnoVrijeme;
       long spavanje = ciklusTrajanje * 1000 - radnoVrijeme;
 
-      System.out.println("Radno vrijeme: " + radnoVrijeme / (float) 1000);
-      System.out.println("Spavanje: " + spavanje / (float) 1000);
+      Logger.getGlobal().log(Level.INFO, "Radno vrijeme: " + radnoVrijeme / (float) 1000);
+      Logger.getGlobal().log(Level.INFO, "Spavanje: " + spavanje / (float) 1000);
 
       if (spavanje > 0 && !this.kraj) {
         try {
@@ -186,19 +185,32 @@ public class SakupljacLetovaAviona extends Thread {
         }
       }
 
-      // dan++
       trenutniDan = dodajDan(trenutniDan);
 
     }
     Logger.getGlobal().log(Level.INFO, "Završeno preuzimanje letova...");
   }
 
+  /**
+   * Konvertira vrijeme u sekundama proteklo od 1.1.1970. (eng. epoch time) u format datuma
+   * dd.MM.yyyy
+   * 
+   * @param epoch Vrijeme u sekundama proteklo od 1.1.1970.
+   * @return Datum u formatu dd.MM.yyyy
+   */
   private String konvertirajDan(long epoch) {
     Date date = new Date(epoch * 1000);
     SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
     return sdf.format(date);
   }
 
+  /**
+   * Konvertira datum u formatu dd.MM.yyyy u vrijeme u sekundama proteklo od 1.1.1970. (eng. epoch
+   * time)
+   * 
+   * @param dan Datum u formatu dd.MM.yyyy
+   * @return Vrijeme proteklo u sekundama od 1.1.1970.
+   */
   private long konvertirajDan(String dan) {
     long epochTime;
 
@@ -211,6 +223,13 @@ public class SakupljacLetovaAviona extends Thread {
     return epochTime;
   }
 
+  /**
+   * Dodaje jedan dan na vrijeme proteklo od 1.1.1970.
+   * 
+   * @param epoch Vrijeme u sekundama proteklo od 1.1.1970.
+   * @return Vrijeme u sekundama proteklo od 1.1.1970. uvećano za jedan dan (početak dana, neovisno
+   *         o dobu dana)
+   */
   private long dodajDan(long epoch) {
     long epochSecond = epoch;
     long epochTime;
@@ -224,10 +243,23 @@ public class SakupljacLetovaAviona extends Thread {
     return epochTime;
   }
 
+  /**
+   * Provjerava ispravnost formata datuma
+   * 
+   * @param datum Zadani datum
+   * @return true ako je u redu, inače false
+   */
   private boolean provjeriFormatDatuma(String datum) {
     return provjeriIzraz(datum, regexDatum);
   }
 
+  /**
+   * Provjerava ispravnost danog izraza koristeći regularne izraze
+   * 
+   * @param izraz Izraz koji se provjerava
+   * @param regex Regularni izraz s kojim se provjerava
+   * @return true ako je u redu, inače false
+   */
   private boolean provjeriIzraz(String izraz, String regex) {
     String s = izraz.trim();
 

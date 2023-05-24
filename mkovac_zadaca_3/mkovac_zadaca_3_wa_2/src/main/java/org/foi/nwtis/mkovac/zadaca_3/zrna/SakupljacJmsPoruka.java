@@ -7,6 +7,12 @@ import java.util.logging.Logger;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Singleton;
 
+/**
+ * Zrno za prikupljanje JMS poruka u kolekciju
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @Singleton
 public class SakupljacJmsPoruka {
 
@@ -22,6 +28,12 @@ public class SakupljacJmsPoruka {
     Logger.getGlobal().log(Level.INFO, "SakupljacJmsPoruka- spreman");
   }
 
+  /**
+   * Dodaje poruku u kolekciju
+   * 
+   * @param poruka Tekst poruke
+   * @return true ako je u redu, inače false
+   */
   public boolean dodajPoruku(String poruka) {
     if (jmsPoruke.contains(poruka))
       return false;
@@ -31,6 +43,11 @@ public class SakupljacJmsPoruka {
     }
   }
 
+  /**
+   * Vraća kolekciju poruka
+   * 
+   * @return Kolekcija poruka
+   */
   public List<String> dajSvePoruke() {
     return jmsPoruke;
   }

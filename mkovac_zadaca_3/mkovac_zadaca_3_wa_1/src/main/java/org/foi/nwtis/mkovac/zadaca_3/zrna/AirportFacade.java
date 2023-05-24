@@ -20,8 +20,9 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 
 /**
- *
- * @author dkermek
+ * Facade klasa za aerodrome
+ * 
+ * @author Marijan Kovač
  */
 @Stateless
 public class AirportFacade {

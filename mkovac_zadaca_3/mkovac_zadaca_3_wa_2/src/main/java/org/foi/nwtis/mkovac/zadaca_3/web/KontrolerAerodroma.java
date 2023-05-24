@@ -19,8 +19,9 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.xml.ws.WebServiceRef;
 
 /**
- *
- * @author NWTiS
+ * MVC kontroler za aerodromi
+ * 
+ * @author Marijan Kovač
  */
 @Controller
 @Path("aerodromi")

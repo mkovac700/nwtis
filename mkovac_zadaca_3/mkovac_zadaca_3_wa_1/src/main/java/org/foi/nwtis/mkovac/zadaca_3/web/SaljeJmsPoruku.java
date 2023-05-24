@@ -9,6 +9,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * HttpServlet za slanje JMS poruke. Služi samo za testiranje JMS.
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @WebServlet(name = "SaljeJmsPoruku", urlPatterns = {"/SaljeJmsPoruku"})
 public class SaljeJmsPoruku extends HttpServlet {
 
@@ -17,6 +23,9 @@ public class SaljeJmsPoruku extends HttpServlet {
   @EJB
   JmsPosiljatelj jmsPosiljatelj;
 
+  /**
+   * Na GET zahtjev obavlja slanje JMS poruke zadane parametrom upita
+   */
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
