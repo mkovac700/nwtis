@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -17,27 +18,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MrezniRadnik implements Runnable {
+  private ServerSocket posluzitelj;
   private Socket uticnica;
 
   private AtomicBoolean status;
   private AtomicBoolean ispis;
-  private AtomicBoolean kraj;
   private AtomicInteger brojacUdaljenosti;
 
-  public MrezniRadnik(Socket uticnica, AtomicBoolean status, AtomicBoolean kraj,
+  private final double r = 6371;
+
+  public MrezniRadnik(ServerSocket posluzitelj, Socket uticnica, AtomicBoolean status,
       AtomicBoolean ispis, AtomicInteger brojacUdaljenosti) {
+
+    this.posluzitelj = posluzitelj;
     this.uticnica = uticnica;
 
     this.status = status;
-    this.kraj = kraj;
     this.ispis = ispis;
     this.brojacUdaljenosti = brojacUdaljenosti;
   }
 
   @Override
   public void run() {
-    // flag.set(!flag.get());
-
     try {
 
       var citac = new BufferedReader(
@@ -94,7 +96,11 @@ public class MrezniRadnik implements Runnable {
     }
 
     if (provjeriIzraz(zahtjev, regex2)) { // KRAJ
-      this.kraj.set(true);
+      try {
+        this.posluzitelj.close();
+      } catch (IOException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());;
+      }
       return "OK";
     }
 
@@ -110,38 +116,71 @@ public class MrezniRadnik implements Runnable {
     if (provjeriIzraz(zahtjev, regex4)) { // PAUZA
       if (this.status.get()) { // ako je aktivan
         this.status.set(false);
-        return "OK" + brojacUdaljenosti.get();
+        return "OK " + brojacUdaljenosti.get();
       } else { // ako je vec pauziran
         return "ERROR 01 Poslužitelj je pauziran";
       }
     }
 
     if (provjeriIzraz(zahtjev, regex5)) { // INFO
-      var naredba = razdvojiIzraz(zahtjev, regex5);
 
       if (this.status.get()) { // ako je aktivan
-        if (naredba[1].equals("DA") && !this.ispis.get()) {
+        var naredba = razdvojiIzraz(zahtjev, regex5);
+
+        if (naredba[2].equals("DA") && !this.ispis.get()) {
           this.ispis.set(true);
           return "OK";
         }
-        if (naredba[1].equals("DA") && this.ispis.get())
+        if (naredba[2].equals("DA") && this.ispis.get())
           return "ERROR 03 Poslužitelj već ispisuje na standardni izlaz";
-        if (naredba[1].equals("NE") && this.ispis.get()) {
+        if (naredba[2].equals("NE") && this.ispis.get()) {
           this.ispis.set(false);
           return "OK";
         }
-        if (naredba[1].equals("NE") && !this.ispis.get())
+        if (naredba[2].equals("NE") && !this.ispis.get())
           return "ERROR 04 Poslužitelj već ne ispisuje na standardni izlaz";
+
       } else { // ako nije aktivan
         return "ERROR 01 Poslužitelj je pauziran";
       }
     }
 
     if (provjeriIzraz(zahtjev, regex6)) { // UDALJENOST
-
+      if (this.status.get()) {
+        var podaci = razdvojiIzraz(zahtjev, regex6);
+        brojacUdaljenosti.incrementAndGet();
+        return "OK " + String.format("%.2f", izracunajUdaljenost(podaci));
+      } else {
+        return "ERROR 01 Poslužitelj je pauziran";
+      }
     }
 
     return "ERROR 05 Nepoznata naredba";
+  }
+
+  /**
+   * Računa udaljenost na temelju podataka iz dolaznog zahtjeva. Računanje se obavlja korištenjem
+   * haversine formule. Više na: https://www.geeksforgeeks.org/program-distance-two-points-earth/
+   * 
+   * @param podaci Podaci s geografskom širinom i geografskom dužinom iz dolaznog zahtjeva
+   * @return Vraća udaljenost u kilometrima (km)
+   */
+  private double izracunajUdaljenost(String[] podaci) {
+
+    double gpsSirina1 = Math.toRadians(Double.parseDouble(podaci[2]));
+    double gpsDuzina1 = Math.toRadians(Double.parseDouble(podaci[3]));
+    double gpsSirina2 = Math.toRadians(Double.parseDouble(podaci[4]));
+    double gpsDuzina2 = Math.toRadians(Double.parseDouble(podaci[5]));
+
+    double sirina = gpsSirina2 - gpsSirina1;
+    double duzina = gpsDuzina2 - gpsDuzina1;
+
+    double a = Math.pow(Math.sin(sirina / 2), 2)
+        + Math.cos(gpsSirina1) * Math.cos(gpsSirina2) * Math.pow(Math.sin(duzina / 2), 2);
+
+    double c = 2 * Math.asin(Math.sqrt(a));
+
+    return c * r;
   }
 
   /**

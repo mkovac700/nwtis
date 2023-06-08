@@ -2,6 +2,8 @@ package org.foi.nwtis.mkovac.aplikacija_1;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -16,8 +18,6 @@ public class GlavniPosluzitelj {
   private Konfiguracija konfig;
 
   private AtomicBoolean status;
-
-  private AtomicBoolean kraj;
 
   private AtomicBoolean ispis;
 
@@ -37,7 +37,6 @@ public class GlavniPosluzitelj {
     this.konfig = konfig;
 
     status = new AtomicBoolean(false);
-    kraj = new AtomicBoolean(false);
     ispis = new AtomicBoolean(false);
     brojacUdaljenosti = new AtomicInteger(0);
   }
@@ -64,11 +63,17 @@ public class GlavniPosluzitelj {
 
       ExecutorService executor = Executors.newFixedThreadPool(brojRadnika);
 
-      while (!this.kraj.get()) {
-        var uticnica = posluzitelj.accept();
+      while (true) { // !this.kraj.get()
+        Socket uticnica = null;
+        try {
+          uticnica = posluzitelj.accept();
+        } catch (SocketException e) {
+          Logger.getGlobal().log(Level.INFO, e.getMessage());
+          break;
+        }
 
-        var mrezniRadnik =
-            new MrezniRadnik(uticnica, this.status, this.kraj, this.ispis, this.brojacUdaljenosti);
+        var mrezniRadnik = new MrezniRadnik(posluzitelj, uticnica, this.status, this.ispis,
+            this.brojacUdaljenosti);
         Thread dretva = new Thread(mrezniRadnik);
 
         executor.execute(dretva);
@@ -88,20 +93,6 @@ public class GlavniPosluzitelj {
     } catch (IOException e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
-
-
-
-    // System.out.println("status na pocetku: " + status);
-    //
-    // ExecutorService executor = Executors.newFixedThreadPool(5);
-    // var dretva = new MrezniRadnik(this::setStatus);
-    // executor.execute(dretva);
-    //
-    // executor.shutdown();
-    // while (!executor.isTerminated());
-    //
-    // System.out.println("status nakon azuriranja: " + status);
-    // System.out.println("kraj rada");
 
   }
 
