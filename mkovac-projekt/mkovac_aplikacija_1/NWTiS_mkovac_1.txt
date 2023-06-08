@@ -1,10 +1,4 @@
-ispis=1
+mreznaVrata=8000
+brojRadnika=10
 maksCekanje=5000
-trajanjeSekunde=10
-brojPokusaja=5
-korisnickoIme=pkos
-korisnickaLozinka=123456
-datotekaMeteo=meteoSimulacija.csv
-datotekaProblema=problemi.csv
-posluziteljGlavniAdresa=localhost
-posluziteljGlavniVrata=8000
+brojCekaca=5
