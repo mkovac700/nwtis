@@ -6,6 +6,7 @@ import org.foi.nwtis.mkovac.aplikacija_2.jpa.Airports;
 import org.foi.nwtis.mkovac.aplikacija_2.zrna.AirportFacade;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.podaci.Lokacija;
+import org.foi.nwtis.podaci.Udaljenost;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
@@ -34,6 +35,17 @@ public class RestAerodromi {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Vraća podatke o svim aerodromima u zadanom rasponu. Zadani raspon je 1, 20. Može imati
+   * parametre traziNaziv (filtriranje po nazivu aerodroma) i/ili traziDrzavu (filtriranje po oznaci
+   * države).
+   * 
+   * @param traziNaziv Za filtriranje po nazivu aerodroma
+   * @param traziDrzavu Za filtriranje po oznaci države
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajSveAerodrome(@QueryParam("traziNaziv") String traziNaziv,
@@ -93,6 +105,36 @@ public class RestAerodromi {
     var gson = new Gson();
     var jsonAerodrom = gson.toJson(aerodrom);
     var odgovor = Response.ok().entity(jsonAerodrom).build();
+    return odgovor;
+  }
+
+  /**
+   * Vraća podatke o udaljenosti između dva aerodroma.
+   * 
+   * @param icaoOd Oznaka polaznog aerodroma
+   * @param icaoDo Oznaka dolaznog aerodroma
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
+  @GET
+  @Path("{icaoOd}/{icaoDo}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response dajUdaljenostiIzmeduDvaAerodroma(@PathParam("icaoOd") String icaoOd,
+      @PathParam("icaoDo") String icaoDo) {
+
+    if ((icaoOd == null || icaoOd.trim().length() == 0)
+        || (icaoDo == null || icaoDo.trim().length() == 0))
+      return null;
+
+    var udaljenosti = new ArrayList<Udaljenost>();
+    var distances = airportFacade.findDistances(icaoOd, icaoDo);
+
+    for (Object[] o : distances) {
+      udaljenosti.add(new Udaljenost(o[1].toString(), Float.parseFloat(o[0].toString())));
+    }
+
+    var gson = new Gson();
+    var jsonUdaljenosti = gson.toJson(udaljenosti);
+    var odgovor = Response.ok().entity(jsonUdaljenosti).build();
     return odgovor;
   }
 }
