@@ -94,6 +94,17 @@ public class AirportFacade {
     return q.getResultList();
   }
 
+  public List<Airports> findAll(String drzava) {
+    cb = em.getCriteriaBuilder();
+    CriteriaQuery<Airports> cq = cb.createQuery(Airports.class);
+    Root<Airports> rt = cq.from(Airports.class);
+
+    cq.where(cb.equal(rt.get("isoCountry"), drzava));
+
+    Query q = em.createQuery(cq);
+    return q.getResultList();
+  }
+
   public List<Object[]> findDistances(String icaoOd, String icaoDo) {
     cb = em.getCriteriaBuilder();
     CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
