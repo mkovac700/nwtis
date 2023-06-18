@@ -4,6 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ *
+ * @author Marijan Kovač
+ * @version 1.0.0
+ */
 @AllArgsConstructor()
 public class Status {
 

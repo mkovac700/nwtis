@@ -10,7 +10,6 @@ import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.podaci.Lokacija;
 import org.foi.nwtis.podaci.Udaljenost;
 import org.foi.nwtis.podaci.UdaljenostAerodrom;
-import org.foi.nwtis.podaci.UdaljenostAerodromi;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
@@ -214,11 +213,11 @@ public class RestAerodromi {
     String odgovor = ap1Klijent.posaljiZahtjev(MessageFormat.format("UDALJENOST {0} {1} {2} {3}",
         new Object[] {l1.getLatitude(), l1.getLongitude(), l2.getLatitude(), l2.getLongitude()}));
 
-    UdaljenostAerodromi udaljenost = new UdaljenostAerodromi();
+    UdaljenostAerodrom udaljenost = new UdaljenostAerodrom();
 
     if (odgovor.contains("OK")) {
       float km = Float.parseFloat(odgovor.split(" ")[1]);
-      udaljenost = new UdaljenostAerodromi(a1.getIcao(), a2.getIcao(), km);
+      udaljenost = new UdaljenostAerodrom(a2.getIcao(), km);
       var gson = new Gson();
       var jsonStatus = gson.toJson(udaljenost);
       response = Response.ok().entity(jsonStatus).build();
@@ -234,8 +233,6 @@ public class RestAerodromi {
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajUdaljenost1(@PathParam("icaoOd") String icaoOd,
       @PathParam("icaoDo") String icaoDo) {
-
-    Response response = null;
 
     Airports a1 = airportFacade.find(icaoOd);
     Airports a2 = airportFacade.find(icaoDo);
@@ -280,13 +277,71 @@ public class RestAerodromi {
 
       var gson = new Gson();
       var jsonUdaljenosti = gson.toJson(udaljenosti);
-      response = Response.ok().entity(jsonUdaljenosti).build();
+      return Response.ok().entity(jsonUdaljenosti).build();
 
     } else {
-      response = Response.status(400, odgovor).build();
+      return Response.status(400, odgovor).build();
+    }
+  }
+
+  @GET
+  @Path("{icaoOd}/udaljenost2")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response dajUdaljenost2(@PathParam("icaoOd") String icaoOd,
+      @QueryParam("drzava") String drzava, @QueryParam("km") String km) {
+
+    if ((icaoOd == null || icaoOd.isEmpty()) || (drzava == null || drzava.isEmpty())
+        || (km == null || km.isEmpty())) {
+      return Response.status(400, "Neispravni parametri").build();
     }
 
-    return response;
+    float km1;
+
+    try {
+      km1 = Float.parseFloat(km);
+    } catch (NumberFormatException e) {
+      return Response.status(400, "Neispravni parametri").build();
+    }
+
+    Airports a1 = airportFacade.find(icaoOd);
+    Lokacija l1 = null;
+
+    if (a1 != null) {
+      var koord1 = a1.getCoordinates().split(", ");
+      l1 = new Lokacija(koord1[1], koord1[0]);
+    } else {
+      return Response.status(404, "Nema podatka!").build();
+    }
+
+    List<Airports> airports = airportFacade.findAll(drzava);
+
+    List<UdaljenostAerodrom> udaljenosti = new ArrayList<>();
+
+    if (airports != null && !airports.isEmpty()) {
+      AP1Klijent ap1Klijent = new AP1Klijent();
+
+      for (Airports a : airports) {
+        var koord = a.getCoordinates().split(", ");
+        var lokacija = new Lokacija(koord[1], koord[0]);
+
+        String odgovor = ap1Klijent.posaljiZahtjev(
+            MessageFormat.format("UDALJENOST {0} {1} {2} {3}", new Object[] {l1.getLatitude(),
+                l1.getLongitude(), lokacija.getLatitude(), lokacija.getLongitude()}));
+
+        if (odgovor.contains("OK")) {
+          float km2 = Float.parseFloat(odgovor.split(" ")[1]);
+          if (km2 < km1) {
+            udaljenosti.add(new UdaljenostAerodrom(a.getIcao(), km2));
+          }
+        }
+      }
+
+      var gson = new Gson();
+      var jsonUdaljenosti = gson.toJson(udaljenosti);
+      return Response.ok().entity(jsonUdaljenosti).build();
+    } else {
+      return Response.status(404, "Nema podatka!").build();
+    }
   }
 
 }
