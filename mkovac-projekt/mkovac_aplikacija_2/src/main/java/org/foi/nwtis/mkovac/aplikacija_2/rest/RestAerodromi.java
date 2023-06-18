@@ -1,12 +1,16 @@
 package org.foi.nwtis.mkovac.aplikacija_2.rest;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.foi.nwtis.mkovac.aplikacija_2.jpa.Airports;
+import org.foi.nwtis.mkovac.aplikacija_2.klijenti.AP1Klijent;
 import org.foi.nwtis.mkovac.aplikacija_2.zrna.AirportFacade;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.podaci.Lokacija;
 import org.foi.nwtis.podaci.Udaljenost;
+import org.foi.nwtis.podaci.UdaljenostAerodrom;
+import org.foi.nwtis.podaci.UdaljenostAerodromi;
 import com.google.gson.Gson;
 import jakarta.annotation.Resource;
 import jakarta.enterprise.context.RequestScoped;
@@ -137,4 +141,90 @@ public class RestAerodromi {
     var odgovor = Response.ok().entity(jsonUdaljenosti).build();
     return odgovor;
   }
+
+  /**
+   * Vraća podatke o udaljenosti od zadanog aerodroma do svih ostalih aerodroma u zadanom rasponu.
+   * Zadani raspon je 1, 20.
+   * 
+   * @param icao Oznaka aerodroma
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
+  @GET
+  @Path("{icao}/udaljenosti")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response dajUdaljenostiIzmeđuSvihAerodroma(@PathParam("icao") String icao,
+      @QueryParam("odBroja") String odBroja, @QueryParam("broj") String broj) {
+
+    if (icao == null || icao.trim().length() == 0) {
+      return Response.status(404, "Nema podatka!").build();
+    }
+
+    int offset = 1, limit = 20;
+
+    if ((odBroja != null && !odBroja.isEmpty()) && (broj != null && !broj.isEmpty())) {
+      try {
+        offset = Integer.parseInt(odBroja);
+        limit = Integer.parseInt(broj);
+        if (offset < 1 || limit < 1)
+          return Response.status(400, "Neispravni parametri").build();
+      } catch (NumberFormatException e) {
+        return Response.status(400, "Neispravni parametri").build();
+      }
+    }
+
+    var udaljenosti = new ArrayList<UdaljenostAerodrom>();
+    var distances = airportFacade.findDistances(icao, offset - 1, limit);
+
+    for (Object[] o : distances) {
+      udaljenosti.add(new UdaljenostAerodrom(o[1].toString(), Float.parseFloat(o[0].toString())));
+    }
+
+    var gson = new Gson();
+    var jsonUdaljenosti = gson.toJson(udaljenosti);
+    var odgovor = Response.ok().entity(jsonUdaljenosti).build();
+    return odgovor;
+
+  }
+
+  @GET
+  @Path("{icaoOd}/izracunaj/{icaoDo}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response dajIzracunUdaljenostiIzmeduDvaAerodroma(@PathParam("icaoOd") String icaoOd,
+      @PathParam("icaoDo") String icaoDo) {
+
+    Airports a1 = airportFacade.find(icaoOd);
+    Airports a2 = airportFacade.find(icaoDo);
+    Lokacija l1 = null;
+    Lokacija l2 = null;
+    if (a1 != null && a2 != null) {
+      var koord1 = a1.getCoordinates().split(", ");
+      l1 = new Lokacija(koord1[1], koord1[0]);
+      var koord2 = a2.getCoordinates().split(", ");
+      l2 = new Lokacija(koord2[1], koord2[0]);
+    }
+
+    AP1Klijent ap1Klijent = new AP1Klijent();
+
+    String odgovor = ap1Klijent.posaljiZahtjev(MessageFormat.format("UDALJENOST {0} {1} {2} {3}",
+        new Object[] {l1.getLatitude(), l1.getLongitude(), l2.getLatitude(), l2.getLongitude()}));
+
+    UdaljenostAerodromi udaljenost = new UdaljenostAerodromi();
+
+    Response response;
+
+    if (odgovor.contains("OK")) {
+      float km = Float.parseFloat(odgovor.split(" ")[1]);
+      udaljenost = new UdaljenostAerodromi(a1.getIcao(), a2.getIcao(), km);
+      var gson = new Gson();
+      var jsonStatus = gson.toJson(udaljenost);
+      response = Response.ok().entity(jsonStatus).build();
+    } else {
+      response = Response.status(400, odgovor).build();
+    }
+
+    return response;
+  }
+
 }
