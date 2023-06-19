@@ -3,6 +3,7 @@ NETWORK=mkovac_mreza_1
 
 docker run -it -d \
   -p 8070:8080 \
+  -e TZ=Europe/Paris \
   --network=$NETWORK \
   --ip 200.20.0.4 \
   --name=mkovac_payara_micro \
