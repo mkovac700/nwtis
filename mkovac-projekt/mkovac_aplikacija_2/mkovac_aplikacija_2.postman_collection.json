@@ -1,0 +1,451 @@
+{
+	"info": {
+		"_postman_id": "e16cf833-6645-4fed-a527-92c4540fc3a9",
+		"name": "mkovac_aplikacija_2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27302403"
+	},
+	"item": [
+		{
+			"name": "aerodromi_a",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/aerodromi?traziNaziv=heliport&traziDrzavu=GB&odBroja=10&broj=5",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"aerodromi"
+					],
+					"query": [
+						{
+							"key": "traziNaziv",
+							"value": "heliport"
+						},
+						{
+							"key": "traziDrzavu",
+							"value": "GB"
+						},
+						{
+							"key": "odBroja",
+							"value": "10"
+						},
+						{
+							"key": "broj",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "aerodromi_b",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/aerodromi/LDZA",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "aerodromi_c",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/aerodromi/LDZA/LOWW",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA",
+						"LOWW"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "aerodromi_d",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/aerodromi/LDZA/udaljenosti?odBroja=1&broj=10",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA",
+						"udaljenosti"
+					],
+					"query": [
+						{
+							"key": "odBroja",
+							"value": "1"
+						},
+						{
+							"key": "broj",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "aerodromi_e",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/aerodromi/LDZA/izracunaj/LOWW",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA",
+						"izracunaj",
+						"LOWW"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "aerodromi_f",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/aerodromi/LDZA/udaljenost1/LOWW",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA",
+						"udaljenost1",
+						"LOWW"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "aerodromi_g",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/aerodromi/LDZA/udaljenost2?drzava=AT&km=265.97",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"aerodromi",
+						"LDZA",
+						"udaljenost2"
+					],
+					"query": [
+						{
+							"key": "drzava",
+							"value": "AT"
+						},
+						{
+							"key": "km",
+							"value": "265.97"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "nadzor_a",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/nadzor",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"nadzor"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "nadzor_b.1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/nadzor/KRAJ",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"nadzor",
+						"KRAJ"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "nadzor_b.2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/nadzor/INIT",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"nadzor",
+						"INIT"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "nadzor_b.3",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/nadzor/PAUZA",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"nadzor",
+						"PAUZA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "nadzor_c.1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/nadzor/INFO/DA",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"nadzor",
+						"INFO",
+						"DA"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "nadzor_c.2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/nadzor/INFO/NE",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"nadzor",
+						"INFO",
+						"NE"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dnevnik_a",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/dnevnik?vrsta=AP2&odBroja=10&broj=5",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"dnevnik"
+					],
+					"query": [
+						{
+							"key": "vrsta",
+							"value": "AP2"
+						},
+						{
+							"key": "odBroja",
+							"value": "10"
+						},
+						{
+							"key": "broj",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dnevnik_b",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"vremenskaOznaka\": \"Jun 18, 2023, 11:12:45 PM\",\n    \"vrsta\": \"AP2\",\n    \"metoda\": \"GET\",\n    \"zahtjev\": \"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://200.20.0.4:8080/mkovac_aplikacija_2/api/dnevnik",
+					"protocol": "http",
+					"host": [
+						"200",
+						"20",
+						"0",
+						"4"
+					],
+					"port": "8080",
+					"path": [
+						"mkovac_aplikacija_2",
+						"api",
+						"dnevnik"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

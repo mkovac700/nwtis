@@ -23,16 +23,19 @@ public class Dnevnik implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(unique = true, nullable = false)
+  @Column(name = "ID", unique = true, nullable = false)
   private int id;
 
-  @Column(nullable = false)
-  private Timestamp spremljeno;
+  @Column(name = "VREMENSKA_OZNAKA", nullable = false)
+  private Timestamp vremenskaOznaka;
 
-  @Column(nullable = false, length = 10)
+  @Column(name = "VRSTA", nullable = false, length = 10)
   private String vrsta;
 
-  @Column(nullable = false, length = 255)
+  @Column(name = "METODA", nullable = false, length = 10)
+  private String metoda;
+
+  @Column(name = "ZAHTJEV", nullable = false, length = 255)
   private String zahtjev;
 
   public Dnevnik() {}
@@ -45,12 +48,12 @@ public class Dnevnik implements Serializable {
     this.id = id;
   }
 
-  public Timestamp getSpremljeno() {
-    return this.spremljeno;
+  public Timestamp getVremenskaOznaka() {
+    return this.vremenskaOznaka;
   }
 
-  public void setSpremljeno(Timestamp spremljeno) {
-    this.spremljeno = spremljeno;
+  public void setVremenskaOznaka(Timestamp vremenskaOznaka) {
+    this.vremenskaOznaka = vremenskaOznaka;
   }
 
   public String getVrsta() {
@@ -59,6 +62,14 @@ public class Dnevnik implements Serializable {
 
   public void setVrsta(String vrsta) {
     this.vrsta = vrsta;
+  }
+
+  public String getMetoda() {
+    return this.metoda;
+  }
+
+  public void setMetoda(String metoda) {
+    this.metoda = metoda;
   }
 
   public String getZahtjev() {

@@ -31,6 +31,7 @@ public class RestServisFilter implements Filter {
   private HttpServletResponse response;
 
   private String putanja;
+  private String metoda;
   private String parametri;
   private boolean AP1_status;
 
@@ -54,6 +55,7 @@ public class RestServisFilter implements Filter {
     this.request = (HttpServletRequest) request;
     this.response = (HttpServletResponse) response;
     this.putanja = this.request.getRequestURI();
+    this.metoda = this.request.getMethod();
 
     this.parametri = dajParametreUpita();
 
@@ -94,8 +96,8 @@ public class RestServisFilter implements Filter {
 
     dnevnik.setZahtjev(zahtjev);
     dnevnik.setVrsta(filterName);
-    dnevnik.setSpremljeno(Timestamp.from(Instant.now()));
-
+    dnevnik.setVremenskaOznaka(Timestamp.from(Instant.now()));
+    dnevnik.setMetoda(metoda);
     dnevnikFacade.create(dnevnik);
   }
 

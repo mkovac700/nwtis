@@ -14,16 +14,16 @@ import lombok.Setter;
 public class Dnevnik {
   @Getter
   @Setter
-  private int id;
+  private String zahtjev;
   @Getter
   @Setter
-  private Timestamp spremljeno;
+  private String metoda;
   @Getter
   @Setter
   private String vrsta;
   @Getter
   @Setter
-  private String zahtjev;
+  private Timestamp vremenskaOznaka;
 
   public Dnevnik() {}
 }

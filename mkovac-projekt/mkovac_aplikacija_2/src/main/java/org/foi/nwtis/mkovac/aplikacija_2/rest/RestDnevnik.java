@@ -1,5 +1,6 @@
 package org.foi.nwtis.mkovac.aplikacija_2.rest;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.foi.nwtis.mkovac.aplikacija_2.jpa.Dnevnik;
 import org.foi.nwtis.mkovac.aplikacija_2.zrna.DnevnikFacade;
@@ -52,9 +53,13 @@ public class RestDnevnik {
     }
 
     List<Dnevnik> dnevnici = dnevnikFacade.findAll(vrsta, offset - 1, limit);
+    List<org.foi.nwtis.podaci.Dnevnik> _dnevnici = new ArrayList<>();
+    if (dnevnici != null && !dnevnici.isEmpty())
+      dnevnici.forEach(d -> _dnevnici.add(new org.foi.nwtis.podaci.Dnevnik(d.getZahtjev(),
+          d.getMetoda(), d.getVrsta(), d.getVremenskaOznaka())));
 
     var gson = new Gson();
-    var jsonDnevnici = gson.toJson(dnevnici);
+    var jsonDnevnici = gson.toJson(_dnevnici);
     var odgovor = Response.ok().entity(jsonDnevnici).build();
     return odgovor;
   }
