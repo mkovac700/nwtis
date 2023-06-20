@@ -105,6 +105,9 @@ public class SakupljacLetovaAviona extends Thread {
     } catch (NoResultException e) {
       Logger.getGlobal().log(Level.INFO, e.getMessage());
       zadnjiDan = 0;
+    } catch (Exception e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      zadnjiDan = 0;
     }
 
     if (zadnjiDan > pocetniDan)
@@ -165,7 +168,7 @@ public class SakupljacLetovaAviona extends Thread {
       String poruka = "Na dan: " + konvertirajDan(trenutniDan) + " preuzeto ukupno " + ukupno
           + " letova aviona";
       if (jmsPosiljatelj.saljiPoruku(poruka)) {
-        Logger.getGlobal().log(Level.INFO, "Poruka je poslana!");
+        Logger.getGlobal().log(Level.INFO, "Poruka je poslana: " + poruka);
       } else {
         Logger.getGlobal().log(Level.SEVERE, "Greška kod slanja poruke!");
       }

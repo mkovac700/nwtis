@@ -22,9 +22,9 @@ import jakarta.jms.TextMessage;
 public class JmsPosiljatelj {
   public static int brojPoruka = 0;
 
-  @Resource(mappedName = "jms/nwtis_qf_dz3")
+  @Resource(mappedName = "jms/NWTiS_mkovac_qf")
   private ConnectionFactory connectionFactory;
-  @Resource(mappedName = "jms/nwtis_queue_dz3")
+  @Resource(mappedName = "jms/NWTiS_mkovac")
   private Queue queue;
 
   /**
