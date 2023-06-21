@@ -7,6 +7,7 @@ import org.foi.nwtis.KonfiguracijaApstraktna;
 import org.foi.nwtis.NeispravnaKonfiguracija;
 import org.foi.nwtis.mkovac.aplikacija_3.dretve.SakupljacLetovaAviona;
 import org.foi.nwtis.mkovac.aplikacija_3.klijenti.RestKlijentNadzor;
+import org.foi.nwtis.mkovac.aplikacija_3.zrna.AerodromiLetoviFacade;
 import org.foi.nwtis.mkovac.aplikacija_3.zrna.AirportFacade;
 import org.foi.nwtis.mkovac.aplikacija_3.zrna.JmsPosiljatelj;
 import org.foi.nwtis.mkovac.aplikacija_3.zrna.LetoviPolasciFacade;
@@ -40,6 +41,9 @@ public class WsSlusac implements ServletContextListener {
 
   @Inject
   AirportFacade airportFacade;
+
+  @Inject
+  AerodromiLetoviFacade aerodromiLetoviFacade;
 
   @EJB
   JmsPosiljatelj jmsPosiljatelj;
@@ -92,8 +96,8 @@ public class WsSlusac implements ServletContextListener {
    * Obavlja pokretanje dretve za preuzimanje letova aviona
    */
   private void pokreniSakupljacLetovaAviona() {
-    sakupljacLetovaAviona =
-        new SakupljacLetovaAviona(konfig, letoviPolasciFacade, airportFacade, jmsPosiljatelj);
+    sakupljacLetovaAviona = new SakupljacLetovaAviona(konfig, letoviPolasciFacade, airportFacade,
+        aerodromiLetoviFacade, jmsPosiljatelj);
     sakupljacLetovaAviona.start();
     Logger.getGlobal().log(Level.INFO, "SakupljacLetovaAviona - start");
   }

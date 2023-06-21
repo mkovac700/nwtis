@@ -15,8 +15,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "AIRPORTS")
-@NamedQuery(name = "Airports.findAll",
-    query = "SELECT a FROM Airports a")
+@NamedQuery(name = "Airports.findAll", query = "SELECT a FROM Airports a")
 public class Airports implements Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -68,6 +67,10 @@ public class Airports implements Serializable {
   // bi-directional many-to-one association to LetoviPolasci
   @OneToMany(mappedBy = "airport")
   private List<LetoviPolasci> letoviPolascis;
+
+  // bi-directional many-to-one association to AerodromiLetovi
+  @OneToMany(mappedBy = "airport")
+  private List<AerodromiLetovi> aerodromiLetovis;
 
   public Airports() {}
 
@@ -171,8 +174,7 @@ public class Airports implements Serializable {
     return this.airportsDistanceMatrixs1;
   }
 
-  public void setAirportsDistanceMatrixs1(
-      List<AirportsDistanceMatrix> airportsDistanceMatrixs1) {
+  public void setAirportsDistanceMatrixs1(List<AirportsDistanceMatrix> airportsDistanceMatrixs1) {
     this.airportsDistanceMatrixs1 = airportsDistanceMatrixs1;
   }
 
@@ -196,8 +198,7 @@ public class Airports implements Serializable {
     return this.airportsDistanceMatrixs2;
   }
 
-  public void setAirportsDistanceMatrixs2(
-      List<AirportsDistanceMatrix> airportsDistanceMatrixs2) {
+  public void setAirportsDistanceMatrixs2(List<AirportsDistanceMatrix> airportsDistanceMatrixs2) {
     this.airportsDistanceMatrixs2 = airportsDistanceMatrixs2;
   }
 
@@ -232,12 +233,33 @@ public class Airports implements Serializable {
     return letoviPolasci;
   }
 
-  public LetoviPolasci removeLetoviPolasci(
-      LetoviPolasci letoviPolasci) {
+  public LetoviPolasci removeLetoviPolasci(LetoviPolasci letoviPolasci) {
     getLetoviPolascis().remove(letoviPolasci);
     letoviPolasci.setAirport(null);
 
     return letoviPolasci;
+  }
+
+  public List<AerodromiLetovi> getAerodromiLetovis() {
+    return this.aerodromiLetovis;
+  }
+
+  public void setAerodromiLetovis(List<AerodromiLetovi> aerodromiLetovis) {
+    this.aerodromiLetovis = aerodromiLetovis;
+  }
+
+  public AerodromiLetovi addAerodromiLetovi(AerodromiLetovi aerodromiLetovi) {
+    getAerodromiLetovis().add(aerodromiLetovi);
+    aerodromiLetovi.setAirport(this);
+
+    return aerodromiLetovi;
+  }
+
+  public AerodromiLetovi removeAerodromiLetovi(AerodromiLetovi aerodromiLetovi) {
+    getAerodromiLetovis().remove(aerodromiLetovi);
+    aerodromiLetovi.setAirport(null);
+
+    return aerodromiLetovi;
   }
 
 }

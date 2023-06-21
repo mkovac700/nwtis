@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -14,8 +15,10 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.foi.nwtis.Konfiguracija;
+import org.foi.nwtis.mkovac.aplikacija_3.jpa.AerodromiLetovi;
 import org.foi.nwtis.mkovac.aplikacija_3.jpa.Airports;
 import org.foi.nwtis.mkovac.aplikacija_3.jpa.LetoviPolasci;
+import org.foi.nwtis.mkovac.aplikacija_3.zrna.AerodromiLetoviFacade;
 import org.foi.nwtis.mkovac.aplikacija_3.zrna.AirportFacade;
 import org.foi.nwtis.mkovac.aplikacija_3.zrna.JmsPosiljatelj;
 import org.foi.nwtis.mkovac.aplikacija_3.zrna.LetoviPolasciFacade;
@@ -28,7 +31,8 @@ import jakarta.persistence.NoResultException;
 public class SakupljacLetovaAviona extends Thread {
   private Konfiguracija konfig;
 
-  private String[] aerodromiSakupljanje;
+  // private String[] aerodromiSakupljanje;
+  private List<String> aerodromiSakupljanje;
   private int ciklusTrajanje;
   private String preuzimanjeOd;
   private String preuzimanjeDo;
@@ -42,21 +46,26 @@ public class SakupljacLetovaAviona extends Thread {
 
   LetoviPolasciFacade letoviPolasciFacade;
   AirportFacade airportFacade;
+  AerodromiLetoviFacade aerodromiLetoviFacade;
   JmsPosiljatelj jmsPosiljatelj;
 
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
   public SakupljacLetovaAviona(Konfiguracija konfig, LetoviPolasciFacade letoviPolasciFacade,
-      AirportFacade airportFacade, JmsPosiljatelj jmsPosiljatelj) {
+      AirportFacade airportFacade, AerodromiLetoviFacade aerodromiLetoviFacade,
+      JmsPosiljatelj jmsPosiljatelj) {
     this.konfig = konfig;
-    this.aerodromiSakupljanje = this.konfig.dajPostavku("aerodromi.sakupljanje").trim().split(" ");
+    // this.aerodromiSakupljanje = this.konfig.dajPostavku("aerodromi.sakupljanje").trim().split("
+    // ");
+    this.aerodromiSakupljanje = new ArrayList<>();
     this.ciklusTrajanje = Integer.parseInt(this.konfig.dajPostavku("ciklus.trajanje"));
     this.preuzimanjeOd = this.konfig.dajPostavku("preuzimanje.od");
     this.preuzimanjeDo = this.konfig.dajPostavku("preuzimanje.do");
 
     this.letoviPolasciFacade = letoviPolasciFacade;
     this.airportFacade = airportFacade;
+    this.aerodromiLetoviFacade = aerodromiLetoviFacade;
     this.jmsPosiljatelj = jmsPosiljatelj;
   }
 
@@ -124,6 +133,12 @@ public class SakupljacLetovaAviona extends Thread {
     while (!this.kraj && trenutniDan < zavrsniDan) {
       Logger.getGlobal().log(Level.INFO,
           "Preuzimanje letova za dan " + konvertirajDan(trenutniDan));
+
+      List<AerodromiLetovi> aerodromiLetovi = aerodromiLetoviFacade.findAll();
+      if (aerodromiLetovi != null && !aerodromiLetovi.isEmpty()) {
+        aerodromiLetovi.removeIf(al -> al.getPreuzimanje() == 0);
+        aerodromiLetovi.forEach(al -> aerodromiSakupljanje.add(al.getAirport().getIcao()));
+      }
 
       long pocetnoVrijeme = System.currentTimeMillis();
       long ukupno = 0;
