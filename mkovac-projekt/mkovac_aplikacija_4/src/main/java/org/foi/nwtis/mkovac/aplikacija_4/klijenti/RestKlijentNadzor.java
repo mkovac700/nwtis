@@ -80,13 +80,15 @@ public class RestKlijentNadzor {
 
       Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
 
-      if (request.get(String.class).isEmpty())
+      String zahtjev = request.get(String.class);
+
+      if (zahtjev.isEmpty())
         return null;
 
       Gson gson = new Gson();
       Status status = null;
       try {
-        status = gson.fromJson(request.get(String.class), Status.class);
+        status = gson.fromJson(zahtjev, Status.class);
       } catch (JsonSyntaxException e) {
         Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }

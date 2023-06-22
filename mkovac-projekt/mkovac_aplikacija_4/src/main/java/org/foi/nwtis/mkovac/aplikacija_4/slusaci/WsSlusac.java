@@ -48,7 +48,7 @@ public class WsSlusac implements ServletContextListener {
 
     if (!provjeriStatusPosluzitelja()) {
       Logger.getGlobal().log(Level.SEVERE, "Poslužitelj AP1 nije aktivan, prekidam rad!");
-      System.exit(1);
+      throw new RuntimeException("Poslužitelj AP1 nije aktivan, prekidam rad!");
     }
   }
 
@@ -86,8 +86,8 @@ public class WsSlusac implements ServletContextListener {
     Status status = rkn.dajStatus();
 
     boolean s = false;
-    if (status != null)
-      s = Boolean.parseBoolean(status.getOpis().split(" ")[1]);
+    if (status != null && status.getOpis().split(" ")[1].equals("1"))
+      s = true;
 
     return s;
   }
