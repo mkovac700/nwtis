@@ -15,7 +15,6 @@ import jakarta.inject.Inject;
 import jakarta.jws.WebMethod;
 import jakarta.jws.WebParam;
 import jakarta.jws.WebService;
-import jakarta.persistence.NoResultException;
 import jakarta.xml.soap.SOAPException;
 import jakarta.xml.soap.SOAPFactory;
 import jakarta.xml.soap.SOAPFault;
@@ -77,9 +76,9 @@ public class WsKorisnici {
     Korisnici k;
     try {
       k = korisniciFacade.findOne(korisnik);
-    } catch (NoResultException e) {
-      Logger.getGlobal().log(Level.INFO, "Korisnik ne postoji: " + e.getMessage());
-      return null;
+      // } catch (NoResultException e) {
+      // Logger.getGlobal().log(Level.INFO, "Korisnik ne postoji: " + e.getMessage());
+      // return null;
     } catch (Exception ex) {
       Logger.getGlobal().log(Level.SEVERE, "Greška u dohvaćanju korisnika: " + ex.getMessage());
       return null;

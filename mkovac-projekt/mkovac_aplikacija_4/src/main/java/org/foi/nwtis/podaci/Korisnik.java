@@ -20,6 +20,6 @@ public class Korisnik {
   @Setter
   private String prezime;
 
-  // public Korisnik() {}
+  public Korisnik() {}
 
 }
