@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import org.foi.nwtis.mkovac.aplikacija_4.iznimke.PogresnaAutentikacija;
 import org.foi.nwtis.mkovac.aplikacija_4.jpa.Korisnici;
 import org.foi.nwtis.mkovac.aplikacija_4.pomocnici.Autentikator;
-import org.foi.nwtis.mkovac.aplikacija_4.zrna.AirportFacade;
+import org.foi.nwtis.mkovac.aplikacija_4.web.WsInfo;
 import org.foi.nwtis.mkovac.aplikacija_4.zrna.KorisniciFacade;
 import org.foi.nwtis.podaci.Korisnik;
 import jakarta.annotation.Resource;
@@ -28,9 +28,6 @@ import jakarta.xml.ws.soap.SOAPFaultException;
  */
 @WebService(serviceName = "korisnici")
 public class WsKorisnici {
-
-  @Inject
-  AirportFacade airportFacade;
 
   @Inject
   KorisniciFacade korisniciFacade;
@@ -100,6 +97,10 @@ public class WsKorisnici {
       _korisnik.setLozinka(korisnik.getLozinka());
 
       korisniciFacade.create(_korisnik);
+
+      int brojKorisnika = korisniciFacade.count();
+
+      WsInfo.posaljiObavijest("Broj upisanih korisnika: " + brojKorisnika);
 
       return true;
     }

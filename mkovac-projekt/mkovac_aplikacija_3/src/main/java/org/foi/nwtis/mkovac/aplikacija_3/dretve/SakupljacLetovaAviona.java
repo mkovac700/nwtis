@@ -136,7 +136,7 @@ public class SakupljacLetovaAviona extends Thread {
 
       List<AerodromiLetovi> aerodromiLetovi = aerodromiLetoviFacade.findAll();
       if (aerodromiLetovi != null && !aerodromiLetovi.isEmpty()) {
-        aerodromiLetovi.removeIf(al -> al.getPreuzimanje() == 0);
+        aerodromiLetovi.removeIf(al -> al.getPreuzimanje() == false);
         aerodromiLetovi.forEach(al -> aerodromiSakupljanje.add(al.getAirport().getIcao()));
       }
 

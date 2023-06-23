@@ -75,6 +75,28 @@
 							<genWsdl>true</genWsdl>
 						</configuration>
 					</execution>
+					<execution>
+						<id>generate-wsdl-aerodromi</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>wsgen</goal>
+						</goals>
+						<configuration>
+							<sei>org.foi.nwtis.mkovac.aplikacija_4.ws.WsAerodromi</sei>
+							<genWsdl>true</genWsdl>
+						</configuration>
+					</execution>
+					<execution>
+						<id>generate-wsdl-letovi</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>wsgen</goal>
+						</goals>
+						<configuration>
+							<sei>org.foi.nwtis.mkovac.aplikacija_4.ws.WsLetovi</sei>
+							<genWsdl>true</genWsdl>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
@@ -275,6 +297,23 @@
 			<artifactId>nwtis_rest_bp_lib</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<!-- 
+		<dependency>
+			<groupId>org.glassfish.tyrus</groupId>
+			<artifactId>tyrus-client</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.tyrus</groupId>
+			<artifactId>tyrus-server</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.tyrus</groupId>
+			<artifactId>tyrus-container-grizzly</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+		-->
 		<!-- 
 		<dependency>
 			<groupId>org.foi.nwtis</groupId>

@@ -8,6 +8,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -84,5 +85,14 @@ public class KorisniciFacade {
     TypedQuery<Korisnici> q = em.createQuery(cq);
 
     return q.getResultList();
+  }
+
+  public int count() {
+    cb = em.getCriteriaBuilder();
+    CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+    Root<Korisnici> rt = cq.from(Korisnici.class);
+    cq.select(cb.count(rt));
+    Query q = em.createQuery(cq);
+    return ((Long) q.getSingleResult()).intValue();
   }
 }

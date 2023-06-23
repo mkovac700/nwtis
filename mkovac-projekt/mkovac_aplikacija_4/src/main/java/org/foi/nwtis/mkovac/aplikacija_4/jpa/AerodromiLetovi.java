@@ -28,7 +28,7 @@ public class AerodromiLetovi implements Serializable {
   private int id;
 
   @Column(nullable = false)
-  private byte preuzimanje;
+  private boolean preuzimanje;
 
   // bi-directional many-to-one association to Airport
   @ManyToOne
@@ -45,11 +45,11 @@ public class AerodromiLetovi implements Serializable {
     this.id = id;
   }
 
-  public byte getPreuzimanje() {
+  public boolean getPreuzimanje() {
     return this.preuzimanje;
   }
 
-  public void setPreuzimanje(byte preuzimanje) {
+  public void setPreuzimanje(boolean preuzimanje) {
     this.preuzimanje = preuzimanje;
   }
 

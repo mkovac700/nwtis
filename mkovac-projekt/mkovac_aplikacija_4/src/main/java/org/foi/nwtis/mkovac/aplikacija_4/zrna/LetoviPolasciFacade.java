@@ -1,5 +1,6 @@
 package org.foi.nwtis.mkovac.aplikacija_4.zrna;
 
+import java.util.List;
 import org.foi.nwtis.mkovac.aplikacija_4.jpa.LetoviPolasci;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateless;
@@ -9,6 +10,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
 /**
@@ -47,10 +49,30 @@ public class LetoviPolasciFacade {
   public LetoviPolasci findLast() throws NoResultException {
     cb = em.getCriteriaBuilder();
     CriteriaQuery<LetoviPolasci> cq = cb.createQuery(LetoviPolasci.class);
-    Root<LetoviPolasci> root = cq.from(LetoviPolasci.class);
-    cq.orderBy(cb.desc(root.get("id")));
+    Root<LetoviPolasci> rt = cq.from(LetoviPolasci.class);
+    cq.orderBy(cb.desc(rt.get("id")));
     TypedQuery<LetoviPolasci> q = em.createQuery(cq);
     q.setMaxResults(1);
     return q.getSingleResult();
+  }
+
+  public List<LetoviPolasci> findAll(String icao, long danOd, long danDo, int odBroja, int broj) {
+    cb = em.getCriteriaBuilder();
+    CriteriaQuery<LetoviPolasci> cq = cb.createQuery(LetoviPolasci.class);
+    Root<LetoviPolasci> rt = cq.from(LetoviPolasci.class);
+
+    Predicate predicateIcao = cb.equal(rt.get("airport").get("icao"), icao);
+    Predicate predicateDanOd = cb.greaterThanOrEqualTo(rt.get("firstSeen"), danOd);
+    Predicate predicateDanDo = cb.lessThanOrEqualTo(rt.get("firstSeen"), danDo);
+
+    Predicate predicate = cb.and(predicateIcao, predicateDanOd, predicateDanDo);
+
+    cq.where(predicate);
+
+    TypedQuery<LetoviPolasci> q = em.createQuery(cq);
+    q.setFirstResult(odBroja);
+    q.setMaxResults(broj);
+
+    return q.getResultList();
   }
 }
