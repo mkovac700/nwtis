@@ -5,8 +5,29 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class DatumskiUpravitelj {
+/**
+ * Klasa za rad s datumima
+ * 
+ * @author Marijan Kovač
+ *
+ */
+public class UpraviteljDatuma {
+
+  private static final String regexDatum =
+      "(0[1-9]|[1-2][0-9]|3[01])\\.(0[1-9]|1[012])\\.(19[7-9][0-9]|20[0-2][0-9]|203[0-7])";
+
+  /**
+   * Provjerava ispravnost formata datuma
+   * 
+   * @param datum Zadani datum
+   * @return true ako je u redu, inače false
+   */
+  public static boolean provjeriFormatDatuma(String datum) {
+    return provjeriIzraz(datum, regexDatum);
+  }
 
   /**
    * Konvertira datum u formatu dd.MM.yyyy u vrijeme u sekundama proteklo od 1.1.1970. (eng. epoch
@@ -45,5 +66,23 @@ public class DatumskiUpravitelj {
     epochTime = dateTime.toInstant().getEpochSecond();
 
     return epochTime;
+  }
+
+  /**
+   * Provjerava ispravnost danog izraza koristeći regularne izraze
+   * 
+   * @param izraz Izraz koji se provjerava
+   * @param regex Regularni izraz s kojim se provjerava
+   * @return true ako je u redu, inače false
+   */
+  private static boolean provjeriIzraz(String izraz, String regex) {
+    String s = izraz.trim();
+
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(s);
+
+    boolean status = matcher.matches();
+
+    return status;
   }
 }

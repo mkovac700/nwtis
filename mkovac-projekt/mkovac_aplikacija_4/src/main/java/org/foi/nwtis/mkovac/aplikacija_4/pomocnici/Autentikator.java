@@ -7,14 +7,23 @@ import org.foi.nwtis.mkovac.aplikacija_4.jpa.Korisnici;
 import org.foi.nwtis.mkovac.aplikacija_4.zrna.KorisniciFacade;
 import jakarta.persistence.NoResultException;
 
+/**
+ * Klasa za obavljanje autentikacije korisnika
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class Autentikator {
 
-  // @Inject
-  // static KorisniciFacade korisniciFacade;
-  //
-  // @Resource(lookup = "java:app/jdbc/nwtis_bp")
-  // javax.sql.DataSource ds;
-
+  /**
+   * Obavlja autentikaciju korisnika na temelju korisničkog imena i lozinke
+   * 
+   * @param korisniciFacade objekt klase KorisniciFacade za upravljanje tablicom Korisnik u bazi
+   *        podataka
+   * @param korisnik Korisničko ime
+   * @param lozinka Korisnička lozinka
+   * @throws PogresnaAutentikacija Ukoliko autentikacija nije bila uspješna
+   */
   public static void autenticiraj(KorisniciFacade korisniciFacade, String korisnik, String lozinka)
       throws PogresnaAutentikacija {
 

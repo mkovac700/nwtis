@@ -5,4 +5,8 @@
 <entry key="adresa.AP2">http://200.20.0.4:8080/mkovac_aplikacija_2/api</entry>
 <entry key="OpenSkyNetwork.korisnik">mkovac</entry>
 <entry key="OpenSkyNetwork.lozinka">m43X7PxAgD</entry>
+<entry key="OSKlijentBP.korisnik">mkovac@student.foi.hr</entry>
+<entry key="OSKlijentBP.lozinka">mkovac</entry>
+<entry key="preuzimanje.klijent">OSKlijent</entry>
+<entry key="OpenWeatherMap.apikey">2ae2c6718a6b24cf5da0b758bea84e5e</entry>
 </properties>

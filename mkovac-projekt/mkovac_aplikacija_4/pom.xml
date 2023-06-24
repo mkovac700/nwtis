@@ -97,6 +97,17 @@
 							<genWsdl>true</genWsdl>
 						</configuration>
 					</execution>
+					<execution>
+						<id>generate-wsdl-meteo</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>wsgen</goal>
+						</goals>
+						<configuration>
+							<sei>org.foi.nwtis.mkovac.aplikacija_4.ws.WsMeteo</sei>
+							<genWsdl>true</genWsdl>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
