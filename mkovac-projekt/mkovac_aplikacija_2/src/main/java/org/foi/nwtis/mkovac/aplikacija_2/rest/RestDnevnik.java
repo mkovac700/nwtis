@@ -78,6 +78,6 @@ public class RestDnevnik {
 
     dnevnikFacade.create(dnevnik);
 
-    return Response.ok().build();
+    return Response.ok().entity("Zapis uspješno dodan!").build();
   }
 }
