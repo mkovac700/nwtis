@@ -14,11 +14,7 @@
 	
 	<main>
 		
-		<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/svi">Pregled aerodroma</a><br/> 
-		<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/udaljenosti2aerodroma">Pregled udaljenosti između dva aerodroma</a><br/>
-		<a href="${pageContext.servletContext.contextPath}/mvc/letovi/aerodrom">Pregled polazaka/letova s aerodroma</a><br/>
-		<a href="${pageContext.servletContext.contextPath}/mvc/letovi/aerodromi">Pregled polazaka/letova između dva aerodroma</a><br/>
-		<a href="${pageContext.servletContext.contextPath}/mvc/letovi/spremljeni">Pregled spremljenih letova</a><br/>
+		<a href="${pageContext.servletContext.contextPath}/mvc/korisnici">5.2 - Korisnici</a><br/> 
 	</main>
 
 </body>

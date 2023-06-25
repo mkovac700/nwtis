@@ -3,4 +3,10 @@
 <properties>
 <comment>NWTiS mkovac 2023.</comment>
 <entry key="adresa.AP2">http://200.20.0.4:8080/mkovac_aplikacija_2/api</entry>
+<entry key="autor.ime">Marijan</entry>
+<entry key="autor.prezime">Kovač</entry>
+<entry key="autor.predmet">NWTiS</entry>
+<entry key="aplikacija.godina">2023</entry>
+<entry key="aplikacija.verzija">1.00</entry>
+<entry key="stranica.brojRedova">15</entry>
 </properties>
