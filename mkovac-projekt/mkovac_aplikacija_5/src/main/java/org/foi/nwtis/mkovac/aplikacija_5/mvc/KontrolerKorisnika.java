@@ -35,19 +35,11 @@ public class KontrolerKorisnika {
   @Inject
   private Models model;
 
-  private int brojRedova = 15;
   private Info info;
 
   public KontrolerKorisnika() {
     ServletContext context = WsSlusac.getServletContext();
     Konfiguracija konf = (Konfiguracija) context.getAttribute("konfig");
-
-    try {
-      brojRedova = Integer.parseInt(konf.dajPostavku("stranica.brojRedova"));
-    } catch (NumberFormatException e) {
-      Logger.getGlobal().log(Level.SEVERE,
-          "Neispravan broj redova. Postavljeno na zadani broj redova (15)." + e.getMessage());
-    }
 
     String autorIme = konf.dajPostavku("autor.ime");
     String autorPrezime = konf.dajPostavku("autor.prezime");
@@ -166,6 +158,9 @@ public class KontrolerKorisnika {
   @View("5.2.3.jsp")
   public void postPregled(@FormParam("ime") String ime, @FormParam("prezime") String prezime) {
     model.put("info", info);
+
+    model.put("ime", ime);
+    model.put("prezime", prezime);
 
     String korisnickoIme = sesija.getKorisnik();
     String lozinka = sesija.getLozinka();

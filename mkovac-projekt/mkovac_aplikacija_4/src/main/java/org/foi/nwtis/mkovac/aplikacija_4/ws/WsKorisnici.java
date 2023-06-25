@@ -52,8 +52,8 @@ public class WsKorisnici {
     List<Korisnici> korisnici = korisniciFacade.findAll(traziImeKorisnika, traziPrezimeKorisnika);
     List<Korisnik> _korisnici = new ArrayList<>();
 
-    korisnici
-        .forEach(k -> _korisnici.add(new Korisnik(korisnik, lozinka, k.getIme(), k.getPrezime())));
+    korisnici.forEach(k -> _korisnici
+        .add(new Korisnik(k.getKorisnik(), k.getLozinka(), k.getIme(), k.getPrezime())));
 
     return _korisnici;
   }
@@ -100,7 +100,7 @@ public class WsKorisnici {
 
       int brojKorisnika = korisniciFacade.count();
 
-      WsInfo.posaljiObavijest("Broj upisanih korisnika: " + brojKorisnika);
+      WsInfo.posaljiObavijest("Trenutni broj korisnika: " + brojKorisnika);
 
       return true;
     }

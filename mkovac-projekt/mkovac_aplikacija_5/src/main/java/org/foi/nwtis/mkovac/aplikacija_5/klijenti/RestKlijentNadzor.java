@@ -1,5 +1,6 @@
 package org.foi.nwtis.mkovac.aplikacija_5.klijenti;
 
+import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
@@ -49,6 +50,42 @@ public class RestKlijentNadzor {
   }
 
   /**
+   * Šalje komandu prema AP1 i vraća odgovor (status).
+   * 
+   * @param komanda Komanda koja se šalje (KRAJ | INIT | PAUZA)
+   * @return Status poslužitelja
+   */
+  public Status dajKomandu(String komanda) {
+    RestKlijent rk = new RestKlijent();
+    Status status = null;
+    try {
+      status = rk.dajKomandu(komanda);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+    rk.close();
+    return status;
+  }
+
+  /**
+   * Šalje komandu INFO s vrstom prema AP1 i vraća odgovor (status).
+   * 
+   * @param vrsta Vrsta komande INFO koja se šalje (DA | NE)
+   * @return Status poslužitelja
+   */
+  public Status dajInfo(String vrsta) {
+    RestKlijent rk = new RestKlijent();
+    Status status = null;
+    try {
+      status = rk.dajKomandu(vrsta);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+    rk.close();
+    return status;
+  }
+
+  /**
    * Interna klasa za rad s klijentom REST servisa. Odrađuje slanje odgovarajućih zahtjeva prema
    * REST servisu.
    * 
@@ -77,6 +114,66 @@ public class RestKlijentNadzor {
      */
     public Status dajStatus() throws ClientErrorException {
       WebTarget resource = webTarget;
+
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
+      String zahtjev = request.get(String.class);
+
+      if (zahtjev.isEmpty())
+        return null;
+
+      Gson gson = new Gson();
+      Status status = null;
+      try {
+        status = gson.fromJson(zahtjev, Status.class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+
+      return status;
+    }
+
+    /**
+     * Šalje komandu prema poslužitelju AP1.
+     * 
+     * @param komanda Komanda koja se šalje
+     * @return Status poslužitelja
+     * @throws ClientErrorException Ukoliko povezivanje na AP2 nije bilo uspješno.
+     */
+    public Status dajKomandu(String komanda) throws ClientErrorException {
+      WebTarget resource = webTarget;
+
+      resource = resource.path(MessageFormat.format("{0}", new Object[] {komanda}));
+
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
+      String zahtjev = request.get(String.class);
+
+      if (zahtjev.isEmpty())
+        return null;
+
+      Gson gson = new Gson();
+      Status status = null;
+      try {
+        status = gson.fromJson(zahtjev, Status.class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+
+      return status;
+    }
+
+    /**
+     * Šalje komandu INFO prema poslužitelju AP1.
+     * 
+     * @param vrsta Vrsta koja se šalje
+     * @return Status poslužitelja
+     * @throws ClientErrorException Ukoliko povezivanje na AP2 nije bilo uspješno.
+     */
+    public Status dajInfo(String vrsta) throws ClientErrorException {
+      WebTarget resource = webTarget;
+
+      resource = resource.path(MessageFormat.format("INFO/{0}", new Object[] {vrsta}));
 
       Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
 

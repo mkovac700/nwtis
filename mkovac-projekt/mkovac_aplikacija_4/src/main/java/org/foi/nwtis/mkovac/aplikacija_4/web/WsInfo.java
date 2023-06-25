@@ -3,7 +3,8 @@ package org.foi.nwtis.mkovac.aplikacija_4.web;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.google.gson.Gson;
+import org.foi.nwtis.mkovac.aplikacija_4.zrna.KorisniciFacade;
+import jakarta.inject.Inject;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
@@ -15,6 +16,9 @@ import jakarta.websocket.server.ServerEndpoint;
 public class WsInfo {
   private static Session session;
 
+  @Inject
+  KorisniciFacade korisniciFacade;
+
   @OnOpen
   public void onOpen(Session session) {
     WsInfo.session = session;
@@ -25,6 +29,10 @@ public class WsInfo {
     if (message.equals("dajMeteo(info)")) {
       // TODO
     }
+    if (message.equals("dajBrojKorisnika")) {
+      int brojKorisnika = korisniciFacade.count();
+      WsInfo.posaljiObavijest("Trenutni broj korisnika: " + brojKorisnika);
+    }
   }
 
   @OnClose
@@ -34,9 +42,9 @@ public class WsInfo {
 
   public static void posaljiObavijest(String poruka) {
     try {
-      String jsonPoruka = new Gson().toJson(poruka);
+      // String jsonPoruka = new Gson().toJson(poruka);
       if (session != null)
-        session.getBasicRemote().sendText(jsonPoruka);
+        session.getBasicRemote().sendText(poruka);
       else
         throw new IOException("Nema povezanih WS klijenata!");
     } catch (IOException e) {

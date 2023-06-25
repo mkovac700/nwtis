@@ -1,7 +1,5 @@
 package org.foi.nwtis.mkovac.aplikacija_5.mvc;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.aplikacija_5.slusaci.WsSlusac;
 import org.foi.nwtis.podaci.Info;
@@ -21,19 +19,11 @@ public class KontrolerPocetna {
   @Inject
   private Models model;
 
-  private int brojRedova = 15;
   private Info info;
 
   public KontrolerPocetna() {
     ServletContext context = WsSlusac.getServletContext();
     Konfiguracija konf = (Konfiguracija) context.getAttribute("konfig");
-
-    try {
-      brojRedova = Integer.parseInt(konf.dajPostavku("stranica.brojRedova"));
-    } catch (NumberFormatException e) {
-      Logger.getGlobal().log(Level.SEVERE,
-          "Neispravan broj redova. Postavljeno na zadani broj redova (15)." + e.getMessage());
-    }
 
     String autorIme = konf.dajPostavku("autor.ime");
     String autorPrezime = konf.dajPostavku("autor.prezime");
