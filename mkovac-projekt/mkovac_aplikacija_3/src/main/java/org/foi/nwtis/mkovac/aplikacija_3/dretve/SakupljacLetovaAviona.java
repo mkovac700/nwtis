@@ -24,6 +24,7 @@ import org.foi.nwtis.mkovac.aplikacija_3.zrna.JmsPosiljatelj;
 import org.foi.nwtis.mkovac.aplikacija_3.zrna.LetoviPolasciFacade;
 import org.foi.nwtis.rest.klijenti.NwtisRestIznimka;
 import org.foi.nwtis.rest.klijenti.OSKlijent;
+import org.foi.nwtis.rest.klijenti.OSKlijentBP;
 import org.foi.nwtis.rest.podaci.LetAviona;
 import jakarta.annotation.Resource;
 import jakarta.persistence.NoResultException;
@@ -31,13 +32,15 @@ import jakarta.persistence.NoResultException;
 public class SakupljacLetovaAviona extends Thread {
   private Konfiguracija konfig;
 
-  // private String[] aerodromiSakupljanje;
   private List<String> aerodromiSakupljanje;
   private int ciklusTrajanje;
   private String preuzimanjeOd;
   private String preuzimanjeDo;
   private String osKorisnik;
   private String osLozinka;
+  private String bpKorisnik;
+  private String bpLozinka;
+  private String klijent;
 
   private final String regexDatum =
       "(0[1-9]|[1-2][0-9]|3[01])\\.(0[1-9]|1[012])\\.(19[7-9][0-9]|20[0-2][0-9]|203[0-7])";
@@ -55,13 +58,19 @@ public class SakupljacLetovaAviona extends Thread {
   public SakupljacLetovaAviona(Konfiguracija konfig, LetoviPolasciFacade letoviPolasciFacade,
       AirportFacade airportFacade, AerodromiLetoviFacade aerodromiLetoviFacade,
       JmsPosiljatelj jmsPosiljatelj) {
+
     this.konfig = konfig;
-    // this.aerodromiSakupljanje = this.konfig.dajPostavku("aerodromi.sakupljanje").trim().split("
-    // ");
+
     this.aerodromiSakupljanje = new ArrayList<>();
+
     this.ciklusTrajanje = Integer.parseInt(this.konfig.dajPostavku("ciklus.trajanje"));
     this.preuzimanjeOd = this.konfig.dajPostavku("preuzimanje.od");
     this.preuzimanjeDo = this.konfig.dajPostavku("preuzimanje.do");
+    this.osKorisnik = this.konfig.dajPostavku("OpenSkyNetwork.korisnik");
+    this.osLozinka = this.konfig.dajPostavku("OpenSkyNetwork.lozinka");
+    this.bpKorisnik = this.konfig.dajPostavku("OSKlijentBP.korisnik");
+    this.bpLozinka = this.konfig.dajPostavku("OSKlijentBP.lozinka");
+    this.klijent = this.konfig.dajPostavku("preuzimanje.klijent");
 
     this.letoviPolasciFacade = letoviPolasciFacade;
     this.airportFacade = airportFacade;
@@ -126,7 +135,18 @@ public class SakupljacLetovaAviona extends Thread {
     else
       trenutniDan = pocetniDan;
 
-    OSKlijent osKlijent = new OSKlijent(osKorisnik, osLozinka);
+    OSKlijent osKlijent = null;
+    if (klijent.equals("OSKlijent"))
+      osKlijent = new OSKlijent(osKorisnik, osLozinka);
+
+    OSKlijentBP osKlijentBP = null;
+    if (klijent.equals("OSKlijentBP"))
+      osKlijentBP = new OSKlijentBP(bpKorisnik, bpLozinka);
+
+    if (osKlijent == null && osKlijentBP == null) {
+      Logger.getGlobal().log(Level.SEVERE, "Nepoznat klijent preuzimanja podataka o letovima!");
+      return;
+    }
 
     Logger.getGlobal().log(Level.INFO, "Započeto preuzimanje letova...");
 
@@ -147,8 +167,14 @@ public class SakupljacLetovaAviona extends Thread {
         Airports airport = airportFacade.find(aerodrom);
         List<LetAviona> letoviAviona = null;
         try {
-          letoviAviona = osKlijent.getDepartures(aerodrom, trenutniDan, dodajDan(trenutniDan));
+          if (klijent.equals("OSKlijent"))
+            letoviAviona = osKlijent.getDepartures(aerodrom, trenutniDan, dodajDan(trenutniDan));
+
+          if (klijent.equals("OSKlijentBP"))
+            letoviAviona = osKlijentBP.getDepartures(aerodrom, trenutniDan, dodajDan(trenutniDan));
+
           letoviAviona.removeIf(la -> la.getEstArrivalAirport() == null);
+
         } catch (NwtisRestIznimka e) {
           Logger.getGlobal().log(Level.WARNING, e.getMessage());
         }

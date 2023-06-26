@@ -5,8 +5,10 @@
 <entry key="adresa.AP2">http://200.20.0.4:8080/mkovac_aplikacija_2/api</entry>
 <entry key="OpenSkyNetwork.korisnik">mkovac</entry>
 <entry key="OpenSkyNetwork.lozinka">m43X7PxAgD</entry>
+<entry key="OSKlijentBP.korisnik">mkovac@student.foi.hr</entry>
+<entry key="OSKlijentBP.lozinka">mkovac</entry>
 <entry key="ciklus.trajanje">300</entry>
-<entry key="aerodromi.sakupljanje">BIKF EDDB EDDF EETN EFHK EDDM EGAA EGBB EGCC EGGP EGKK EHAM EIDW ELLX ENGM EPWA ESSA EVRA LDZA LEBL LFPG LOWW</entry>
-<entry key="preuzimanje.od">01.01.2023</entry>
-<entry key="preuzimanje.do">01.05.2023</entry>
+<entry key="preuzimanje.od">01.12.2022</entry>
+<entry key="preuzimanje.do">13.01.2023</entry>
+<entry key="preuzimanje.klijent">OSKlijent</entry>
 </properties>
