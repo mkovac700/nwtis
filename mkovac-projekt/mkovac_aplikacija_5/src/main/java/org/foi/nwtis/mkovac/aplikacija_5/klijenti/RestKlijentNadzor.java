@@ -77,7 +77,7 @@ public class RestKlijentNadzor {
     RestKlijent rk = new RestKlijent();
     Status status = null;
     try {
-      status = rk.dajKomandu(vrsta);
+      status = rk.dajInfo(vrsta);
     } catch (ClientErrorException e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }

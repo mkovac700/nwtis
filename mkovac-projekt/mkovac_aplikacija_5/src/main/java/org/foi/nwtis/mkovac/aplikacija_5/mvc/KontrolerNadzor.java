@@ -60,24 +60,82 @@ public class KontrolerNadzor {
 
     if (komanda.equals("STATUS")) {
       Status status = rkn.dajStatus();
-      if (status != null)
-        odgovor = status.getOpis();
+
+      if (status != null) {
+        String opis = status.getOpis();
+        int statusKod = status.getStatus();
+
+        if (statusKod == 200) {
+          if (opis.split(" ")[1].equals("1"))
+            odgovor = "Poslužitelj je aktivan!";
+          else
+            odgovor = "Poslužitelj je pauziran!";
+        } else
+          odgovor = opis;
+      }
     }
 
-    if (komanda.equals("KRAJ") || komanda.equals("INIT") || komanda.equals("PAUZA")) {
+    if (komanda.equals("KRAJ")) {
       Status status = rkn.dajKomandu(komanda);
-      if (status != null)
-        odgovor = status.getOpis();
+
+      if (status != null) {
+        String opis = status.getOpis();
+
+        if (opis.equals("OK"))
+          odgovor = "Poslužitelj je zaustavljen!";
+        else
+          odgovor = opis;
+      }
+    }
+
+    if (komanda.equals("INIT")) {
+      Status status = rkn.dajKomandu(komanda);
+
+      if (status != null) {
+        String opis = status.getOpis();
+
+        if (opis.equals("OK"))
+          odgovor = "Poslužitelj je inicijaliziran!";
+        else
+          odgovor = opis;
+      }
+    }
+
+    if (komanda.equals("PAUZA")) {
+      Status status = rkn.dajKomandu(komanda);
+
+      if (status != null) {
+        String opis = status.getOpis();
+
+        if (opis.contains("OK")) {
+          String brojZahtjeva = opis.split(" ")[1];
+          odgovor =
+              "Poslužitelj je pauziran! Broj obrađenih zahtjeva za udaljenost: " + brojZahtjeva;
+        } else
+          odgovor = opis;
+      }
     }
 
     if (komanda.contains("INFO")) {
       String vrsta = komanda.split(" ")[1];
       Status status = rkn.dajInfo(vrsta);
-      if (status != null)
-        odgovor = status.getOpis();
+
+
+      if (status != null) {
+        String opis = status.getOpis();
+
+        if (opis.contains("OK")) {
+          if (vrsta.equals("DA"))
+            odgovor = "Ispis dozvoljen!";
+          else
+            odgovor = "Ispis prekinut!";
+        } else
+          odgovor = opis;
+      }
+
+
     }
 
     model.put("odgovor", odgovor);
   }
-
 }

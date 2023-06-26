@@ -38,7 +38,11 @@ public class RestNadzor {
       var jsonStatus = gson.toJson(status);
       response = Response.ok().entity(jsonStatus).build();
     } else {
-      response = Response.status(400, odgovor).build();
+      // response = Response.status(400, odgovor).build();
+      status = new Status(400, odgovor);
+      var gson = new Gson();
+      var jsonStatus = gson.toJson(status);
+      response = Response.ok().entity(jsonStatus).build();
     }
 
     return response;
@@ -62,7 +66,10 @@ public class RestNadzor {
       var jsonStatus = gson.toJson(status);
       response = Response.ok().entity(jsonStatus).build();
     } else {
-      response = Response.status(400, odgovor).build();
+      status = new Status(400, odgovor);
+      var gson = new Gson();
+      var jsonStatus = gson.toJson(status);
+      response = Response.ok().entity(jsonStatus).build();
     }
 
     return response;
@@ -86,7 +93,10 @@ public class RestNadzor {
       var jsonStatus = gson.toJson(status);
       response = Response.ok().entity(jsonStatus).build();
     } else {
-      response = Response.status(400, odgovor).build();
+      status = new Status(400, odgovor);
+      var gson = new Gson();
+      var jsonStatus = gson.toJson(status);
+      response = Response.ok().entity(jsonStatus).build();
     }
 
     return response;
