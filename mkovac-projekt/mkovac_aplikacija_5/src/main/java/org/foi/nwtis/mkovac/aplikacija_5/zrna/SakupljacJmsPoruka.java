@@ -53,6 +53,31 @@ public class SakupljacJmsPoruka {
   }
 
   /**
+   * Vraća kolekciju poruka u zadanom rasponu
+   * 
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Kolekcija poruka
+   */
+  public List<String> dajSvePoruke(int odBroja, int broj) {
+
+    if (odBroja < 1 || broj < 1) {
+      odBroja = 1;
+      broj = 20;
+    }
+
+    if (odBroja > jmsPoruke.size())
+      return null;
+
+    else if (odBroja - 1 + broj > jmsPoruke.size())
+      return jmsPoruke.subList(odBroja - 1, jmsPoruke.size());
+
+    else
+      return jmsPoruke.subList(odBroja - 1, odBroja - 1 + broj);
+
+  }
+
+  /**
    * Briše sve poruke iz kolekcije
    */
   public void obrisiSvePoruke() {

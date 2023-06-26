@@ -154,6 +154,8 @@ public class SakupljacLetovaAviona extends Thread {
       Logger.getGlobal().log(Level.INFO,
           "Preuzimanje letova za dan " + konvertirajDan(trenutniDan));
 
+      aerodromiSakupljanje.clear();
+
       List<AerodromiLetovi> aerodromiLetovi = aerodromiLetoviFacade.findAll();
       if (aerodromiLetovi != null && !aerodromiLetovi.isEmpty()) {
         aerodromiLetovi.removeIf(al -> al.getPreuzimanje() == false);
@@ -199,7 +201,11 @@ public class SakupljacLetovaAviona extends Thread {
             letoviPolasci.setStored(Timestamp.from(Instant.now()));
             letoviPolasci.setAirport(airport);
 
-            letoviPolasciFacade.create(letoviPolasci);
+            try {
+              letoviPolasciFacade.create(letoviPolasci);
+            } catch (Exception e) {
+              Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+            }
 
             ukupno++;
           }

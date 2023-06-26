@@ -3,6 +3,7 @@ package org.foi.nwtis.mkovac.aplikacija_4.web;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.foi.nwtis.mkovac.aplikacija_4.zrna.AerodromiLetoviFacade;
 import org.foi.nwtis.mkovac.aplikacija_4.zrna.KorisniciFacade;
 import jakarta.inject.Inject;
 import jakarta.websocket.CloseReason;
@@ -19,6 +20,9 @@ public class WsInfo {
   @Inject
   KorisniciFacade korisniciFacade;
 
+  @Inject
+  AerodromiLetoviFacade aerodromiLetoviFacade;
+
   @OnOpen
   public void onOpen(Session session) {
     WsInfo.session = session;
@@ -26,12 +30,16 @@ public class WsInfo {
 
   @OnMessage
   public void onMessage(String message, Session session) {
-    if (message.equals("dajMeteo(info)")) {
-      // TODO
-    }
+
     if (message.equals("dajBrojKorisnika")) {
       int brojKorisnika = korisniciFacade.count();
       WsInfo.posaljiObavijest("Trenutni broj korisnika: " + brojKorisnika);
+    }
+
+    if (message.equals("dajBrojAerodromaZaPreuzimanje")) {
+      int brojAerodromaZaPreuzimanje = aerodromiLetoviFacade.count();
+      WsInfo.posaljiObavijest(
+          "Trenutni broj aerodroma za preuzimanje: " + brojAerodromaZaPreuzimanje);
     }
   }
 

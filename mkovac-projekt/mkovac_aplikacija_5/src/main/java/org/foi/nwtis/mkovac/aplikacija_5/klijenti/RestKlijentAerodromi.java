@@ -1,10 +1,14 @@
 package org.foi.nwtis.mkovac.aplikacija_5.klijenti;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.aplikacija_5.slusaci.WsSlusac;
 import org.foi.nwtis.podaci.Aerodrom;
+import org.foi.nwtis.podaci.Udaljenost;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import jakarta.servlet.ServletContext;
@@ -47,6 +51,52 @@ public class RestKlijentAerodromi {
     }
     rk.close();
     return k;
+  }
+
+  /**
+   * Dohvaća podatke o svim aerodromima u zadanom rasponu. Zadani raspon je 1, 20.
+   * 
+   * @param traziNaziv
+   * @param traziDrzavu
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća kolekciju (listu) podataka
+   */
+  public List<Aerodrom> dajAerodromi(String traziNaziv, String traziDrzavu, int odBroja, int broj) {
+    RestKlijent rk = new RestKlijent();
+    Aerodrom[] json_Aerodromi = null;
+    try {
+      json_Aerodromi = rk.dajAerodromi(traziNaziv, traziDrzavu, odBroja, broj);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+    List<Aerodrom> aerodromi;
+    if (json_Aerodromi == null) {
+      aerodromi = new ArrayList<>();
+    } else {
+      aerodromi = Arrays.asList(json_Aerodromi);
+    }
+    rk.close();
+    return aerodromi;
+  }
+
+  public List<Udaljenost> dajUdaljenosti2Aerodroma(String icaoOd, String icaoDo) {
+    RestKlijent rc = new RestKlijent();
+    Udaljenost[] json_udaljenost2Aerodroma = null;
+    try {
+      json_udaljenost2Aerodroma = rc.dajUdaljenosti2Aerodroma(icaoOd, icaoDo);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+    List<Udaljenost> udaljenost2Aerodroma;
+    if (json_udaljenost2Aerodroma == null) {
+      udaljenost2Aerodroma = new ArrayList<>();
+    } else {
+      udaljenost2Aerodroma = Arrays.asList(json_udaljenost2Aerodroma);
+    }
+    rc.close();
+
+    return udaljenost2Aerodroma;
   }
 
   /**
@@ -95,6 +145,62 @@ public class RestKlijentAerodromi {
       return aerodrom;
     }
 
+    public Aerodrom[] dajAerodromi(String traziNaziv, String traziDrzavu, int odBroja, int broj)
+        throws ClientErrorException {
+      WebTarget resource = webTarget;
+
+      resource = resource.queryParam("odBroja", odBroja).queryParam("broj", broj)
+          .queryParam("traziNaziv", traziNaziv).queryParam("traziDrzavu", traziDrzavu);
+
+      System.out.println("putanja: " + resource.toString());
+
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
+      String odgovor = request.get(String.class);
+
+      System.out.println("odgovor: " + odgovor);
+
+      if (odgovor.isEmpty()) {
+        return null;
+      }
+      Gson gson = new Gson();
+      Aerodrom[] aerodromi = null;
+      try {
+        aerodromi = gson.fromJson(odgovor, Aerodrom[].class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+
+      return aerodromi;
+    }
+
+    public Udaljenost[] dajUdaljenosti2Aerodroma(String icaoOd, String icaoDo)
+        throws ClientErrorException {
+
+      WebTarget resource = webTarget;
+
+      if ((icaoOd == null || icaoDo == null) || (icaoOd.isEmpty() || icaoDo.isEmpty()))
+        return null;
+
+      resource =
+          resource.path(java.text.MessageFormat.format("{0}/{1}", new Object[] {icaoOd, icaoDo}));
+
+      System.out.println("Putanja: " + resource.toString());
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+      if (request.get(String.class).isEmpty()) {
+        return null;
+      }
+      Gson gson = new Gson();
+      Udaljenost[] udaljenost2Aerodroma = null;
+      try {
+        udaljenost2Aerodroma = gson.fromJson(request.get(String.class), Udaljenost[].class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+
+      return udaljenost2Aerodroma;
+    }
+
     /**
      * Zatvara klijent REST servisa
      */
@@ -102,5 +208,7 @@ public class RestKlijentAerodromi {
       client.close();
     }
   }
+
+
 
 }

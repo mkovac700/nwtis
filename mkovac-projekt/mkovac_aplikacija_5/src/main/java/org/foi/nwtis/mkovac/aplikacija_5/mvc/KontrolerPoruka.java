@@ -1,5 +1,7 @@
 package org.foi.nwtis.mkovac.aplikacija_5.mvc;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.aplikacija_5.slusaci.WsSlusac;
 import org.foi.nwtis.mkovac.aplikacija_5.zrna.SakupljacJmsPoruka;
@@ -12,7 +14,9 @@ import jakarta.mvc.Models;
 import jakarta.mvc.View;
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 
 @Controller
 @Path("poruke")
@@ -27,6 +31,8 @@ public class KontrolerPoruka {
 
   private Info info;
 
+  private int brojRedova = 15;
+
   public KontrolerPoruka() {
     ServletContext context = WsSlusac.getServletContext();
     Konfiguracija konf = (Konfiguracija) context.getAttribute("konfig");
@@ -37,18 +43,50 @@ public class KontrolerPoruka {
     String aplikacijaGodina = konf.dajPostavku("aplikacija.godina");
     String aplikacijaVerzija = konf.dajPostavku("aplikacija.verzija");
 
+    try {
+      brojRedova = Integer.parseInt(konf.dajPostavku("stranica.brojRedova"));
+    } catch (NumberFormatException e) {
+      Logger.getGlobal().log(Level.SEVERE,
+          "Neispravan broj redova. Postavljeno na zadani broj redova (15)." + e.getMessage());
+    }
+
     info = new Info(autorIme, autorPrezime, autorPredmet, aplikacijaGodina, aplikacijaVerzija);
   }
 
   @GET
   @View("5.4.jsp")
-  public void poruke() {
+  public void poruke(@QueryParam("stranica") String stranica) {
     model.put("info", info);
 
-    var poruke = sakupljacJmsPoruka.dajSvePoruke();
+    int brojStranice = 1;
+    int pocetak = 1;
+    int broj = brojRedova;
+
+    if (stranica != null && !stranica.isEmpty()) {
+      try {
+        brojStranice = Integer.parseInt(stranica);
+
+        if (brojStranice < 1)
+          brojStranice = 1;
+      } catch (NumberFormatException e) {
+        brojStranice = 1;
+      }
+    }
+
+    pocetak = (brojStranice - 1) * broj + 1;
+
+    var poruke = sakupljacJmsPoruka.dajSvePoruke(pocetak, broj);
 
     model.put("poruke", poruke);
 
+  }
+
+  @POST
+  @View("5.4.jsp")
+  public void postPoruke() {
+    model.put("info", info);
+
+    sakupljacJmsPoruka.obrisiSvePoruke();
   }
 
 }
