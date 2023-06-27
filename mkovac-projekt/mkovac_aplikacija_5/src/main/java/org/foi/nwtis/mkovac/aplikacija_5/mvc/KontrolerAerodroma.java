@@ -20,6 +20,7 @@ import jakarta.mvc.Controller;
 import jakarta.mvc.Models;
 import jakarta.mvc.View;
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -40,6 +41,9 @@ public class KontrolerAerodroma {
 
   @Inject
   private Models model;
+
+  @Inject
+  private HttpSession session;
 
   private Info info;
 
@@ -63,6 +67,12 @@ public class KontrolerAerodroma {
     }
 
     info = new Info(autorIme, autorPrezime, autorPredmet, aplikacijaGodina, aplikacijaVerzija);
+
+    // korisnik = (String) session.getAttribute("korisnik");
+    // lozinka = (String) session.getAttribute("lozinka");
+
+    // korisnik = autentikator.getKorisnik();
+    // lozinka = autentikator.getLozinka();
   }
 
   @GET
@@ -138,9 +148,12 @@ public class KontrolerAerodroma {
 
     String odgovor = null;
 
+    String korisnik = (String) session.getAttribute("korisnik");
+    String lozinka = (String) session.getAttribute("lozinka");
+
     var port = serviceAerodromi.getWsAerodromiPort();
     try {
-      var rezultat = port.dodajAerodromZaLetove("pperic", "pero123", icao);
+      var rezultat = port.dodajAerodromZaLetove(korisnik, lozinka, icao);
       if (rezultat)
         odgovor = "Aerodrom uspješno dodan za preuzimanje letova!";
       else

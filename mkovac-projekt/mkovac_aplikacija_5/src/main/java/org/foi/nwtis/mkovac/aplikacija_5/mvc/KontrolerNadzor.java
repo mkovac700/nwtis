@@ -3,7 +3,6 @@ package org.foi.nwtis.mkovac.aplikacija_5.mvc;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.aplikacija_5.klijenti.RestKlijentNadzor;
 import org.foi.nwtis.mkovac.aplikacija_5.slusaci.WsSlusac;
-import org.foi.nwtis.mkovac.aplikacija_5.zrna.Sesija;
 import org.foi.nwtis.podaci.Info;
 import org.foi.nwtis.podaci.Status;
 import jakarta.enterprise.context.RequestScoped;
@@ -21,9 +20,6 @@ import jakarta.ws.rs.Path;
 @Path("nadzor")
 @RequestScoped
 public class KontrolerNadzor {
-
-  @Inject
-  Sesija sesija;
 
   @Inject
   private Models model;

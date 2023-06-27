@@ -15,6 +15,7 @@ import jakarta.mvc.Controller;
 import jakarta.mvc.Models;
 import jakarta.mvc.View;
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -31,6 +32,9 @@ public class KontrolerLetova {
 
   @Inject
   private Models model;
+
+  @Inject
+  private HttpSession session;
 
   private Info info;
 
@@ -102,9 +106,11 @@ public class KontrolerLetova {
 
     List<LetAviona> letoviAviona = null;
 
+    String korisnik = (String) session.getAttribute("korisnik");
+    String lozinka = (String) session.getAttribute("lozinka");
+
     try {
-      letoviAviona =
-          port.dajPolaskeInterval("pperic", "pero123", icao, danOd, danDo, pocetak, broj);
+      letoviAviona = port.dajPolaskeInterval(korisnik, lozinka, icao, danOd, danDo, pocetak, broj);
 
     } catch (SOAPException_Exception e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
@@ -154,8 +160,11 @@ public class KontrolerLetova {
 
     List<LetAviona> letoviAviona = null;
 
+    String korisnik = (String) session.getAttribute("korisnik");
+    String lozinka = (String) session.getAttribute("lozinka");
+
     try {
-      letoviAviona = port.dajPolaskeNaDan("pperic", "pero123", icao, dan, pocetak, broj);
+      letoviAviona = port.dajPolaskeNaDan(korisnik, lozinka, icao, dan, pocetak, broj);
 
     } catch (SOAPException_Exception e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
@@ -186,8 +195,11 @@ public class KontrolerLetova {
 
     List<LetAviona> letoviAviona = null;
 
+    String korisnik = (String) session.getAttribute("korisnik");
+    String lozinka = (String) session.getAttribute("lozinka");
+
     try {
-      letoviAviona = port.dajPolaskeNaDanOS("pperic", "pero123", icao, dan);
+      letoviAviona = port.dajPolaskeNaDanOS(korisnik, lozinka, icao, dan);
 
     } catch (SOAPException_Exception e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());

@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
+import org.foi.nwtis.mkovac.aplikacija_5.pomocnici.Autentikator;
 import org.foi.nwtis.mkovac.aplikacija_5.slusaci.WsSlusac;
-import org.foi.nwtis.mkovac.aplikacija_5.zrna.Sesija;
 import org.foi.nwtis.mkovac_aplikacija_4.ws.WsKorisnici.endpoint.Korisnici;
 import org.foi.nwtis.mkovac_aplikacija_4.ws.WsKorisnici.endpoint.Korisnik;
 import org.foi.nwtis.podaci.Info;
@@ -15,6 +15,7 @@ import jakarta.mvc.Controller;
 import jakarta.mvc.Models;
 import jakarta.mvc.View;
 import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -30,7 +31,7 @@ public class KontrolerKorisnika {
   private Korisnici service;
 
   @Inject
-  Sesija sesija;
+  private HttpSession session;
 
   @Inject
   private Models model;
@@ -108,12 +109,16 @@ public class KontrolerKorisnika {
       @FormParam("lozinka") String lozinka) {
     model.put("info", info);
 
+    Autentikator autentikator = new Autentikator(service);
+
     String odgovor = null;
     try {
-      boolean rezultat = sesija.prijaviKorisnika(korime, lozinka);
-      if (rezultat)
+      boolean rezultat = autentikator.prijaviKorisnika(korime, lozinka);
+      if (rezultat) {
+        session.setAttribute("korisnik", korime);
+        session.setAttribute("lozinka", lozinka);
         odgovor = "Prijavljeni ste kao " + korime + "!";
-      else
+      } else
         odgovor = "Neuspješna prijava!";
     } catch (Exception e) {
       String msg = e.getMessage();
@@ -135,8 +140,8 @@ public class KontrolerKorisnika {
   public void pregled() {
     model.put("info", info);
 
-    String korisnickoIme = sesija.getKorisnik();
-    String lozinka = sesija.getLozinka();
+    String korisnickoIme = (String) session.getAttribute("korisnik");
+    String lozinka = (String) session.getAttribute("lozinka");
 
 
     String odgovor = null;
@@ -162,8 +167,8 @@ public class KontrolerKorisnika {
     model.put("ime", ime);
     model.put("prezime", prezime);
 
-    String korisnickoIme = sesija.getKorisnik();
-    String lozinka = sesija.getLozinka();
+    String korisnickoIme = (String) session.getAttribute("korisnik");
+    String lozinka = (String) session.getAttribute("lozinka");
 
     String odgovor = null;
     try {

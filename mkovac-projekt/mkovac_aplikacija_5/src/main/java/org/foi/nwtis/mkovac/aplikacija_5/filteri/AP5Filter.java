@@ -8,8 +8,10 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.mkovac.aplikacija_5.klijenti.RestKlijentDnevnik;
+import org.foi.nwtis.mkovac.aplikacija_5.slusaci.WsSlusac;
 import org.foi.nwtis.podaci.Dnevnik;
 import com.google.gson.Gson;
+import jakarta.inject.Inject;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -19,6 +21,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebFilter(filterName = "AP5", urlPatterns = "/*")
 public class AP5Filter implements Filter {
@@ -31,6 +34,9 @@ public class AP5Filter implements Filter {
   private String putanja;
   private String metoda;
   private String parametri;
+
+  @Inject
+  private HttpSession session;
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
@@ -50,7 +56,28 @@ public class AP5Filter implements Filter {
 
     evidentirajZahtjev();
 
-    chain.doFilter(request, response);
+    String korisnik = (String) session.getAttribute("korisnik");
+
+    String pocetna = WsSlusac.getServletContext().getContextPath();
+
+    String prijava = pocetna + "/mvc/korisnici/prijava";
+
+    if (korisnik != null && !korisnik.isEmpty()) { // ako je korisnik prijavljen, nastavi
+      chain.doFilter(request, response);
+    } else { // ako nije prijavljen
+      // // System.out.println("korisnik:" + korisnik);
+      // // System.out.println("putanja:" + putanja);
+      // // System.out.println("pocetna:" + pocetna);
+
+      if (putanja.endsWith("korisnici") || putanja.contains("korisnici/registracija")
+          || putanja.contains("korisnici/prijava") || putanja.equals(pocetna + "/")) {
+        chain.doFilter(request, response);
+      } else {
+        this.response.sendRedirect(prijava);
+      }
+    }
+
+
 
   }
 

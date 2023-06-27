@@ -1,17 +1,13 @@
-package org.foi.nwtis.mkovac.aplikacija_5.zrna;
+package org.foi.nwtis.mkovac.aplikacija_5.pomocnici;
 
 import org.foi.nwtis.mkovac_aplikacija_4.ws.WsKorisnici.endpoint.Korisnici;
 import org.foi.nwtis.mkovac_aplikacija_4.ws.WsKorisnici.endpoint.Korisnik;
 import org.foi.nwtis.mkovac_aplikacija_4.ws.WsKorisnici.endpoint.SOAPException_Exception;
-import jakarta.ejb.Singleton;
-import jakarta.xml.ws.WebServiceRef;
 import lombok.Getter;
 import lombok.Setter;
 
-@Singleton
-public class Sesija {
+public class Autentikator {
 
-  @WebServiceRef(wsdlLocation = "http://localhost:8080/mkovac_aplikacija_4/korisnici?wsdl")
   private Korisnici service;
 
   @Getter
@@ -20,6 +16,10 @@ public class Sesija {
   @Getter
   @Setter
   private String lozinka;
+
+  public Autentikator(Korisnici service) {
+    this.service = service;
+  }
 
   public boolean prijaviKorisnika(String korisnik, String lozinka) throws SOAPException_Exception {
     var port = service.getWsKorisniciPort();
