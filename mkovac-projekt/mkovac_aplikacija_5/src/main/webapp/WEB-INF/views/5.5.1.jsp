@@ -39,7 +39,8 @@
 </head>
 <body>
 	<header>
-		<a href="${pageContext.servletContext.contextPath}">Početna stranica</a><br> 
+		<a href="${pageContext.servletContext.contextPath}">Početna stranica</a>&nbsp; <a
+			href="${pageContext.servletContext.contextPath}/mvc/aerodromi">Povratak</a><br> 
 		<h1>Svi aerodromi</h1>
 		<%@ include file="zaglavlje.jsp"%>
 	</header>

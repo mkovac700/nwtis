@@ -9,6 +9,7 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.aplikacija_5.slusaci.WsSlusac;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.podaci.Udaljenost;
+import org.foi.nwtis.podaci.UdaljenostAerodrom;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import jakarta.servlet.ServletContext;
@@ -43,14 +44,14 @@ public class RestKlijentAerodromi {
    */
   public Aerodrom dajAerodrom(String icao) {
     RestKlijent rk = new RestKlijent();
-    Aerodrom k = null;
+    Aerodrom a = null;
     try {
-      k = rk.dajAerodrom(icao);
+      a = rk.dajAerodrom(icao);
     } catch (ClientErrorException e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
     rk.close();
-    return k;
+    return a;
   }
 
   /**
@@ -81,10 +82,10 @@ public class RestKlijentAerodromi {
   }
 
   public List<Udaljenost> dajUdaljenosti2Aerodroma(String icaoOd, String icaoDo) {
-    RestKlijent rc = new RestKlijent();
+    RestKlijent rk = new RestKlijent();
     Udaljenost[] json_udaljenost2Aerodroma = null;
     try {
-      json_udaljenost2Aerodroma = rc.dajUdaljenosti2Aerodroma(icaoOd, icaoDo);
+      json_udaljenost2Aerodroma = rk.dajUdaljenosti2Aerodroma(icaoOd, icaoDo);
     } catch (ClientErrorException e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
@@ -94,7 +95,58 @@ public class RestKlijentAerodromi {
     } else {
       udaljenost2Aerodroma = Arrays.asList(json_udaljenost2Aerodroma);
     }
-    rc.close();
+    rk.close();
+
+    return udaljenost2Aerodroma;
+  }
+
+  public UdaljenostAerodrom dajIzracunUdaljenosti2Aerodroma(String icaoOd, String icaoDo) {
+    RestKlijent rk = new RestKlijent();
+    UdaljenostAerodrom ua = null;
+    try {
+      ua = rk.dajIzracunUdaljenosti2Aerodroma(icaoOd, icaoDo);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+    rk.close();
+    return ua;
+  }
+
+  public List<UdaljenostAerodrom> dajIzracun1Udaljenosti2Aerodroma(String icaoOd, String icaoDo) {
+    RestKlijent rk = new RestKlijent();
+    UdaljenostAerodrom[] json_udaljenost2Aerodroma = null;
+    try {
+      json_udaljenost2Aerodroma = rk.dajIzracun1Udaljenosti2Aerodroma(icaoOd, icaoDo);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+    List<UdaljenostAerodrom> udaljenost2Aerodroma;
+    if (json_udaljenost2Aerodroma == null) {
+      udaljenost2Aerodroma = new ArrayList<>();
+    } else {
+      udaljenost2Aerodroma = Arrays.asList(json_udaljenost2Aerodroma);
+    }
+    rk.close();
+
+    return udaljenost2Aerodroma;
+  }
+
+  public List<UdaljenostAerodrom> dajIzracun2Udaljenosti2Aerodroma(String icaoOd, String drzava,
+      String km) {
+    RestKlijent rk = new RestKlijent();
+    UdaljenostAerodrom[] json_udaljenost2Aerodroma = null;
+    try {
+      json_udaljenost2Aerodroma = rk.dajIzracun2Udaljenosti2Aerodroma(icaoOd, drzava, km);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+    List<UdaljenostAerodrom> udaljenost2Aerodroma;
+    if (json_udaljenost2Aerodroma == null) {
+      udaljenost2Aerodroma = new ArrayList<>();
+    } else {
+      udaljenost2Aerodroma = Arrays.asList(json_udaljenost2Aerodroma);
+    }
+    rk.close();
 
     return udaljenost2Aerodroma;
   }
@@ -194,6 +246,109 @@ public class RestKlijentAerodromi {
       Udaljenost[] udaljenost2Aerodroma = null;
       try {
         udaljenost2Aerodroma = gson.fromJson(request.get(String.class), Udaljenost[].class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+
+      return udaljenost2Aerodroma;
+    }
+
+    public UdaljenostAerodrom dajIzracunUdaljenosti2Aerodroma(String icaoOd, String icaoDo)
+        throws ClientErrorException {
+
+      WebTarget resource = webTarget;
+
+      if ((icaoOd == null || icaoDo == null) || (icaoOd.isEmpty() || icaoDo.isEmpty()))
+        return null;
+
+      resource = resource
+          .path(java.text.MessageFormat.format("{0}/izracunaj/{1}", new Object[] {icaoOd, icaoDo}));
+
+      System.out.println("Putanja: " + resource.toString());
+
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
+      String odgovor = request.get(String.class);
+
+      System.out.println("odgovor: " + odgovor);
+
+      if (odgovor.isEmpty()) {
+        return null;
+      }
+      Gson gson = new Gson();
+      UdaljenostAerodrom udaljenost2Aerodroma = null;
+      try {
+        udaljenost2Aerodroma = gson.fromJson(odgovor, UdaljenostAerodrom.class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+
+      return udaljenost2Aerodroma;
+
+    }
+
+    public UdaljenostAerodrom[] dajIzracun1Udaljenosti2Aerodroma(String icaoOd, String icaoDo)
+        throws ClientErrorException {
+
+      WebTarget resource = webTarget;
+
+      if ((icaoOd == null || icaoDo == null) || (icaoOd.isEmpty() || icaoDo.isEmpty()))
+        return null;
+
+      resource = resource.path(
+          java.text.MessageFormat.format("{0}/udaljenost1/{1}", new Object[] {icaoOd, icaoDo}));
+
+      System.out.println("Putanja: " + resource.toString());
+
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
+      String odgovor = request.get(String.class);
+
+      System.out.println("odgovor: " + odgovor);
+
+      if (odgovor.isEmpty()) {
+        return null;
+      }
+      Gson gson = new Gson();
+      UdaljenostAerodrom[] udaljenost2Aerodroma = null;
+      try {
+        udaljenost2Aerodroma = gson.fromJson(odgovor, UdaljenostAerodrom[].class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+
+      return udaljenost2Aerodroma;
+    }
+
+    public UdaljenostAerodrom[] dajIzracun2Udaljenosti2Aerodroma(String icaoOd, String drzava,
+        String km) throws ClientErrorException {
+
+      WebTarget resource = webTarget;
+
+      if ((icaoOd == null || icaoOd == null) || (drzava.isEmpty() || drzava.isEmpty())
+          || (km.isEmpty() || km.isEmpty()))
+        return null;
+
+      resource =
+          resource.path(java.text.MessageFormat.format("{0}/udaljenost2", new Object[] {icaoOd}));
+
+      resource = resource.queryParam("drzava", drzava).queryParam("km", km);
+
+      System.out.println("Putanja: " + resource.toString());
+
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
+      String odgovor = request.get(String.class);
+
+      System.out.println("odgovor: " + odgovor);
+
+      if (odgovor.isEmpty()) {
+        return null;
+      }
+      Gson gson = new Gson();
+      UdaljenostAerodrom[] udaljenost2Aerodroma = null;
+      try {
+        udaljenost2Aerodroma = gson.fromJson(odgovor, UdaljenostAerodrom[].class);
       } catch (JsonSyntaxException e) {
         Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }

@@ -109,6 +109,7 @@ public class WsLetovi {
         letAviona.setFirstSeen(lp.getFirstSeen());
         letAviona.setIcao24(lp.getIcao24());
         letAviona.setLastSeen(lp.getLastSeen());
+        letAviona.setEstDepartureAirport(lp.getAirport().getIcao());
 
         letoviAviona.add(letAviona);
       }
@@ -164,6 +165,7 @@ public class WsLetovi {
         letAviona.setFirstSeen(lp.getFirstSeen());
         letAviona.setIcao24(lp.getIcao24());
         letAviona.setLastSeen(lp.getLastSeen());
+        letAviona.setEstDepartureAirport(lp.getAirport().getIcao());
 
         letoviAviona.add(letAviona);
       }

@@ -13,6 +13,7 @@ import org.foi.nwtis.mkovac_aplikacija_4.ws.WsMeteo.endpoint.MeteoPodaci;
 import org.foi.nwtis.podaci.Aerodrom;
 import org.foi.nwtis.podaci.Info;
 import org.foi.nwtis.podaci.Udaljenost;
+import org.foi.nwtis.podaci.UdaljenostAerodrom;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.mvc.Controller;
@@ -213,10 +214,94 @@ public class KontrolerAerodroma {
   }
 
   @GET
-  @Path("udaljenosti2aerodroma/izracun")
-  @View("5.5.4.jsp")
+  @Path("udaljenost2aerodroma/izracun")
+  @View("5.5.5.jsp")
   public void getIzracunUdaljenosti2Aerodroma() {
     model.put("info", info);
+  }
+
+  @POST
+  @Path("udaljenost2aerodroma/izracun")
+  @View("5.5.5.jsp")
+  public void postIzracunUdaljenosti2Aerodroma(@FormParam("icaoOd") String icaoOd,
+      @FormParam("icaoDo") String icaoDo) {
+    model.put("info", info);
+
+    model.put("icaoOd", icaoOd);
+    model.put("icaoDo", icaoDo);
+
+    UdaljenostAerodrom ua = null;
+
+    try {
+      RestKlijentAerodromi rka = new RestKlijentAerodromi();
+      ua = rka.dajIzracunUdaljenosti2Aerodroma(icaoOd, icaoDo);
+
+    } catch (Exception e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+
+    model.put("ua", ua);
+  }
+
+  @GET
+  @Path("udaljenosti2aerodroma/izracun1")
+  @View("5.5.6.jsp")
+  public void getIzracun1Udaljenosti2Aerodroma() {
+    model.put("info", info);
+  }
+
+  @POST
+  @Path("udaljenosti2aerodroma/izracun1")
+  @View("5.5.6.jsp")
+  public void postIzracun1Udaljenosti2Aerodroma(@FormParam("icaoOd") String icaoOd,
+      @FormParam("icaoDo") String icaoDo) {
+    model.put("info", info);
+
+    model.put("icaoOd", icaoOd);
+    model.put("icaoDo", icaoDo);
+
+    List<UdaljenostAerodrom> udaljenosti1 = null;
+
+    try {
+      RestKlijentAerodromi rka = new RestKlijentAerodromi();
+      udaljenosti1 = rka.dajIzracun1Udaljenosti2Aerodroma(icaoOd, icaoDo);
+
+    } catch (Exception e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+
+    model.put("udaljenosti1", udaljenosti1);
+  }
+
+  @GET
+  @Path("udaljenosti2aerodroma/izracun2")
+  @View("5.5.7.jsp")
+  public void getIzracun2Udaljenosti2Aerodroma() {
+    model.put("info", info);
+  }
+
+  @POST
+  @Path("udaljenosti2aerodroma/izracun2")
+  @View("5.5.7.jsp")
+  public void postIzracun2Udaljenosti2Aerodroma(@FormParam("icaoOd") String icaoOd,
+      @FormParam("drzava") String drzava, @FormParam("km") String km) {
+    model.put("info", info);
+
+    model.put("icaoOd", icaoOd);
+    model.put("drzava", drzava);
+    model.put("km", km);
+
+    List<UdaljenostAerodrom> udaljenosti2 = null;
+
+    try {
+      RestKlijentAerodromi rka = new RestKlijentAerodromi();
+      udaljenosti2 = rka.dajIzracun2Udaljenosti2Aerodroma(icaoOd, drzava, km);
+
+    } catch (Exception e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+
+    model.put("udaljenosti2", udaljenosti2);
   }
 
 }

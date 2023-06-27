@@ -1,5 +1,5 @@
 
-<%@page import="org.foi.nwtis.podaci.Udaljenost"%>
+<%@page import="org.foi.nwtis.podaci.UdaljenostAerodrom"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
@@ -7,14 +7,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Udaljenost između dva aerodroma</title>
+<title>Izračun udaljenosti #1</title>
 </head>
 <body>
 	<header>
 		<a href="${pageContext.servletContext.contextPath}">Početna
-			stranica</a>&nbsp; <a
+			stranica</a>&nbsp;<a
 			href="${pageContext.servletContext.contextPath}/mvc/aerodromi">Povratak</a><br>
-		<h1>Udaljenost između dva aerodroma po državama</h1>
+		<h1>Izračun udaljenosti do aerodroma unutar države #1</h1>
 		<%@ include file="zaglavlje.jsp"%>
 	</header>
 	<main>
@@ -26,9 +26,9 @@
 		String greska = null;
 
 		if (request.getAttribute("icaoOd") != null)
-		  icaoOd = (String)request.getAttribute("icaoOd");
+		  icaoOd = (String) request.getAttribute("icaoOd");
 		if (request.getAttribute("icaoDo") != null)
-		  icaoDo = (String)request.getAttribute("icaoDo");
+		  icaoDo = (String) request.getAttribute("icaoDo");
 		%>
 
 		<div style="display: flex;">
@@ -42,32 +42,26 @@
 		</div>
 		<br>
 		<%
-		float ukupno = 0;
-		List<Udaljenost> udaljenost2Aerodroma =
-		    (List<Udaljenost>) request.getAttribute("udaljenost2Aerodroma");
+		List<UdaljenostAerodrom> udaljenosti1 =
+		    (List<UdaljenostAerodrom>) request.getAttribute("udaljenosti1");
 		if ((icaoOd != null && !icaoOd.isEmpty()) && (icaoDo != null && !icaoDo.isEmpty())) {
-		  if (udaljenost2Aerodroma != null) {
+		  if (udaljenosti1 != null && !udaljenosti1.isEmpty()) {
 		%>
 		<table border=1>
 			<tr>
-				<th>Država</th>
+				<th>ICAO</th>
 				<th>Udaljenost (km)</th>
 			</tr>
 			<%
-			for (Udaljenost u : udaljenost2Aerodroma) {
-			  ukupno += u.getKm();
+			for (UdaljenostAerodrom ua : udaljenosti1) {
 			%>
 			<tr>
-				<td><%=u.getDrzava()%></td>
-				<td><%=u.getKm()%></td>
+				<td><%=ua.getIcao()%></td>
+				<td><%=ua.getKm()%></td>
 			</tr>
 			<%
 			}
 			%>
-			<tr>
-				<td><b>Ukupno (km)</b></td>
-				<td><b><%=ukupno%></b></td>
-			</tr>
 		</table>
 		<%
 		} else
