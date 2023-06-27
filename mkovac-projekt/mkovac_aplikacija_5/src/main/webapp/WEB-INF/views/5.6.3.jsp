@@ -11,14 +11,14 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Letovi s aerodroma na dan</title>
+<title>Letovi s aerodroma na dan - OS</title>
 </head>
 <body>
 	<header>
 		<a href="${pageContext.servletContext.contextPath}">Početna
 			stranica</a>&nbsp; <a
 			href="${pageContext.servletContext.contextPath}/mvc/letovi">Povratak</a><br> 
-		<h1>Letovi s aerodroma na dan</h1>
+		<h1>Letovi s aerodroma na dan - OS</h1>
 		<%@ include file="zaglavlje.jsp"%>
 	</header>
 	<main>
@@ -33,15 +33,7 @@
 		  icao = (String) request.getAttribute("icao");
 		if (request.getAttribute("dan") != null)
 		  dan = (String) request.getAttribute("dan");
-
-		int brStranice = 1;
-
-		if (request.getAttribute("stranica") != null) { //odBroja
-		  brStranice = Integer.parseInt((String) request.getAttribute("stranica"));//odBroja
-		  if (brStranice < 1)
-		    response.sendRedirect(request.getContextPath() + "/mvc/letovi/aerodrom?icao=" + icao + "&dan="
-		    + dan + "&stranica=1");
-		}
+		
 		%>
 
 		<div style="display: flex;">
@@ -93,39 +85,11 @@
 			}
 			%>
 		</table>
-		<br> Stranica:
-		<%=brStranice%><br> <br>
-		<div style="display: flex;">
-			<form action="" method="post">
-				<input type="hidden" name="icao" value="<%=icao%>" /> <input
-					type="hidden" name="dan" value="<%=dan%>" /> <input type="hidden"
-					name="stranica" value="1" />
-				<button type="submit">Početak</button>
-			</form>
-			<form action="" method="post">
-				<input type="hidden" name="icao" value="<%=icao%>" /> <input
-					type="hidden" name="dan" value="<%=dan%>" /> <input type="hidden"
-					name="stranica" value="<%=brStranice - 1%>" />
-				<button type="submit">Prethodna stranica</button>
-			</form>
-			<form action="" method="post">
-				<input type="hidden" name="icao" value="<%=icao%>" /> <input
-					type="hidden" name="dan" value="<%=dan%>" /> <input type="hidden"
-					name="stranica" value="<%=brStranice + 1%>" />
-				<button type="submit">Sljedeća stranica</button>
-			</form>
-		</div>
+		<br> 
 		<%
-		} else {
-		if (brStranice != 1)
-		  response.sendRedirect(request.getContextPath() + "/mvc/letovi/aerodrom?icao=" + icao + "&dan="
-		  + dan + "&stranica=1");
+		} 
 		else
 		  greska = "Nema podataka za prikaz!";
-		}
-		%>
-
-		<%
 		}
 		%>
 		<%

@@ -1,9 +1,15 @@
 package org.foi.nwtis.mkovac.aplikacija_5.klijenti;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.aplikacija_5.slusaci.WsSlusac;
+import org.foi.nwtis.podaci.Dnevnik;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.client.Client;
@@ -41,6 +47,24 @@ public class RestKlijentDnevnik {
     }
     rk.close();
     return odgovor;
+  }
+
+  public List<Dnevnik> dajDnevnik(String vrsta, int odBroja, int broj) {
+    RestKlijent rk = new RestKlijent();
+    Dnevnik[] json_Dnevnik = null;
+    try {
+      json_Dnevnik = rk.dajDnevnik(vrsta, odBroja, broj);
+    } catch (ClientErrorException e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    }
+    List<Dnevnik> dnevnik;
+    if (json_Dnevnik == null) {
+      dnevnik = new ArrayList<>();
+    } else {
+      dnevnik = Arrays.asList(json_Dnevnik);
+    }
+    rk.close();
+    return dnevnik;
   }
 
   /**
@@ -85,6 +109,34 @@ public class RestKlijentDnevnik {
         odgovor = response.getStatusInfo().getReasonPhrase();
 
       return odgovor;
+    }
+
+    public Dnevnik[] dajDnevnik(String vrsta, int odBroja, int broj) throws ClientErrorException {
+      WebTarget resource = webTarget;
+
+      resource = resource.queryParam("vrsta", vrsta).queryParam("odBroja", odBroja)
+          .queryParam("broj", broj);
+
+      System.out.println("putanja: " + resource.toString());
+
+      Invocation.Builder request = resource.request(MediaType.APPLICATION_JSON);
+
+      String odgovor = request.get(String.class);
+
+      System.out.println("odgovor: " + odgovor);
+
+      if (odgovor.isEmpty()) {
+        return null;
+      }
+      Gson gson = new Gson();
+      Dnevnik[] dnevnik = null;
+      try {
+        dnevnik = gson.fromJson(odgovor, Dnevnik[].class);
+      } catch (JsonSyntaxException e) {
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      }
+
+      return dnevnik;
     }
 
     /**

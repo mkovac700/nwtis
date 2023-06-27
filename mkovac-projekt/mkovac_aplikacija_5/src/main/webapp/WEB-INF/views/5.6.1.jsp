@@ -11,28 +11,31 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Letovi s aerodroma na dan</title>
+<title>Letovi s aerodroma u intervalu</title>
 </head>
 <body>
 	<header>
 		<a href="${pageContext.servletContext.contextPath}">Početna
 			stranica</a>&nbsp; <a
 			href="${pageContext.servletContext.contextPath}/mvc/letovi">Povratak</a><br> 
-		<h1>Letovi s aerodroma na dan</h1>
+		<h1>Letovi s aerodroma u intervalu</h1>
 		<%@ include file="zaglavlje.jsp"%>
 	</header>
 	<main>
 
 		<%
 		String icao = "";
-		String dan = "";
+		String danOd = "";
+		String danDo = "";
 
 		String greska = null;
 
 		if (request.getAttribute("icao") != null)
 		  icao = (String) request.getAttribute("icao");
-		if (request.getAttribute("dan") != null)
-		  dan = (String) request.getAttribute("dan");
+		if (request.getAttribute("danOd") != null)
+		  danOd = (String) request.getAttribute("danOd");
+		if (request.getAttribute("danDo") != null)
+		  danDo = (String) request.getAttribute("danDo");
 
 		int brStranice = 1;
 
@@ -40,7 +43,7 @@
 		  brStranice = Integer.parseInt((String) request.getAttribute("stranica"));//odBroja
 		  if (brStranice < 1)
 		    response.sendRedirect(request.getContextPath() + "/mvc/letovi/aerodrom?icao=" + icao + "&dan="
-		    + dan + "&stranica=1");
+		    + danOd + "&stranica=1");
 		}
 		%>
 
@@ -48,8 +51,10 @@
 			<form action="" method="post">
 				<label for="icao">ICAO:</label><br> <input type="text"
 					id="icao" name="icao" value=<%=icao%>><br> <label
-					for="dan">Dan:</label><br> <input type="text" id="dan"
-					name="dan" placeholder="dd.MM.yyyy" value=<%=dan%>>
+					for="danOd">Dan od:</label><br> <input type="text" id="danOd"
+					name="danOd" placeholder="dd.MM.yyyy" value=<%=danOd%>><br> <label
+					for="danOd">Dan do:</label><br> <input type="text" id="danDo"
+					name="danDo" placeholder="dd.MM.yyyy" value=<%=danDo%>>
 				<button type="submit">Pretraži</button>
 			</form>
 		</div>
@@ -58,7 +63,7 @@
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
 		List<LetAviona> letoviAviona = (List<LetAviona>) request.getAttribute("letoviAviona");
 
-		if ((icao != null && !icao.isEmpty()) && (dan != null && !dan.isEmpty())) {
+		if ((icao != null && !icao.isEmpty()) && (danOd != null && !danOd.isEmpty()) && (danDo != null && !danDo.isEmpty())) {
 		  if (letoviAviona != null && !letoviAviona.isEmpty()) {
 		%>
 		<table border=1>
@@ -98,20 +103,23 @@
 		<div style="display: flex;">
 			<form action="" method="post">
 				<input type="hidden" name="icao" value="<%=icao%>" /> <input
-					type="hidden" name="dan" value="<%=dan%>" /> <input type="hidden"
-					name="stranica" value="1" />
+					type="hidden" name="danOd" value="<%=danOd%>" /> <input
+					type="hidden" name="danDo" value="<%=danDo%>" />
+					<input type="hidden" name="stranica" value="1" />
 				<button type="submit">Početak</button>
 			</form>
 			<form action="" method="post">
 				<input type="hidden" name="icao" value="<%=icao%>" /> <input
-					type="hidden" name="dan" value="<%=dan%>" /> <input type="hidden"
-					name="stranica" value="<%=brStranice - 1%>" />
+					type="hidden" name="dan" value="<%=danOd%>" /> <input
+					type="hidden" name="danDo" value="<%=danDo%>" />
+					<input type="hidden" name="stranica" value="<%=brStranice - 1%>" />
 				<button type="submit">Prethodna stranica</button>
 			</form>
 			<form action="" method="post">
 				<input type="hidden" name="icao" value="<%=icao%>" /> <input
-					type="hidden" name="dan" value="<%=dan%>" /> <input type="hidden"
-					name="stranica" value="<%=brStranice + 1%>" />
+					type="hidden" name="dan" value="<%=danOd%>" /> <input
+					type="hidden" name="danDo" value="<%=danDo%>" />
+					<input type="hidden" name="stranica" value="<%=brStranice + 1%>" />
 				<button type="submit">Sljedeća stranica</button>
 			</form>
 		</div>
@@ -119,7 +127,7 @@
 		} else {
 		if (brStranice != 1)
 		  response.sendRedirect(request.getContextPath() + "/mvc/letovi/aerodrom?icao=" + icao + "&dan="
-		  + dan + "&stranica=1");
+		  + danOd + "&stranica=1");
 		else
 		  greska = "Nema podataka za prikaz!";
 		}

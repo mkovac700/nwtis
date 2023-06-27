@@ -63,6 +63,59 @@ public class KontrolerLetova {
   }
 
   @GET
+  @Path("spremljeni1")
+  @View("5.6.1.jsp")
+  public void spremljeniLetovi1() {
+    model.put("info", info);
+  }
+
+  @POST
+  @Path("spremljeni1")
+  @View("5.6.1.jsp")
+  public void spremljeniLetovi1(@FormParam("icao") String icao, @FormParam("danOd") String danOd,
+      @FormParam("danDo") String danDo, @FormParam("stranica") String stranica) {
+    model.put("info", info);
+
+    model.put("icao", icao);
+    model.put("danOd", danOd);
+    model.put("danDo", danDo);
+    model.put("stranica", stranica);
+
+    int brojStranice = 1;
+    int pocetak = 1;
+    int broj = brojRedova;
+
+    if (stranica != null && !stranica.isEmpty()) {
+      try {
+        brojStranice = Integer.parseInt(stranica);
+
+        if (brojStranice < 1)
+          brojStranice = 1;
+      } catch (NumberFormatException e) {
+        brojStranice = 1;
+      }
+    }
+
+    pocetak = (brojStranice - 1) * broj + 1;
+
+    var port = serviceLetovi.getWsLetoviPort();
+
+    List<LetAviona> letoviAviona = null;
+
+    try {
+      letoviAviona =
+          port.dajPolaskeInterval("pperic", "pero123", icao, danOd, danDo, pocetak, broj);
+
+    } catch (SOAPException_Exception e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    } catch (Exception ex) {
+      Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+    }
+
+    model.put("letoviAviona", letoviAviona);
+  }
+
+  @GET
   @Path("spremljeni2")
   @View("5.6.2.jsp")
   public void spremljeniLetovi2() {
@@ -103,6 +156,38 @@ public class KontrolerLetova {
 
     try {
       letoviAviona = port.dajPolaskeNaDan("pperic", "pero123", icao, dan, pocetak, broj);
+
+    } catch (SOAPException_Exception e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+    } catch (Exception ex) {
+      Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+    }
+
+    model.put("letoviAviona", letoviAviona);
+  }
+
+  @GET
+  @Path("OpenSkyNetwork")
+  @View("5.6.3.jsp")
+  public void getOpenSkyNetwork() {
+    model.put("info", info);
+  }
+
+  @POST
+  @Path("OpenSkyNetwork")
+  @View("5.6.3.jsp")
+  public void getOpenSkyNetwork(@FormParam("icao") String icao, @FormParam("dan") String dan) {
+    model.put("info", info);
+
+    model.put("icao", icao);
+    model.put("dan", dan);
+
+    var port = serviceLetovi.getWsLetoviPort();
+
+    List<LetAviona> letoviAviona = null;
+
+    try {
+      letoviAviona = port.dajPolaskeNaDanOS("pperic", "pero123", icao, dan);
 
     } catch (SOAPException_Exception e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
