@@ -9,6 +9,8 @@
 <meta charset="UTF-8">
 <title>Svi aerodromi</title>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script type="text/javascript">
 	var socket = new WebSocket("ws://localhost:8080/mkovac_aplikacija_4/info");
 	
@@ -34,6 +36,29 @@
 		
 		document.getElementById("filterForm").submit();
 	};
+	
+	function preuzimanje(event) {
+		
+		event.preventDefault();
+		
+		var baseUrl = window.location.href;
+		var url = baseUrl + "/preuzimanje";
+		
+		var icao = event.target.dataset.icao;
+		
+	    $.ajax({
+	      type: "POST",
+	      url: url, 
+	      data: { icao: icao }, 
+	      success: function (response) {
+	    	  console.log(response.text)
+	      },
+	      error: function (xhr, status, error) {
+	        console.log(error)
+	      }
+	    });
+	};
+	
 </script>
 
 </head>
@@ -102,8 +127,7 @@
 			<td><%=a.getLokacija().getLatitude() %>, <%=a.getLokacija().getLongitude() %></td>
 			<td>
 				<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/<%= a.getIcao() %>">Pregled aerodroma</a>
-				<a href="#" onclick="preuzimanje('<%=a.getIcao() %>')">Dodaj za preuzimanje JS</a>
-				<a href="${pageContext.servletContext.contextPath}/mvc/aerodromi/<%= a.getIcao() %>/preuzimanje">Dodaj za preuzimanje</a>
+				<a href="#" onclick="preuzimanje(event)" id="postDownload" data-icao="<%=a.getIcao()%>">Dodaj za preuzimanje</a>
 			</td>
 		</tr>
 		<%

@@ -86,7 +86,7 @@ public class WsAerodromi {
 
       int brojAerodroma = aerodromiLetoviFacade.count();
 
-      WsInfo.posaljiObavijest("Broj upisanih korisnika: " + brojAerodroma);
+      WsInfo.posaljiObavijest("Trenutni broj aerodroma za preuzimanje: " + brojAerodroma);
 
       return true;
     }

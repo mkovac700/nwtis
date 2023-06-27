@@ -26,6 +26,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.WebServiceRef;
 
 @Controller
@@ -140,12 +141,9 @@ public class KontrolerAerodroma {
     }
   }
 
-  @GET
-  @Path("{icao}/preuzimanje")
-  @View("preuzimanje.jsp")
-  public void postAerodromiPreuzimanje(@PathParam("icao") String icao) {
-    model.put("info", info);
-
+  @POST
+  @Path("svi/preuzimanje")
+  public Response postAerodromiPreuzimanje(@FormParam("icao") String icao) {
     String odgovor = null;
 
     String korisnik = (String) session.getAttribute("korisnik");
@@ -166,14 +164,7 @@ public class KontrolerAerodroma {
       odgovor = ex.getMessage();
     }
 
-    model.put("odgovor", odgovor);
-
-  }
-
-  @POST
-  @Path("svi/{icao}/preuzimanje")
-  public void postAerodromiPreuzimanje() {
-
+    return Response.ok(odgovor).build();
   }
 
   @GET
@@ -198,6 +189,13 @@ public class KontrolerAerodroma {
     } catch (org.foi.nwtis.mkovac_aplikacija_4.ws.WsMeteo.endpoint.SOAPException_Exception e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
     }
+  }
+
+  @GET
+  @Path("preuzimanje")
+  @View("5.5.3.jsp")
+  public void getPreuzimanje() {
+    model.put("info", info);
   }
 
   @GET
