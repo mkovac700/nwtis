@@ -22,6 +22,12 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Klasa za filtriranje i evidentiranje HTTP zahtjeva
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @WebFilter(filterName = "AP2", urlPatterns = "/*")
 public class RestServisFilter implements Filter {
 
@@ -41,11 +47,19 @@ public class RestServisFilter implements Filter {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Obavlja inicijalizaciju postavki i filtera
+   */
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
     this.filterName = filterConfig.getFilterName();
   }
 
+  /**
+   * Osluškuje dolazak zahtjeva i zatim provjerava status poslužitelja AP1. Ukoliko poslužitelj nije
+   * inicijaliziran, dozvoljava samo zahtjeve na resursu /nadzor. Nakon inicijalizacije poslužitelja
+   * dozvoljava i ostale zahtjeve. Svaki zahtjev evidentira se u bazi podataka.
+   */
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
@@ -80,6 +94,10 @@ public class RestServisFilter implements Filter {
     }
   }
 
+  /**
+   * Sprema zahtjev u bazu podataka. Sprema se putanja zahtjeva zajedno s parametrima upita, metoda
+   * zahtjeva, vrsta filtera te vremenska oznaka.
+   */
   private void evidentirajZahtjev() {
     StringBuilder sb = new StringBuilder();
 
@@ -101,6 +119,11 @@ public class RestServisFilter implements Filter {
     dnevnikFacade.create(dnevnik);
   }
 
+  /**
+   * Provjerava status poslužitelja AP1 slanjem komande STATUS
+   * 
+   * @return True ako je aktivan, inače false
+   */
   private boolean provjeriStatusPosluzitelja() {
 
     AP1Klijent ap1Klijent = new AP1Klijent();
@@ -112,6 +135,11 @@ public class RestServisFilter implements Filter {
       return false;
   }
 
+  /**
+   * Izdvaja parametre upita iz zahtjeva te ih spaja u jedinstveni niz znakova.
+   * 
+   * @return Niz znakova u obliku parametara upita
+   */
   private String dajParametreUpita() {
 
     Map<String, String[]> parameterMap = this.request.getParameterMap();

@@ -10,10 +10,21 @@ import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Testna klasa za testiranje rada poslužitelja
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class TestKlijent {
 
   private String zahtjev;
 
+  /**
+   * Glavna funkcija koja služi za pokretanje programa TestKlijent
+   * 
+   * @param args Naredba za izvršavanje određenog zahtjeva
+   */
   public static void main(String[] args) {
     TestKlijent tk = new TestKlijent();
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -24,12 +35,17 @@ public class TestKlijent {
         System.out.println("Unijeli ste naredbu: " + tk.zahtjev);
         tk.spojiSeNaPosluzitelj("localhost", 8000);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       }
     }
   }
 
+  /**
+   * Spaja se na GlavniPosluzitelj, šalje korisnikov zahtjev i čeka na odgovor.
+   * 
+   * @param adresa GlavniPosluzitelj adresa
+   * @param vrata GlavniPosluzitelj vrata
+   */
   private void spojiSeNaPosluzitelj(String adresa, int vrata) {
     try {
       var mreznaUticnica = new Socket(adresa, vrata);

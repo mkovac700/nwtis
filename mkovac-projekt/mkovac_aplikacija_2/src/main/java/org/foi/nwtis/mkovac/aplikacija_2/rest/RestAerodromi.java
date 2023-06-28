@@ -187,6 +187,14 @@ public class RestAerodromi {
 
   }
 
+  /**
+   * Vraća podatak o udaljenosti između dva aerodroma. Udaljenost se dobije slanjem zahtjeva
+   * poslužitelju AP1.
+   * 
+   * @param icaoOd Oznaka polaznog aerodroma
+   * @param icaoDo Oznaka dolaznog aerodroma
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{icaoOd}/izracunaj/{icaoDo}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -228,6 +236,14 @@ public class RestAerodromi {
     return response;
   }
 
+  /**
+   * Vraća kolekciju aerodroma unutar države dolaznog aerodroma čija je udaljenost manja od polaznog
+   * aerodroma do dolaznog aerodroma
+   * 
+   * @param icaoOd Oznaka polaznog aerodroma
+   * @param icaoDo Oznaka dolaznog aerodroma
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{icaoOd}/udaljenost1/{icaoDo}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -284,6 +300,15 @@ public class RestAerodromi {
     }
   }
 
+  /**
+   * Vraća kolekciju aerodroma unutar zadane države čija je udaljenost manja od zadane između
+   * polaznog aerodroma do aerodroma države
+   * 
+   * @param icaoOd Oznaka polaznog aerodroma
+   * @param drzava Oznaka države
+   * @param km Broj kilometara
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{icaoOd}/udaljenost2")
   @Produces(MediaType.APPLICATION_JSON)

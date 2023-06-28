@@ -13,6 +13,12 @@ import org.foi.nwtis.Konfiguracija;
 import org.foi.nwtis.mkovac.aplikacija_2.slusaci.RestServisSlusac;
 import jakarta.servlet.ServletContext;
 
+/**
+ * Klijent za rad s poslužiteljem AP1
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class AP1Klijent {
 
   private String AP1_adresa;
@@ -30,6 +36,11 @@ public class AP1Klijent {
     }
   }
 
+  /**
+   * Spaja se na poslužitelj, šalje zahtjev i čeka na odgovor.
+   * 
+   * @param zahtjev Zahtjev koji se šalje
+   */
   public String posaljiZahtjev(String zahtjev) {
     String odgovor = null;
 

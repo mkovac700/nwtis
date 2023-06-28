@@ -68,12 +68,6 @@ public class KontrolerAerodroma {
     }
 
     info = new Info(autorIme, autorPrezime, autorPredmet, aplikacijaGodina, aplikacijaVerzija);
-
-    // korisnik = (String) session.getAttribute("korisnik");
-    // lozinka = (String) session.getAttribute("lozinka");
-
-    // korisnik = autentikator.getKorisnik();
-    // lozinka = autentikator.getLozinka();
   }
 
   @GET

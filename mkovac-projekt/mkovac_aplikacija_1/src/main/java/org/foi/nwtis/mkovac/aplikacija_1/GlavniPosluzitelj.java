@@ -14,6 +14,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.foi.nwtis.Konfiguracija;
 
+/**
+ * Klasa GlavniPosluzitelj zadužena je za otvaranje veze na određenim mrežnim vratima. Na
+ * poslužitelja se mogu spojiti klijenti koji šalju različite zahtjeve za obradu.
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class GlavniPosluzitelj {
   private Konfiguracija konfig;
 
@@ -25,14 +32,8 @@ public class GlavniPosluzitelj {
 
   private int mreznaVrata = 8000;
   private int brojRadnika = 10;
-  // private int maksCekanje = 5000;
   private int brojCekaca = 5;
 
-  /**
-   * Konstruktor za GlavniPosluzitelj
-   * 
-   * @param konfig Objekt tipa Konfiguracija s postavkama
-   */
   public GlavniPosluzitelj(Konfiguracija konfig) {
     this.konfig = konfig;
 
@@ -41,12 +42,14 @@ public class GlavniPosluzitelj {
     brojacUdaljenosti = new AtomicInteger(0);
   }
 
+  /**
+   * Učitava konfiguracijske podatke te potom otvara mrežna vrata.
+   */
   public void pokreniPosluzitelja() {
 
     try {
       mreznaVrata = Integer.parseInt(konfig.dajPostavku("mreznaVrata"));
       brojRadnika = Integer.parseInt(konfig.dajPostavku("brojRadnika"));
-      // maksCekanje = Integer.parseInt(konfig.dajPostavku("maksCekanje"));
       brojCekaca = Integer.parseInt(konfig.dajPostavku("brojCekaca"));
     } catch (NumberFormatException e) {
       Logger.getGlobal().log(Level.SEVERE, "Postavke nisu ispravne! " + e.getMessage()
@@ -56,6 +59,12 @@ public class GlavniPosluzitelj {
     otvoriMreznaVrata();
   }
 
+  /**
+   * Otvara mrežna vrata te čeka na spajanje klijenata. Nakon spajanja klijenta daljnji se rad
+   * prebacuje u dretvu MrezniRadnik koja obrađuje dolazne zahtjeve.
+   * 
+   * @see MrezniRadnik
+   */
   private void otvoriMreznaVrata() {
     List<Thread> dretve = new ArrayList<>();
 
@@ -63,7 +72,7 @@ public class GlavniPosluzitelj {
 
       ExecutorService executor = Executors.newFixedThreadPool(brojRadnika);
 
-      while (true) { // !this.kraj.get()
+      while (true) {
         Socket uticnica = null;
         try {
           uticnica = posluzitelj.accept();
@@ -83,9 +92,7 @@ public class GlavniPosluzitelj {
 
       posluzitelj.close();
 
-      // dodati interruptiranje i gasenje executora
-
-      executor.shutdown(); // ili shutdownNow za INTERRUPT!!
+      executor.shutdown();
       while (!executor.isTerminated());
 
       Logger.getGlobal().log(Level.INFO, "Glavni poslužitelj - kraj rada");

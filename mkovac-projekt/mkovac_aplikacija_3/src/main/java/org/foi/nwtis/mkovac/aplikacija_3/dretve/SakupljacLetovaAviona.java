@@ -29,6 +29,12 @@ import org.foi.nwtis.rest.podaci.LetAviona;
 import jakarta.annotation.Resource;
 import jakarta.persistence.NoResultException;
 
+/**
+ * Klasa dretve za preuzimanje letova aviona
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class SakupljacLetovaAviona extends Thread {
   private Konfiguracija konfig;
 

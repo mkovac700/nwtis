@@ -21,6 +21,11 @@ import jakarta.ws.rs.core.Response;
 @Path("nadzor")
 public class RestNadzor {
 
+  /**
+   * Vraća status poslužitelja
+   * 
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajStatus() {
@@ -48,6 +53,12 @@ public class RestNadzor {
     return response;
   }
 
+  /**
+   * Šalje naredbu poslužitelju AP1 i vraća odgovor.
+   * 
+   * @param komanda Komanda koja se šalje (KRAJ | INIT | PAUZA)
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("{komanda}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -75,6 +86,12 @@ public class RestNadzor {
     return response;
   }
 
+  /**
+   * Šalje naredbu INFO sa vrstom poslužitelju AP1 i vraća odgovor.
+   * 
+   * @param vrsta Vrsta naredbe (DA | NE)
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Path("INFO/{vrsta}")
   @Produces(MediaType.APPLICATION_JSON)

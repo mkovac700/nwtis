@@ -17,6 +17,12 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Klasa koja obavlja ulogu dretve za GlavniPosluzitelj.
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class MrezniRadnik implements Runnable {
   private ServerSocket posluzitelj;
   private Socket uticnica;
@@ -38,6 +44,10 @@ public class MrezniRadnik implements Runnable {
     this.brojacUdaljenosti = brojacUdaljenosti;
   }
 
+  /**
+   * Dio koda koji obrađuje dretva za GlavniPosluzitelj. Čita dolazni zahtjev te ga obrađuje i šalje
+   * odgovor, tj. rezultat obrade ili pogrešku.
+   */
   @Override
   public void run() {
     try {
@@ -62,7 +72,6 @@ public class MrezniRadnik implements Runnable {
 
       String odgovor = this.obradiZahtjev(poruka.toString());
 
-      // TODO UKLONIT KASNIJE
       if (this.ispis.get())
         System.out.println("Odgovor: " + odgovor);
 
@@ -78,6 +87,13 @@ public class MrezniRadnik implements Runnable {
     }
   }
 
+  /**
+   * Obrađuje dolazni zahtjev na temelju pripremljenih dozvoljenih zahtjeva. Nakon obrade vraća
+   * poruku za klijenta.
+   * 
+   * @param zahtjev Dolazni formatirani zahtjev
+   * @return Vraća traženi podatak klijentu ako je uspješno ili grešku.
+   */
   private String obradiZahtjev(String zahtjev) {
 
     String regex1 = "(STATUS)$";

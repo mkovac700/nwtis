@@ -34,6 +34,14 @@ public class RestDnevnik {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Vraća zapise iz dnevnika.
+   * 
+   * @param vrsta Vrsta zahtjeva za koji se traže podaci (AP2, AP4, AP5)
+   * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Vraća tražene podatke ili odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response dajDnevnik(@QueryParam("vrsta") String vrsta,
@@ -64,6 +72,12 @@ public class RestDnevnik {
     return odgovor;
   }
 
+  /**
+   * Dodaje zapis u dnevnik.
+   * 
+   * @param zapis JSON zapis
+   * @return Vraća odgovor (pogrešku) sa statusnim kodom i opisom.
+   */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   public Response spremiDnevnik(String zapis) {
