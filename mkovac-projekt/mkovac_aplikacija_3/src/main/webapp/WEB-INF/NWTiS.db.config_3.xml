@@ -7,8 +7,8 @@
 <entry key="OpenSkyNetwork.lozinka">m43X7PxAgD</entry>
 <entry key="OSKlijentBP.korisnik">mkovac@student.foi.hr</entry>
 <entry key="OSKlijentBP.lozinka">mkovac</entry>
-<entry key="ciklus.trajanje">300</entry>
-<entry key="preuzimanje.od">01.01.2022</entry>
-<entry key="preuzimanje.do">30.11.2022</entry>
+<entry key="ciklus.trajanje">180</entry>
+<entry key="preuzimanje.od">01.12.2022</entry>
+<entry key="preuzimanje.do">13.01.2023</entry>
 <entry key="preuzimanje.klijent">OSKlijent</entry>
 </properties>

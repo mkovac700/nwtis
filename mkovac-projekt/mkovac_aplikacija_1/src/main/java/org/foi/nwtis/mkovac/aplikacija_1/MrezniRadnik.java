@@ -183,9 +183,6 @@ public class MrezniRadnik implements Runnable {
    */
   private double izracunajUdaljenost(String[] podaci) {
 
-    Logger.getGlobal().log(Level.INFO,
-        "PODACI: " + podaci[2] + " " + podaci[4] + " " + podaci[6] + " " + podaci[8]);
-
     double gpsSirina1 = Math.toRadians(Double.parseDouble(podaci[2]));
     double gpsDuzina1 = Math.toRadians(Double.parseDouble(podaci[4]));
     double gpsSirina2 = Math.toRadians(Double.parseDouble(podaci[6]));
