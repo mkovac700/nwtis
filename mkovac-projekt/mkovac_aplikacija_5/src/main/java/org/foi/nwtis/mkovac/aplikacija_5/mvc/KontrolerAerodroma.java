@@ -156,6 +156,8 @@ public class KontrolerAerodroma {
         odgovor = "Aerodrom uspješno dodan za preuzimanje letova!";
       else
         odgovor = "Greška u dodavanju aerodroma za preuzimanje letova!";
+
+      Logger.getGlobal().log(Level.INFO, odgovor);
     } catch (SOAPException_Exception e) {
       Logger.getGlobal().log(Level.SEVERE, e.getMessage());
       odgovor = e.getMessage();
@@ -196,6 +198,56 @@ public class KontrolerAerodroma {
   @View("5.5.3.jsp")
   public void getPreuzimanje() {
     model.put("info", info);
+
+    String korisnik = (String) session.getAttribute("korisnik");
+    String lozinka = (String) session.getAttribute("lozinka");
+
+    var port = serviceAerodromi.getWsAerodromiPort();
+
+    var aerodromi = port.dajSveAerodromeZaLetove(korisnik, lozinka);
+
+    model.put("aerodromi", aerodromi);
+
+  }
+
+  @POST
+  @Path("preuzimanje/status")
+  public Response postPreuzimanjeStatus(@FormParam("icao") String icao,
+      @FormParam("akcija") boolean akcija) {
+
+    String odgovor = null;
+
+    String korisnik = (String) session.getAttribute("korisnik");
+    String lozinka = (String) session.getAttribute("lozinka");
+
+    var port = serviceAerodromi.getWsAerodromiPort();
+    try {
+      if (akcija) {
+        var rezultat = port.aktivirajAerodromZaLetove(korisnik, lozinka, icao);
+        if (rezultat)
+          odgovor = "Aerodrom uspješno aktiviran za preuzimanje letova!";
+        else
+          odgovor = "Greška u aktiviranju aerodroma za preuzimanje letova!";
+      } else {
+        var rezultat = port.pauzirajAerodromZaLetove(korisnik, lozinka, icao);
+        if (rezultat)
+          odgovor = "Aerodrom uspješno pauziran za preuzimanje letova!";
+        else
+          odgovor = "Greška u pauziranju aerodroma za preuzimanje letova!";
+      }
+
+      Logger.getGlobal().log(Level.INFO, odgovor);
+
+    } catch (SOAPException_Exception e) {
+      Logger.getGlobal().log(Level.SEVERE, e.getMessage());
+      odgovor = e.getMessage();
+    } catch (Exception ex) {
+      Logger.getGlobal().log(Level.SEVERE, ex.getMessage());
+      odgovor = ex.getMessage();
+    }
+
+    return Response.ok(odgovor).build();
+
   }
 
   @GET

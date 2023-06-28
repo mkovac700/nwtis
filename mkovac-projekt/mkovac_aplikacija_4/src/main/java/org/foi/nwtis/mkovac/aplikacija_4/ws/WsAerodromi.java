@@ -13,6 +13,7 @@ import org.foi.nwtis.mkovac.aplikacija_4.zrna.AerodromiLetoviFacade;
 import org.foi.nwtis.mkovac.aplikacija_4.zrna.AirportFacade;
 import org.foi.nwtis.mkovac.aplikacija_4.zrna.KorisniciFacade;
 import org.foi.nwtis.podaci.Aerodrom;
+import org.foi.nwtis.podaci.AerodromLetovi;
 import org.foi.nwtis.podaci.Lokacija;
 import jakarta.annotation.Resource;
 import jakarta.inject.Inject;
@@ -44,6 +45,27 @@ public class WsAerodromi {
 
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
+
+  @WebMethod(operationName = "dajSveAerodromeZaLetove")
+  public List<AerodromLetovi> dajSveAerodromeZaLetove(@WebParam String korisnik,
+      @WebParam String lozinka) {
+
+    List<AerodromiLetovi> aerodromiLetovi = aerodromiLetoviFacade.findAll(); // (byte) 1
+    List<AerodromLetovi> aerodromi = new ArrayList<>();
+
+    String[] koord = null;
+    Lokacija lokacija = null;
+    for (AerodromiLetovi al : aerodromiLetovi) {
+      Airports a = al.getAirport();
+      koord = a.getCoordinates().split(",");
+      lokacija = new Lokacija(koord[1], koord[0]);
+      aerodromi.add(
+          new AerodromLetovi(new Aerodrom(a.getIcao(), a.getName(), a.getIsoCountry(), lokacija),
+              al.getPreuzimanje()));
+    }
+
+    return aerodromi;
+  }
 
   @WebMethod(operationName = "dajAerodromeZaLetove")
   public List<Aerodrom> dajAerodromeZaLetove(@WebParam String korisnik, @WebParam String lozinka) {
