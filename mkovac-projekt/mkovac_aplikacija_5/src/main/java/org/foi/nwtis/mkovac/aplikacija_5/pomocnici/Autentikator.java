@@ -6,6 +6,12 @@ import org.foi.nwtis.mkovac_aplikacija_4.ws.WsKorisnici.endpoint.SOAPException_E
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Klasa za autentikaciju korisnika
+ * 
+ * @author Marijan Kovač
+ *
+ */
 public class Autentikator {
 
   private Korisnici service;
@@ -21,6 +27,14 @@ public class Autentikator {
     this.service = service;
   }
 
+  /**
+   * Šalje zahtjev JAX-WS servisu za autentikaciju
+   * 
+   * @param korisnik Korisnik
+   * @param lozinka Lozinka
+   * @return True ako je u redu, inače false
+   * @throws SOAPException_Exception Greška prilikom autentikacije ili druga neočekivana pogreška
+   */
   public boolean prijaviKorisnika(String korisnik, String lozinka) throws SOAPException_Exception {
     var port = service.getWsKorisniciPort();
     Korisnik k = port.dajKorisnika(korisnik, lozinka, korisnik);

@@ -13,6 +13,12 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
+/**
+ * Krajnja točka info
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @ServerEndpoint("/info")
 public class WsInfo {
   private static Session session;
@@ -23,11 +29,22 @@ public class WsInfo {
   @Inject
   AerodromiLetoviFacade aerodromiLetoviFacade;
 
+  /**
+   * Osluškuje otvaranje WebSocketa i inicijalizira sesiju
+   * 
+   * @param session Sesija
+   */
   @OnOpen
   public void onOpen(Session session) {
     WsInfo.session = session;
   }
 
+  /**
+   * Osluškuje dolazak poruke te šalje odgovor putem WebSocketa
+   * 
+   * @param message Dolazna poruka
+   * @param session Sesija
+   */
   @OnMessage
   public void onMessage(String message, Session session) {
 
@@ -43,14 +60,24 @@ public class WsInfo {
     }
   }
 
+  /**
+   * Osluškuje gašenje WebSocketa
+   * 
+   * @param session Sesija
+   * @param reason Razlog
+   */
   @OnClose
   public void onClose(Session session, CloseReason reason) {
 
   }
 
+  /**
+   * Šalje obavijest (poruku) putem WebSocketa
+   * 
+   * @param poruka Tekst poruke koja se šalje
+   */
   public static void posaljiObavijest(String poruka) {
     try {
-      // String jsonPoruka = new Gson().toJson(poruka);
       if (session != null)
         session.getBasicRemote().sendText(poruka);
       else

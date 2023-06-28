@@ -21,6 +21,12 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Klasa za filtriranje i evidentiranje HTTP zahtjeva
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @WebFilter(filterName = "AP4", urlPatterns = "/*")
 public class WebServisFilter implements Filter {
 
@@ -39,11 +45,17 @@ public class WebServisFilter implements Filter {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Obavlja inicijalizaciju postavki i filtera
+   */
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
     this.filterName = filterConfig.getFilterName();
   }
 
+  /**
+   * Osluškuje dolazak zahtjeva i zatim evidentira zahtjev u bazi podataka.
+   */
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
@@ -58,17 +70,12 @@ public class WebServisFilter implements Filter {
     evidentirajZahtjev();
 
     chain.doFilter(request, response);
-
-    // if (this.putanja.contains("/korisnici") || this.putanja.contains("/aerodromi")
-    // || this.putanja.contains("/letovi") || this.putanja.contains("/meteo")
-    // || this.putanja.contains("/info")) {
-    // chain.doFilter(request, response);
-    // } else {
-    // this.response.sendError(HttpServletResponse.SC_NOT_FOUND);
-    // return;
-    // }
   }
 
+  /**
+   * Sprema zahtjev u bazu podataka. Sprema se putanja zahtjeva zajedno s parametrima upita, metoda
+   * zahtjeva, vrsta filtera te vremenska oznaka.
+   */
   private void evidentirajZahtjev() {
     StringBuilder sb = new StringBuilder();
 
@@ -90,6 +97,11 @@ public class WebServisFilter implements Filter {
     dnevnikFacade.create(dnevnik);
   }
 
+  /**
+   * Izdvaja parametre upita iz zahtjeva te ih spaja u jedinstveni niz znakova.
+   * 
+   * @return Niz znakova u obliku parametara upita
+   */
   private String dajParametreUpita() {
 
     Map<String, String[]> parameterMap = this.request.getParameterMap();

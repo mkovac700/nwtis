@@ -22,6 +22,12 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.xml.ws.WebServiceRef;
 
+/**
+ * MVC kontroler za korisnici
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @Controller
 @Path("korisnici")
 @RequestScoped

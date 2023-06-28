@@ -19,6 +19,12 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
+/**
+ * MVC kontroler za dnevnik
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @Controller
 @Path("dnevnik")
 @RequestScoped

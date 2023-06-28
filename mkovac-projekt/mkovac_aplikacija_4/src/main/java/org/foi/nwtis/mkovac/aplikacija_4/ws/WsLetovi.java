@@ -61,6 +61,20 @@ public class WsLetovi {
     this.klijent = konfig.dajPostavku("preuzimanje.klijent");
   }
 
+  /**
+   * Dohvaća polaske (letove) u zadanom intervalu datuma iz baze podataka
+   * 
+   * @param korisnik Korisnik
+   * @param lozinka Lozinka
+   * @param icao Oznaka aerodroma
+   * @param danOd Dan od kojeg se pretražuje
+   * @param danDo Dan do kojeg se pretražuje
+   * @param odBroja Od kojeg zapisa se želi pretražiti
+   * @param broj Koliko zapisa se želi pretražiti
+   * @return Vraća kolekciju letova aviona
+   * @throws SOAPException Ako se dogodila pogreška autentikacije korisnika ili neka neočekivana
+   *         pogreška
+   */
   @WebMethod(operationName = "dajPolaskeInterval")
   public List<LetAviona> dajPolaskeInterval(@WebParam String korisnik, @WebParam String lozinka,
       @WebParam String icao, @WebParam String danOd, @WebParam String danDo, @WebParam int odBroja,
@@ -118,6 +132,19 @@ public class WsLetovi {
     return letoviAviona;
   }
 
+  /**
+   * Dohvaća polaske (letove) na zadani datum iz baze podataka
+   * 
+   * @param korisnik Korisnik
+   * @param lozinka Lozinka
+   * @param icao Oznaka aerodroma
+   * @param dan Dan za koji se pretražuje
+   * @param odBroja Od kojeg zapisa se želi pretražiti
+   * @param broj Koliko zapisa se želi pretražiti
+   * @return Vraća kolekciju letova aviona
+   * @throws SOAPException Ako se dogodila pogreška autentikacije korisnika ili neka neočekivana
+   *         pogreška
+   */
   @WebMethod(operationName = "dajPolaskeNaDan")
   public List<LetAviona> dajPolaskeNaDan(@WebParam String korisnik, @WebParam String lozinka,
       @WebParam String icao, @WebParam String dan, @WebParam int odBroja, @WebParam int broj)
@@ -174,6 +201,17 @@ public class WsLetovi {
     return letoviAviona;
   }
 
+  /**
+   * Dohvaća polaske (letove) sa servisa OpenSkyNetwork
+   * 
+   * @param korisnik Korisnik
+   * @param lozinka Lozinka
+   * @param icao Oznaka aerodroma
+   * @param dan Dan za koji se pretražuje
+   * @return Vraća kolekciju letova aviona
+   * @throws SOAPException Ako se dogodila pogreška autentikacije korisnika ili neka neočekivana
+   *         pogreška
+   */
   @WebMethod(operationName = "dajPolaskeNaDanOS")
   public List<LetAviona> dajPolaskeNaDanOS(@WebParam String korisnik, @WebParam String lozinka,
       @WebParam String icao, @WebParam String dan) throws SOAPException {

@@ -37,6 +37,12 @@ public class RestKlijentDnevnik {
     adresa_AP2 = konf.dajPostavku("adresa.AP2");
   }
 
+  /**
+   * Dodaje novi zapis u dnevnik
+   * 
+   * @param json_Zapis JSON zapis dnevnika
+   * @return Rezultat spremanja
+   */
   public String spremiDnevnik(String json_Zapis) {
     RestKlijent rk = new RestKlijent();
     String odgovor = null;
@@ -49,6 +55,14 @@ public class RestKlijentDnevnik {
     return odgovor;
   }
 
+  /**
+   * Dohvaća zapise iz dnevnika
+   * 
+   * @param vrsta Vrsta zahtjeva
+   * @param odBroja Od kojeg podataka se želi dohvatiti
+   * @param broj Koliko podataka se želi dohvatiti
+   * @return Kolekcija (lista) podataka
+   */
   public List<Dnevnik> dajDnevnik(String vrsta, int odBroja, int broj) {
     RestKlijent rk = new RestKlijent();
     Dnevnik[] json_Dnevnik = null;
@@ -111,6 +125,14 @@ public class RestKlijentDnevnik {
       return odgovor;
     }
 
+    /**
+     * Dohvaća zapise iz dnevnika
+     * 
+     * @param vrsta Vrsta zahtjeva
+     * @param odBroja Od kojeg podataka se želi dohvatiti
+     * @param broj Koliko podataka se želi dohvatiti
+     * @return Kolekcija (lista) podataka
+     */
     public Dnevnik[] dajDnevnik(String vrsta, int odBroja, int broj) throws ClientErrorException {
       WebTarget resource = webTarget;
 

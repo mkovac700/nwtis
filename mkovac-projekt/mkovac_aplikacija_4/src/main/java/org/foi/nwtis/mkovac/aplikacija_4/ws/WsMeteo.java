@@ -35,6 +35,13 @@ public class WsMeteo {
     OWM_apiKey = konfig.dajPostavku("OpenWeatherMap.apikey");
   }
 
+  /**
+   * Dohvaća meteo podatke za aerodrom
+   * 
+   * @param icao Oznaka aerodroma
+   * @return Meteo podaci
+   * @throws SOAPException Ako se dogodila neka neočekivana pogreška
+   */
   @WebMethod(operationName = "dajMeteo")
   public MeteoPodaci dajMeteo(@WebParam String icao) throws SOAPException {
     RestKlijentAerodromi rka = new RestKlijentAerodromi();

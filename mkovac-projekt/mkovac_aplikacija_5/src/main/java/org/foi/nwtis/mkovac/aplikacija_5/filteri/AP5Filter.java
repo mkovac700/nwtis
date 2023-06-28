@@ -23,6 +23,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Klasa za filtriranje i evidentiranje HTTP zahtjeva
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @WebFilter(filterName = "AP5", urlPatterns = "/*")
 public class AP5Filter implements Filter {
 
@@ -43,6 +49,13 @@ public class AP5Filter implements Filter {
     this.filterName = filterConfig.getFilterName();
   }
 
+  /**
+   * Osluškuje dolazak zahtjeva i zatim provjerava trenutno prijavljenog korisnika. Ukoliko korisnik
+   * nije prijavljen, dozvoljava pristup krajnjim točkama /korisnici, /korisnici/prijava i
+   * korisnici/registracija, dok za sve ostale zahtjeve vrši preusmjeravanje na stranicu prijave.
+   * Nakon prijave dozvoljava pristup ostalim zahtjevima. Svaki zahtjev evidentira se u bazi
+   * podataka.
+   */
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
@@ -77,10 +90,12 @@ public class AP5Filter implements Filter {
       }
     }
 
-
-
   }
 
+  /**
+   * Sprema zahtjev u bazu podataka. Sprema se putanja zahtjeva zajedno s parametrima upita, metoda
+   * zahtjeva, vrsta filtera te vremenska oznaka.
+   */
   private void evidentirajZahtjev() {
     StringBuilder sb = new StringBuilder();
 
@@ -112,6 +127,11 @@ public class AP5Filter implements Filter {
     }
   }
 
+  /**
+   * Izdvaja parametre upita iz zahtjeva te ih spaja u jedinstveni niz znakova.
+   * 
+   * @return Niz znakova u obliku parametara upita
+   */
   private String dajParametreUpita() {
 
     Map<String, String[]> parameterMap = this.request.getParameterMap();

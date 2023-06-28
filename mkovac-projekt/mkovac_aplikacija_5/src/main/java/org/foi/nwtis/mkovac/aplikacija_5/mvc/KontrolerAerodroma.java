@@ -29,6 +29,12 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
 import jakarta.xml.ws.WebServiceRef;
 
+/**
+ * MVC kontroler za aerodromi
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @Controller
 @Path("aerodromi")
 @RequestScoped

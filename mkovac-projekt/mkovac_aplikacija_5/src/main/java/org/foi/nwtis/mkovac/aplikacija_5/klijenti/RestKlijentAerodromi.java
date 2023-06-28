@@ -57,8 +57,8 @@ public class RestKlijentAerodromi {
   /**
    * Dohvaća podatke o svim aerodromima u zadanom rasponu. Zadani raspon je 1, 20.
    * 
-   * @param traziNaziv
-   * @param traziDrzavu
+   * @param traziNaziv Naziv koji se pretražuje
+   * @param traziDrzavu Država koja se pretražuje
    * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
    * @param broj Koliko podataka se želi dohvatiti
    * @return Vraća kolekciju (listu) podataka
@@ -81,6 +81,13 @@ public class RestKlijentAerodromi {
     return aerodromi;
   }
 
+  /**
+   * Dohvaća podatke o udaljenosti dva aerodroma
+   * 
+   * @param icaoOd Polazni aerodrom
+   * @param icaoDo Dolazni aerodrom
+   * @return Vraća kolekciju (listu) podataka
+   */
   public List<Udaljenost> dajUdaljenosti2Aerodroma(String icaoOd, String icaoDo) {
     RestKlijent rk = new RestKlijent();
     Udaljenost[] json_udaljenost2Aerodroma = null;
@@ -100,6 +107,13 @@ public class RestKlijentAerodromi {
     return udaljenost2Aerodroma;
   }
 
+  /**
+   * Dohvaća podatak o izračunatoj udaljenosti dva aerodroma
+   * 
+   * @param icaoOd Polazni aerodrom
+   * @param icaoDo Dolazni aerodrom
+   * @return Vraća jedan podatak
+   */
   public UdaljenostAerodrom dajIzracunUdaljenosti2Aerodroma(String icaoOd, String icaoDo) {
     RestKlijent rk = new RestKlijent();
     UdaljenostAerodrom ua = null;
@@ -112,6 +126,14 @@ public class RestKlijentAerodromi {
     return ua;
   }
 
+  /**
+   * Dohvaća podatak o udaljenostima unutar države odredišnog aerodroma koje su manje od udaljenosti
+   * od polazišnog do odredišnog aerodroma
+   * 
+   * @param icaoOd Polazni aerodrom
+   * @param icaoDo Dolazni aerodrom
+   * @return Vraća kolekciju (listu) podataka
+   */
   public List<UdaljenostAerodrom> dajIzracun1Udaljenosti2Aerodroma(String icaoOd, String icaoDo) {
     RestKlijent rk = new RestKlijent();
     UdaljenostAerodrom[] json_udaljenost2Aerodroma = null;
@@ -131,6 +153,15 @@ public class RestKlijentAerodromi {
     return udaljenost2Aerodroma;
   }
 
+  /**
+   * Dohvaća podatak o udaljenostima do aerodroma unutar zadane države koja je manja od zadane
+   * udaljenosti između polaznog aerodroma i svih aerodroma unutar države
+   * 
+   * @param icaoOd Polazni aerodrom
+   * @param drzava Odredišna država
+   * @param km Broj kilometara
+   * @return Vraća kolekciju (listu) podataka
+   */
   public List<UdaljenostAerodrom> dajIzracun2Udaljenosti2Aerodroma(String icaoOd, String drzava,
       String km) {
     RestKlijent rk = new RestKlijent();
@@ -197,6 +228,15 @@ public class RestKlijentAerodromi {
       return aerodrom;
     }
 
+    /**
+     * Dohvaća podatke o svim aerodromima u zadanom rasponu. Zadani raspon je 1, 20.
+     * 
+     * @param traziNaziv Naziv koji se pretražuje
+     * @param traziDrzavu Država koja se pretražuje
+     * @param odBroja Od kojeg podatka se želi dohvatiti (donja granica)
+     * @param broj Koliko podataka se želi dohvatiti
+     * @return Vraća kolekciju (listu) podataka
+     */
     public Aerodrom[] dajAerodromi(String traziNaziv, String traziDrzavu, int odBroja, int broj)
         throws ClientErrorException {
       WebTarget resource = webTarget;
@@ -226,6 +266,13 @@ public class RestKlijentAerodromi {
       return aerodromi;
     }
 
+    /**
+     * Dohvaća podatke o udaljenosti dva aerodroma
+     * 
+     * @param icaoOd Polazni aerodrom
+     * @param icaoDo Dolazni aerodrom
+     * @return Vraća kolekciju (listu) podataka
+     */
     public Udaljenost[] dajUdaljenosti2Aerodroma(String icaoOd, String icaoDo)
         throws ClientErrorException {
 
@@ -253,6 +300,13 @@ public class RestKlijentAerodromi {
       return udaljenost2Aerodroma;
     }
 
+    /**
+     * Dohvaća podatak o izračunatoj udaljenosti dva aerodroma
+     * 
+     * @param icaoOd Polazni aerodrom
+     * @param icaoDo Dolazni aerodrom
+     * @return Vraća jedan podatak
+     */
     public UdaljenostAerodrom dajIzracunUdaljenosti2Aerodroma(String icaoOd, String icaoDo)
         throws ClientErrorException {
 
@@ -287,6 +341,14 @@ public class RestKlijentAerodromi {
 
     }
 
+    /**
+     * Dohvaća podatak o udaljenostima unutar države odredišnog aerodroma koje su manje od
+     * udaljenosti od polazišnog do odredišnog aerodroma
+     * 
+     * @param icaoOd Polazni aerodrom
+     * @param icaoDo Dolazni aerodrom
+     * @return Vraća kolekciju (listu) podataka
+     */
     public UdaljenostAerodrom[] dajIzracun1Udaljenosti2Aerodroma(String icaoOd, String icaoDo)
         throws ClientErrorException {
 
@@ -320,6 +382,15 @@ public class RestKlijentAerodromi {
       return udaljenost2Aerodroma;
     }
 
+    /**
+     * Dohvaća podatak o udaljenostima do aerodroma unutar zadane države koja je manja od zadane
+     * udaljenosti između polaznog aerodroma i svih aerodroma unutar države
+     * 
+     * @param icaoOd Polazni aerodrom
+     * @param drzava Odredišna država
+     * @param km Broj kilometara
+     * @return Vraća kolekciju (listu) podataka
+     */
     public UdaljenostAerodrom[] dajIzracun2Udaljenosti2Aerodroma(String icaoOd, String drzava,
         String km) throws ClientErrorException {
 

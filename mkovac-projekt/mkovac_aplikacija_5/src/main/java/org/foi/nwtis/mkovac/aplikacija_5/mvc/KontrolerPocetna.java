@@ -12,6 +12,12 @@ import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
+/**
+ * MVC kontroler za početnu stranicu
+ * 
+ * @author Marijan Kovač
+ *
+ */
 @Controller
 @Path("pocetna")
 @RequestScoped

@@ -35,6 +35,17 @@ public class WsKorisnici {
   @Resource(lookup = "java:app/jdbc/nwtis_bp")
   javax.sql.DataSource ds;
 
+  /**
+   * Dohvaća sve korisnike
+   * 
+   * @param korisnik Korisnik
+   * @param lozinka Lozinka
+   * @param traziImeKorisnika Ime korisnika za koje se pretražuje
+   * @param traziPrezimeKorisnika Prezime korisnika za koje se pretražuje
+   * @return Vraća kolekciju korisnika
+   * @throws SOAPException Ako se dogodila pogreška autentikacije korisnika ili neka neočekivana
+   *         pogreška
+   */
   @WebMethod(operationName = "dajKorisnike")
   public List<Korisnik> dajKorisnike(@WebParam String korisnik, @WebParam String lozinka,
       @WebParam String traziImeKorisnika, @WebParam String traziPrezimeKorisnika)
@@ -58,6 +69,16 @@ public class WsKorisnici {
     return _korisnici;
   }
 
+  /**
+   * Dohvaća korisnika
+   * 
+   * @param korisnik Korisnik
+   * @param lozinka Lozinka
+   * @param traziKorisnika Korisnik koji se traži (korisničko ime)
+   * @return Vraća jednog korisnika
+   * @throws SOAPException Ako se dogodila pogreška autentikacije korisnika ili neka neočekivana
+   *         pogreška
+   */
   @WebMethod(operationName = "dajKorisnika")
   public Korisnik dajKorisnika(@WebParam String korisnik, @WebParam String lozinka,
       @WebParam String traziKorisnika) throws SOAPException {
@@ -86,6 +107,12 @@ public class WsKorisnici {
     return _k;
   }
 
+  /**
+   * Dodaje novog korisnika. Nakon dodavanja šalje obavijest putem WebSocketa
+   * 
+   * @param korisnik Objekt korisnika koji se dodaje
+   * @return True ako je u redu, inače false
+   */
   @WebMethod(operationName = "dodajKorisnika")
   public boolean dodajKorisnika(@WebParam Korisnik korisnik) {
 
