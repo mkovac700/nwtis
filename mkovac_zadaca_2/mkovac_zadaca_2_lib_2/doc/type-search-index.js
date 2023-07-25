@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"org.foi.nwtis","l":"KonfiguracijaBP"},{"p":"org.foi.nwtis","l":"PostavkeBazaPodataka"}];updateSearchResults();

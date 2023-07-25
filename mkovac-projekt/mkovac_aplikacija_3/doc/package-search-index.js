@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.foi.nwtis.mkovac.aplikacija_3.dretve"},{"l":"org.foi.nwtis.mkovac.aplikacija_3.jpa"},{"l":"org.foi.nwtis.mkovac.aplikacija_3.klijenti"},{"l":"org.foi.nwtis.mkovac.aplikacija_3.slusaci"},{"l":"org.foi.nwtis.mkovac.aplikacija_3.zrna"},{"l":"org.foi.nwtis.podaci"}];updateSearchResults();
