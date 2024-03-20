@@ -8,7 +8,9 @@
 <br />
 <div align="center">
   
-  <img width="96" height="96" src="https://img.icons8.com/fluency/96/airport-building.png" alt="airport-building"/>
+  <!-- <img width="96" height="96" src="https://img.icons8.com/fluency/96/airport-building.png" alt="airport-building"/> -->
+
+  <img width="96" height="96" src="https://img.icons8.com/fluency/96/geography.png" alt="geography"/>
 
   <h3 align="center">NWTiS</h3>
 
