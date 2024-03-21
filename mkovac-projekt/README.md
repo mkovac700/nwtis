@@ -524,7 +524,7 @@ Za više detalja kliknite <a href=""><strong>ovdje</strong></a>.
       <td></td>
       <td>Docker/JRE <br> HSQLDB <br> nwtis_bp</td>
       <td>JPA Criteria API</td>
-      <td>JAX-WS web servis WebSocket krajnja točka</td>
+      <td>JAX-WS web servis <br> WebSocket krajnja točka</td>
     </tr>
     <tr>
       <td>5</td>
@@ -547,192 +547,384 @@ Za više detalja kliknite <a href=""><strong>ovdje</strong></a>.
 
 ### Preduvjeti
 
-Za pokretanje rješenja bit će vam potrebno slijedeće:
+Za pokretanje rješenja bit će vam potrebno sljedeće:
 
+* Operativni sustav Linux
 
+  Za izradu rješenja korišten je <a href="https://linuxmint.com/">Linux Mint</a> na <a href="https://www.virtualbox.org/">Oracle VirtualBox VM</a>. 
+
+* Java 17 ili veća:
+  * smjestite se u željeni direktorij za preuzimanja, npr:
+  ```bash
+  cd /opt/alati/
+  ```
+
+  * preuzmite Java OpenJDK 17.0.2:
+  ```bash
+  curl https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz -O
+  ```
+
+  * smjestite se u slijedeći direktorij (preporuka):
+  ```bash
+  cd /usr/lib/jvm
+  ```
+
+  * izdvojite arhivu:
+  ```bash
+  sudo tar -xvf /opt/alati/openjdk-17.0.2_linux-x64_bin.tar.gz -C .
+  ```
+
+  * podesite varijablu okruženja:
+
+  Otvorite datoteku `/etc/profile.d/jdk.sh`
+
+  i promijenite/dodajte slijedeću liniju:
+
+  ```bash
+  export JAVA_HOME=/usr/lib/jvm/jdk-17.0.2
+  ```
+
+  * restartirajte sustav (preporuka)
+
+  * provjerite ispravnost instalacije:
+
+  ```bash
+  java -version
+  ```
+
+  Ako je sve bilo u redu, trebali biste dobiti rezultat sličan ovome:
+
+  ```bash
+  openjdk version "17.0.2" 2022-01-18
+  OpenJDK Runtime Environment (build 17.0.2+8-86)
+  OpenJDK 64-Bit Server VM (build 17.0.2+8-86, mixed mode, sharing)
+  ```
+
+* Eclipse IDE
+
+  Preuzmite i instalirajte <a href="https://www.eclipse.org/ide/">Eclipse IDE</a>. Konfigurirajte Eclipse IDE za Java 17 prema potrebi.
+
+* DBeaver (opcionalno)
+
+  👉🏽 DBeaver je dodatak za Eclipse IDE koji olakšava rad s bazama podataka.
+
+  * Help > Eclipse Marketplace > Find
+
+    ⚠️ Nakon provedene instalacije potrebno je ponovno pokrenuti Eclipse IDE
+
+* Maven (opcionalno):
+
+  ⚠️ Maven bi trebao raditi unutar Eclipse IDE bez instalacije, ali po potrebi se može i ručno instalirati za rad putem konzole.
+
+  * ažurirajte repozitorij:
+  ```bash
+  sudo apt update
+  ```
+  * instalirajte Maven:
+  ```bash
+  sudo apt install maven
+  ```
+  * provjerite ispravnost instalacije:
+  ```bash
+  mvn -version
+  ```
+  Ako je sve bilo u redu, trebali biste dobiti rezultat sličan ovome:
+  ```bash
+  Apache Maven 3.6.3
+  Maven home: /usr/share/maven
+  Java version: 17.0.2, vendor: Oracle Corporation, runtime: /usr/lib/jvm/jdk-17.0.2
+  Default locale: en_US, platform encoding: UTF-8
+  OS name: "linux", version: "5.15.0-69-generic", arch: "amd64", family: "unix"
+  ```
+
+* Docker
+
+  * Podesite Docker-ov `apt` repozitorij:
+
+  ```bash
+  # Add Docker's official GPG key:
+  sudo apt-get update
+  sudo apt-get install ca-certificates curl
+  sudo install -m 0755 -d /etc/apt/keyrings
+  sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+  # Add the repository to Apt sources:
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  sudo apt-get update
+  ```
+
+  ⚠️ Ako koristite distribuciju utemeljenu na Ubuntu, npr. Linux Mint, možda ćete morati koristiti `UBUNTU_CODENAME` umjesto `VERSION_CODENAME`.
+
+  * Instalirajte Docker:
+
+  ```bash
+  sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  ```
+
+  * Provjerite ispravnost instalacije:
+
+  ```bash
+  sudo docker run hello-world
+  ```
+
+  Za više informacija kliknite <a href="https://docs.docker.com/engine/install/ubuntu/"><strong>ovdje</strong></a>.
+
+* Payara
+
+  👉🏽 Potrebno je instalirati Payara Web i Payara Full inačice. U nastavku su dane upute za Payara Full.
+
+  * Preuzmite Payara Server 6.2023.4 (Full/Web Profile) na sljedećoj <a href="https://www.payara.fish/downloads/payara-platform-community-edition/"><strong>poveznici</strong></a>.
+
+    ⚠️ Za projekt je korištena verzija 6.2023.4, međutim ista možda više nije dostupna, pa je potrebno preuzeti najnoviju verziju. To znači da naredbe u nastavku treba prilagoditi kako bi iste funkcionirale.
+
+  * Kopirati datoteku s `Downloads` na `/opt/alati`
+
+  * Smjestiti se u direktorij `/opt`
+    
+    ```bash
+    cd /opt
+    ```
+
+  * Izvršiti naredbu
+
+    ```bash
+    sudo unzip alati/payara-6.2023.4.zip
+    mv payara6/ payara-full-6.2023.4
+    ```
+
+  * Podesiti prava pristupa ⚠️
+
+    ```bash
+    sudo chown -R {admin} payara-full-6.2023.4
+    sudo chgrp -R users payara-full-6.2023.4
+    sudo chmod -R g+w payara-full-6.2023.4
+    ```
+
+* HSQLDB
+
+  * Preuzmite HSQLDB na sljedećoj <a href=""><strong>poveznici</strong></a>
+
+    ⚠️ Za projekt je korištena verzija 2.7.1
+
+  * Izdvojite preuzetu mapu na željenu destinaciju
+
+    Primjer:
+
+    ```bash
+    /opt/hsqldb-2.7.1/hsqldb
+    ```
+
+* Postman
+
+* Soap UI
 
 ### Pokretanje
 
+  * Klonirajte ovaj repozitorij:
+
+    ```bash
+    https://github.com/mkovac700/nwtis.git
+    ```
+
+  * Otvorite projekt u Eclipse IDE:
+
+    * `File > Open Projects from File System... > Directory...` 
+
+    * Odaberite korijenski direktorij projekta, a zatim iz popisa odaberite sve direktorije (uključujući i korijenski direktorij) (`Select All`)
   
+  * Uvezite postavke konfiguracija za buildanje aplikacija u Eclipse IDE (preporuka):
+
+    * `File > Import... > Run/Debug > Launch Configurations > Browse...`
+
+    * Konfiguracije se nalaze u direktoriju:
+
+      ```bash
+      nwtis/mkovac-projekt/konfig
+      ```
+
+  * Podesite bazu podataka:
+
+    * #TODO steps za konfiguriranje baze (user i lozinka, kreiranje shema s linkovima na skripte, uvoz podataka koji su potrebni inicijalno)
+
+  * Smjestite se u korijenski direktorij projekta (koristeći File Browser) - potrebno radi pokretanja skripti (više informacija u nastavku)
+
+  Daljnje korake pratite u sekciji <a href="#-upotreba">Upotreba</a>.
 
 <p align="right">(<a href="#readme-top">povratak na vrh</a>)</p>
 
 ## 🚀 Upotreba
 
-Korisniku se daje mogućnost izvršavanja sljedećih komandi:
+⚠️ Za ispravan rad važan je redoslijed pokretanja
 
-* <strong>Izvršavanje programa određeni broj sati virtualnog vremena</strong>
-  * sintaksa
+### Baza podataka (Docker)
+
+* Smjestiti se u korijenski direktorij projekta (`mkovac-projekt`) i izvršiti naredbu (`Desni klik > Open in Terminal`):
+
+  ```bash
+  ./scripts/pokretac.sh
+  ```
+
+  <img src="../dokumentacija/projekt/Screenshot_1.png">
+
+  ⚠️ Provjeriti je li uspješno pokrenuto, jer inače aplikacije koje ovise o bazi podataka neće raditi ispravno, odnosno neće se moći deployati.
+
+
+### mkovac_aplikacija_1
+
+* Izvršiti kompiliranje:
+
+  👉🏽 Odabrati jedan od načina:
+
+  * Eclipse IDE:
+
+    ⚠️ Potrebno je uvesti konfiguracije u Eclipse IDE (opisano u sekciji <a href="#pokretanje">Pokretanje</a>)
+
+    `Run Configurations... > mkovac_aplikacija_1 - install`
+
+  * Maven:
+
+    Smjestiti se u direktorij `mkovac_aplikacija_1` i izvršiti naredbu (`Desni klik > Open in Terminal`):
+
     ```bash
-    VR hh
+    mvn clean package install
     ```
-  * primjer
+
+* Smjestiti se u direktorij `mkovac_aplikacija_1` i izvršiti naredbu (`Desni klik > Open in Terminal`):
+
+  ```bash
+  java -jar /home/NWTiS_2/mkovac/mkovac-projekt/mkovac_aplikacija_1/target/mkovac_aplikacija_1-1.0.0.jar NWTiS_mkovac_1.txt
+  ```
+
+  ⚠️ Potrebno je prilagoditi putanju do izvršne datoteke
+
+* Aplikacija je spremna za rad. 
+
+  (Opcionalno) Testiranje rada može se obaviti preko klase `TestKlijent.java` (Unutar Eclipse IDE: `Desni klik > Run As > Java Application`). Komande su opisane u sekciji <a href="#-opis-projekta">Opis projekta</a>.
+
+### mkovac_aplikacija_2
+
+* Pokretanje baze (lokalno)
+
+  ```bash
+  ./scripts/pokreniBazu.sh
+  ```
+
+  ⚠️ Korišteno za inicijalno kreiranje shema i slično. Nije potrebno pokretati (javit će se greška) ako je već pokrenuta baza na Dockeru (time je baza dostupna i na `localhost:9001` i na adresi kontejnera `200.20.0.3:9001`). 
+
+* Pokretanje Payara Web servera (lokalno)
+
+  * Izvršiti naredbu:
+
     ```bash
-    VR 4
+    ./scripts/pokreniServer.sh
     ```
-  * opis
 
-    Virtualni sat programa radi prema korigiranom broju sekundi. Npr. ako je `--ms 600` znači da se u jednoj sekundi stvarnog vremena izvrši 600 sekundi
-    virtualnog sata. To znači da se odradi jedna sekunda spavanja u stvarnom
-    vremenu, korigirati virtualni sat, ispisati vrijeme virtualnog sata na ekran,
-    provjeriti da li je stigao novi paket ili više njih u uredu za prijem. Primljeni
-    paketi se ukrcavaju u vozilo (na kraju svakog punog sata prema gornjem
-    opisu ukrcavanja paketa). Na ekran se ispisuje svaki paket koji je ukrcan u
-    vozilo (i virtualno vrijeme). Kada dođe vrijeme za određeno vozilo ono
-    može krenuti s dostavom kod primatelja. Na ekran se ispisuje kada vozilo
-    krene na dostavu paketa. Na ekran se ispisuje svaki paket koji je isporučen
-    primatelju (i virtualno vrijeme). Tako se izvršava virtualno vrijeme dok ne
-    istekne zadano vrijeme izvršavanja ili dođe do kraja radnog vremena. Na
-    ekran se ispisuje zašto je došlo do kraja rada. Može se više puta izvršiti
-    komanda.
+    <img src="../dokumentacija/projekt/Screenshot_2.png">
 
-  <div align="center">
-    <a href="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_1.png"><img alt="dz3_demo" src="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_1.png"></a>
-  </div>
+  * Payara Console dostupna je na `localhost:4848`
 
-* <strong>Pregled statusa paketa u trenutku virtualnog vremena</strong>
-  * sintaksa
+    * Klikom na `Applications` moguće je vidjeti popis isporučenih (deployanih) aplikacija
+
+    * Klikom na `server (Admin Server) > View Raw Log` moguće je uživo pratiti logove servera (kontrola rada aplikacija, iznimke i sl.)
+
+* Sada se može obaviti isporuka aplikacije:
+
+  * Unutar Eclipse IDE izvršite konfiguraciju `mkovac_aplikacija_2 - redeploy`
+
+    ⚠️ U slučaju greške kod deploya, provjeriti jesu li ispravno napravljeni svi prethodni koraci (uvjet je ispravno pokrenuta i podešena baza podataka te pokrenuta `mkovac_aplikacija_1`).
+
+  * Provjeriti je li aplikacija isporučena na Payara server (`Payara Console > Applications`)
+
+    <img src="../dokumentacija/projekt/Screenshot_3.png">
+
+  * Aplikacija je dostupna na adresi `localhost:8080/mkovac_aplikacija_2`
+
+    👉🏽 Unutar `Payara Console > Applications` kliknite na `Launch` te na poveznicu aplikacije.
+
+    ⚠️ Na početnoj adresi `localhost:8080/mkovac_aplikacija_2` ne nalazi se ništa! Testiranje se može provesti putem preglednika ili putem Postman-a koristeći putanje definirane u sekciji <a href="#-opis-projekta">Opis projekta</a>.
+
+* Pokretanje Payara Micro servera (Docker):
+
+  * Izvršiti naredbu:
+
     ```bash
-    IP
+    ./scripts/pokretac.sh
     ```
-  * primjer
+
+    <img src="../dokumentacija/projekt/Screenshot_4.png">
+
+  * Aplikacija je sada dostupna i na ``200.20.0.4:8080/mkovac_aplikacija_2``
+
+  <br>
+
+  ⚠️ Nakon svakog ponovnog deploya aplikacije (deploy se vrši na lokalni server), potrebno je ponovno izvršiti ovaj korak kako promjene bile dostupne i unutar Docker slike.
+
+  <br>
+  
+* Sada se može testirati aplikacija
+
+  👉🏽 Testiranje je moguće napraviti preko preglednika, no preporuka je koristiti pripremljenu skriptu za Postman: <a href="./mkovac_aplikacija_2/mkovac_aplikacija_2.postman_collection.json">`mkovac_aplikacija_2.postman_collection.json`</a>
+
+  * Pokrenite Postman i napravite uvoz skripte:
+
+    * Kliknite na `File > Import...`
+
+    * Uvezite datoteku `mkovac_aplikacija_2.postman_collection.json`
+
+      Datoteka se nalazi na putanji:
+
+      ```bash
+      mkovac-projekt/mkovac_aplikacija_2/
+      ```
+
+  * Za početak možete provjeriti status poslužitelja mkovac_aplikacija_1 koristeći `nadzor_a`:
+
     ```bash
-    IP
+    [GET] http://200.20.0.4:8080/mkovac_aplikacija_2/api/nadzor
     ```
-  * opis
 
-    Ispis tablice s primljenim i dostavljenim paketima (vrijeme prijema, vrsta
-    paketa, vrsta usluge, status isporuke, vrijeme preuzimanja, iznos dostave,
-    iznos pouzeća) u trenutno vrijeme virtualnog sata. Ispis primljenog paketa
-    provjerava da li je vrijeme prijema manje od virtualnog vremena. Paket je
-    dostavljen ako je vrijeme preuzimanja manje od virtualnog vremena.
+  * Potom izvršite inicijalizaciju sustava koristeći `nadzor_b.2` (bitno za nastavak rada):
 
-  <div align="center">
-    <a href="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_2.png"><img alt="dz3_demo" src="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_2.png"></a>
-  </div>
-
-* <strong>Pregled podataka za vozila u trenutku virtualnog vremena</strong>
-  * sintaksa
     ```bash
-    SV
+    [GET] http://200.20.0.4:8080/mkovac_aplikacija_2/api/nadzor/INIT
     ```
-  * primjer
+
+  * Sada možete testirati preostale naredbe, primjerice `aerodromi_d`:
+
     ```bash
-    SV
+    [GET] http://200.20.0.4:8080/mkovac_aplikacija_2/api/aerodromi/LDZA/udaljenosti?odBroja=1&broj=1000
     ```
-  * opis
 
-    Ispis tablice s podacima o svim vozilima (status, ukupno odvoženi km, broj
-    paketa u vozilu (hitnih, običnih, isporučenih), trenutni % zauzeća (prostora
-    i težine), broj vožnji. Ispis podataka mora se temeljiti na uzorku dizajna
-    Visitor.
+    <img src="../dokumentacija/projekt/Screenshot_5.png">
 
-  <div align="center">
-    <a href="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_3.png"><img alt="dz3_demo" src="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_3.png"></a>
-  </div>
+    <br>
 
-* <strong>Pregled podataka za vožnje vozila tijekom dana</strong>
-  * sintaksa
-    ```bash
-    VV vozilo
-    ```
-  * primjer
-    ```bash
-    VV VŽ100PK
-    ```
-  * opis
+    ⚠️ Ukoliko niste obavili inicijalizaciju servera `mkovac_aplikacija_1` (ili ste ga pauzirali) javlja se pogreška `403 - Forbidden`:
 
-    Ispis tablice s podacima o pojedinim vožnjama odabranog vozila (vrijeme
-    početka, vrijeme povratka, trajanje, ukupno odvoženo km, broj paketa u
-    vozilu (hitnih, običnih, isporučenih), % zauzeća (prostora i težine) na
-    početku vožnje). Ispis podataka mora se temeljiti na uzorku dizajna Visitor.
+    <img src="../dokumentacija/projekt/Screenshot_6.png">
 
-  <div align="center">
-    <a href="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_4.png"><img alt="dz3_demo" src="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_4.png"></a>
-  </div>
+* Gašenje Payara Web servera:
 
-* <strong>Pregled podataka za segmente vožnje vozila tijekom dana</strong>
-  * sintaksa
-    ```bash
-    VS vozilo n
-    ```
-  * primjer
-    ```bash
-    VS VŽ100PK 1
-    ```
-  * opis
+  ```bash
+  ./scripts/zaustaviServer.sh
+  ```
 
-    Ispis tablice s podacima o segmentima 1. vožnje odabranog vozila (vrijeme
-    početka, vrijeme kraja, trajanje, odvoženo km, paket (ako nije povratak u
-    ured)). Ispis podataka mora se temeljiti na uzorku dizajna Visitor.
+  ⚠️ Za nastavak rada potrebno je ugasiti server, jer će se nadalje koristiti Payara Full, koji ne može biti pokrenut istovremeno sa Payara Web serverom (koriste se identične postavke). Gašenje lokalnog Payara Web servera neće utjecati na rad Payara Micro servera pokrenutog na Dockeru!
 
-  <div align="center">
-    <a href="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_5.png"><img alt="dz3_demo" src="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_5.png"></a>
-  </div>
 
-* <strong>Pregled područja s hijerarhijskim prikazom mjesta koja uključuje, a mjesta koje ulice.
-Svaka nova razina ima uvlaku od 4 praznine.</strong>
-  * sintaksa
-    ```bash
-    PP
-    ```
-  * primjer
-    ```bash
-    PP
-    ```
-  * opis
+### mkovac_aplikacija_3
 
-    Ispis tablice s podacima o područjima, njihovim mjestima i ulicama mjesta
-    koje ulaze u područje.
+  * ugasiti srv ako nije
 
-  <div align="center">
-    <a href="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_6.png"><img alt="dz3_demo" src="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_6.png"></a>
-  </div>
+  * postaviti JMS poruke prema datoteci mkovac_app_3/glassfish_jms.txt (extractati info van)
 
-* <strong>Promjena statusa vozila u trenutku virtualnog vremena</strong>
-  * sintaksa
-    ```bash
-    PS vozilo [A | NI | NA]
-    ```
-    A – aktivno
-    ● NI – nije ispravno
-    ● NA nije aktivno
-  * primjer
-    ```bash
-    PS VŽ100PK NI
-    ```
-  * opis
+  * pokrenuti full
 
-    Vozilu VŽ100PK se postavlja status da nije ispravno.
-
-  <div align="center">
-    <a href="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_7.png"><img alt="dz3_demo" src="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_7.png"></a>
-  </div>
-
-* <strong>Promjena statusa slanja obavijest za pošiljatelja ili primatelja paketa</strong>
-  * sintaksa
-    ```bash
-    PO 'primatelja/pošiljatelja' paket [D | N]
-    ```
-    D – šalju se obavijesti
-    ● N – ne šalju se obavijesti
-  * primjer
-    ```bash
-    PO 'Pero Kos' CROVŽ0001 N
-    ```
-  * opis
-
-    Pošiljatelj Pero Kos ne želi primati obavijesti za paket CROVŽ0001.
-
-  <div align="center">
-    <a href="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_8.png"><img alt="dz3_demo" src="https://raw.githubusercontent.com/mkovac700/uzdiz/master/dokumentacija/komande/Screenshot_8.png"></a>
-  </div>
-
-* <strong>Prekid rada programa</strong>
-  * sintaksa
-    ```bash
-    Q
-    ```
+  * VAŽNO: nwtis rest lib je u /home/NWTiS_2/lib
 
 <p align="right">(<a href="#readme-top">povratak na vrh</a>)</p>
 
@@ -743,6 +935,8 @@ Svaka nova razina ima uvlaku od 4 praznine.</strong>
   <a href="https://www.java.com/en/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original-wordmark.svg" width=100/></a>
   <a href="https://www.eclipse.org/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eclipse/eclipse-original-wordmark.svg" width=100/></a>
   <a href="https://maven.apache.org/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/maven/maven-original.svg" width=100/></a>
+  <a href="https://www.docker.com/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg" width=100/></a>
+          
 </div>
 
 <p align="right">(<a href="#readme-top">povratak na vrh</a>)</p>
