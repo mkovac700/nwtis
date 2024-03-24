@@ -1201,31 +1201,29 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
   * Za početak se prijavite s korisničkim imenom i lozinkom kreiranom u `mkovac_aplikacija_4` ili obavite registraciju ako niste
 
-  * U nastavku se nalazi nekoliko primjera glavnih funkcionalnosti:
+  * Upravljanje poslužiteljem AP1 (`mkovac_aplikacija_1`):
 
-    * Upravljanje poslužiteljem AP1 (`mkovac_aplikacija_1`):
+    <img src="../dokumentacija/projekt/AP5_1.gif">
 
-      <img src="../dokumentacija/projekt/AP5_1.gif">
+  * Pregled aerodroma:
 
-    * Pregled aerodroma:
+    <img src="../dokumentacija/projekt/AP5_2.gif">
 
-      <img src="../dokumentacija/projekt/AP5_2.gif">
+  * Izračun udaljenosti između dva aerodroma:
 
-    * Izračun udaljenosti između dva aerodroma:
+    <img src="../dokumentacija/projekt/AP5_3.gif">
 
-      <img src="../dokumentacija/projekt/AP5_3.gif">
+  * Pregled letova s aerodroma u zadanom intervalu:
 
-    * Pregled letova s aerodroma u zadanom intervalu:
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_12.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_12.png"></a>
+    </div>
 
-      <div align="center">
-        <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_12.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_12.png"></a>
-      </div>
+  * Pregled dnevnika (log):
 
-    * Pregled dnevnika (log):
-
-      <div align="center">
-        <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_11.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_11.png"></a>
-      </div>
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_11.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_11.png"></a>
+    </div>
 
 <p align="right">(<a href="#readme-top">povratak na vrh</a>)</p>
 
