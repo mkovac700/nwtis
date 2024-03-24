@@ -34,9 +34,10 @@
 
 <br>
 
-<div align="center">
+<!--TODO: embed yt video>
+<!-- <div align="center">
   <img alt="dz3_demo" src="./dokumentacija/dz3_demo.gif">
-</div>
+</div> -->
 
 <!-- ABOUT THE PROJECT -->
 ## 📖 Uvod
@@ -461,7 +462,7 @@ držati zadanih osobina i realizirati sljedeće dijelove:
 
 <br> <br>
 
-Za više detalja kliknite <a href=""><strong>ovdje</strong></a>.
+Za više detalja kliknite <a href="../dokumentacija/projekt/NWTiS_2022_2023_v1.0.pdf"><strong>ovdje</strong></a>.
 
 <p align="right">(<a href="#readme-top">povratak na vrh</a>)</p>
 
@@ -706,7 +707,7 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
 * HSQLDB
 
-  * Preuzmite HSQLDB na sljedećoj <a href=""><strong>poveznici</strong></a>
+  * Preuzmite HSQLDB na sljedećoj <a href="https://hsqldb.org/"><strong>poveznici</strong></a>
 
     ⚠️ Za projekt je korištena verzija 2.7.1
 
@@ -720,7 +721,19 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
 * Postman
 
+  * Preuzmite Postman na sljedećoj <a href="https://www.postman.com/downloads/"><strong>poveznici</strong></a>
+
+  * Alternativno se može koristiti naredba (Linux)
+
+    ```bash
+    curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+    ```
+
 * Soap UI
+
+  * Preuzmite Soap UI (Open Source) na sljedećoj <a href="https://www.soapui.org/downloads/soapui/"><strong>poveznici</strong></a>  
+
+  * Pokrenite preuzetu `.sh` skriptu te pratite daljnje korake
 
 ### Priprema
 
@@ -748,7 +761,97 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
   * Podesite bazu podataka:
 
-    * #TODO steps za konfiguriranje baze (user i lozinka, kreiranje shema s linkovima na skripte, uvoz podataka koji su potrebni inicijalno)
+    * Inicijalno pokretanje i kreiranje baze podataka:
+
+      * Smjestite se u direktorij gdje je instaliran HSQLDB, primjerice:
+
+        ```bash
+        cd /opt/hsqldb-2.7.1/hsqldb
+        ```
+
+        te pokrenite bazu koristeći
+
+        ```bash
+        ./hsqldb-server.sh
+        ```
+
+      * U drugom terminalu izvršite sljedeću naredbu:
+
+        ```bash
+        ./sqltool.sh localhost:9001
+        ```
+
+        👉🏽 Navedena će naredba otvoriti SQL terminal
+
+      * Kreirajte novu bazu:
+
+        ```bash
+        CREATE DATABASE nwtis_2;
+        ```
+
+        ⚠️ Važno je da naziv baze bude isti kako bi sve bilo kompatibilno sa postojećim skriptama i konfiguracijskim datotekama
+
+      * Sada se može ugasiti terminal koristeći naredbu
+
+        ```bash
+        \q
+        ```
+
+      * Nakon toga je potrebno ugasiti bazu terminiranjem prvog terminala u kojem je baza pokrenuta (`CTRL+Q`)
+
+    * Povezivanje na bazu `nwtis_2`:
+
+      * Otvorite novi terminal i izvršite naredbu:
+
+      ```bash
+      cd /opt/hsqldb-2.7.1/hsqldb/data
+      sudo java -classpath ../lib/hsqldb.jar org.hsqldb.server.Server \
+      --database.0 file:nwtis_2 --dbname.0 nwtis_2 --port 9001
+      ```
+
+    * Povezivanje na bazu unutar Eclipse IDE:
+
+      * Pokrenite Eclipse IDE i otvorite perspektivu DBeaver
+
+      * Kreirajte novu vezu `Database Navigator > Desni klik > Create > Connection` i unesite podatke kao na slici:
+
+        <img src="../dokumentacija/projekt/Screenshot_13.png">
+
+        ⚠️ Prvi put će Eclipse IDE javiti grešku da ne postoji driver, no trebao bi automatski ponuditi instalaciju istog
+
+        👉🏽 Koristite `Test Connection...` za provjeru spajanja na bazu
+
+      * Izvršite skriptu `nwtis/mkovac-projekt/Scripts/ADD_USER.sql`
+
+      * Kreirajte još jednu vezu koristeći `Database Navigator > Desni klik > Create > Connection`, ovaj put s podacima kao na slici:
+
+        <img src="../dokumentacija/projekt/Screenshot_14.png">
+
+        👉🏽 Korisničko ime i lozinka odgovaraju onoj u skripti `ADD_USER.sql`
+
+        👉🏽 Koristite `Test Connection...` za provjeru spajanja na bazu
+
+    * Kreiranje DDL:
+
+      * Najprije izvršite skriptu `nwtis/mkovac-projekt/Scripts/Tablice_DDL.sql`
+
+      * Potom se mogu izvršiti preostale skripte:
+
+        * `Dnevnik.sql`
+        * `Korisnici.sql`
+        * `Aerodromi_Letovi.sql`
+        * `Letovi_Polasci.sql`
+
+        ⚠️ VAŽNO: U danim skriptama pripazite da ne izvršite i naredbe `DROP`, `DELETE` i slično. Redoslijed izvršavanja ovdje nije bitan.
+
+    * Uvoz potrebnih podataka:
+
+      Izvršite skripte:
+    
+      * `AIRPORTS_Podaci.sql`
+      * `AIRPORTS_DISTANCE_MATRIX_Podaci.sql`
+      
+      ⚠️ VAŽNO: Bitan je navedeni redoslijed izvršavanja skripti.
 
   * Podesite JMS poruke (samo za Payara Full ⚠️):
 
@@ -805,6 +908,11 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
   ⚠️ Provjeriti je li uspješno pokrenuto, jer inače aplikacije koje ovise o bazi podataka neće raditi ispravno, odnosno neće se moći deployati.
 
+* Unutar Eclipse IDE u perspektivi DBeaver sada možete pristupiti bazi i putem `200.20.0.3:9001`
+
+  👉🏽 Potrebno je kreirati nove veze te zamijeniti `localhost` s `200.20.0.3:9001`
+
+    <img src="../dokumentacija/projekt/Screenshot_15.png">
 
 ### mkovac_aplikacija_1
 
@@ -985,7 +1093,7 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
       NAPOMENE:
 
-      ⚠️ U slučaju greške kod deploya, provjeriti jesu li ispravno napravljeni svi prethodni koraci (uvjet je ispravno pokrenuta i podešena baza podataka, pokrenuta i <strong>inicijalizirana (naredba `INIT`)</strong> `mkovac_aplikacija_1` te ispravno podešene JMS poruke). Također, problem se može javiti s bibliotekom `nwtis_rest_lib v 3.0.0` koja se nalazi na repozitoriju fakulteta te ako isti u budućnosti ne bude dostupan, tada treba podesiti lokalno (biblioteka se nalazi u `nwtis/Libs`, dok se u `pom.xml` projekta nalazi zakomentirana instrukcija)
+      ⚠️ U slučaju greške kod deploya, provjeriti jesu li ispravno napravljeni svi prethodni koraci (uvjet je ispravno pokrenuta i podešena baza podataka, pokrenuta i <strong>inicijalizirana (naredba `INIT`)</strong> `mkovac_aplikacija_1` te ispravno podešene JMS poruke). Također, problem se može javiti s bibliotekom `nwtis_rest_lib v 3.0.0` koja se nalazi na repozitoriju fakulteta te ako isti u budućnosti ne bude dostupan, tada treba podesiti lokalno (biblioteka se nalazi u `nwtis/nwtis_rest_lib`, dok se u `pom.xml` projekta nalazi zakomentirana instrukcija)
 
       ⚠️ Aplikacija preuzima letove sa servisa Open Sky Network, međutim program ima i alternativno rješenje ako servis padne, te u tom slučaju treba promijeniti postavku u datoteci `nwtis/mkovac-projekt/mkovac_aplikacija_3/src/main/webapp/WEB-INF/NWTiS.db.config_3.xml`:
 
@@ -1003,6 +1111,10 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
     ⚠️ Isporukom aplikacije u prethodnom koraku (ako je sve bilo ispravno) se automatski započinje s radom aplikacije, dakle krenut će se preuzimati letovi sukladno zadanim postavkama.
 
     <img src="../dokumentacija/projekt/Screenshot_8.png">
+
+  * Preuzete letove možete pregledati u Eclipse IDE koristeći DBeaver
+
+    👉🏽 Možete izvršiti upite iz datoteke `nwtis/mkovac-projekt/Scripts/mkovac_aplikacija_3.sql` (detaljnije pročitajte u <a href="../dokumentacija/projekt/NWTiS_2022_2023_v1.0.pdf"><strong>opisu projekta</strong></a>).
 
   * Zaustavljanje aplikacije:
 
