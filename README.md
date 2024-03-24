@@ -65,7 +65,7 @@ Odaberite jednu od mogućnosti:
   * <a href="./mkovac_zadaca_1/">Zadaća 1</a> - Višedretveni sustav "Automatizacija domova" putem mrežne utičnice (socket)
   * <a href="./mkovac_zadaca_2/">Zadaća 2</a> - Web sustav "Informacije o aerodromima, udaljenostima i letovima" (REST)
   * <a href="./mkovac_zadaca_3/">Zadaća 3</a> - Web sustav "Informacije o aerodromima, lokacijama i meteorološkim podacima" (SOAP)
-  * <a href="./mkovac-projekt/">Projekt</a> - Složeni sustav koji se sastoji od ukupno 5 aplikacija i koji objedinjuje funkcionalnosti sve tri zadaće
+  * <a href="./mkovac-projekt/">Projekt</a> - Složeni sustav koji se sastoji od ukupno 5 aplikacija i koji objedinjuje funkcionalnosti sve tri zadaće (<a href="./mkovac-projekt/README.md">README 📲</a>)
 
   
 
@@ -78,6 +78,7 @@ Odaberite jednu od mogućnosti:
   <a href="https://www.java.com/en/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original-wordmark.svg" width=100/></a>
   <a href="https://www.eclipse.org/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eclipse/eclipse-original-wordmark.svg" width=100/></a>
   <a href="https://maven.apache.org/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/maven/maven-original.svg" width=100/></a>
+  <a href="https://www.docker.com/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg" width=100/></a>
 </div>
 
 <p align="right">(<a href="#readme-top">povratak na vrh</a>)</p>

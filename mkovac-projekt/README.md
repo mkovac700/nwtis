@@ -25,8 +25,8 @@
   <!-- TABLE OF CONTENTS -->
 
   <a href="#-uvod">Uvod</a> • 
-  <a href="#-zadatak">Zadatak</a> • 
-  <a href="#-struktura-rješenja">Struktura rješenja</a> • 
+  <a href="#-opis-projekta">Opis projekta</a> • 
+  <a href="#-instalacijska-i-programska-arhitektura-sustava">Instalacijska i programska arhitektura sustava</a> • 
   <a href="#-konfiguracija">Konfiguracija</a> • 
   <a href="#-upotreba">Upotreba</a> • 
   <a href="#-korišteni-alati">Korišteni alati</a>
@@ -756,7 +756,7 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
     * Konfiguracije se nalaze u direktoriju:
 
       ```bash
-      nwtis/mkovac-projekt/konfig
+      nwtis/konfiguracije
       ```
 
   * Podesite bazu podataka:
@@ -815,7 +815,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
       * Kreirajte novu vezu `Database Navigator > Desni klik > Create > Connection` i unesite podatke kao na slici:
 
-        <img src="../dokumentacija/projekt/Screenshot_13.png">
+        <div align="center">
+          <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_13.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_13.png"></a>
+        </div>
 
         ⚠️ Prvi put će Eclipse IDE javiti grešku da ne postoji driver, no trebao bi automatski ponuditi instalaciju istog
 
@@ -825,7 +827,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
       * Kreirajte još jednu vezu koristeći `Database Navigator > Desni klik > Create > Connection`, ovaj put s podacima kao na slici:
 
-        <img src="../dokumentacija/projekt/Screenshot_14.png">
+        <div align="center">
+          <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_14.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_14.png"></a>
+        </div>
 
         👉🏽 Korisničko ime i lozinka odgovaraju onoj u skripti `ADD_USER.sql`
 
@@ -904,7 +908,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
   ./scripts/pokretac.sh
   ```
 
-  <img src="../dokumentacija/projekt/Screenshot_1.png">
+  <div align="center">
+    <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_1.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_1.png"></a>
+  </div>
 
   ⚠️ Provjeriti je li uspješno pokrenuto, jer inače aplikacije koje ovise o bazi podataka neće raditi ispravno, odnosno neće se moći deployati.
 
@@ -912,7 +918,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
   👉🏽 Potrebno je kreirati nove veze te zamijeniti `localhost` s `200.20.0.3:9001`
 
-    <img src="../dokumentacija/projekt/Screenshot_15.png">
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_15.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_15.png"></a>
+    </div>
 
 ### mkovac_aplikacija_1
 
@@ -968,7 +976,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
     ./scripts/pokreniServer.sh
     ```
 
-    <img src="../dokumentacija/projekt/Screenshot_2.png">
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_2.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_2.png"></a>
+    </div>
 
   * Payara Console dostupna je na `localhost:4848`
 
@@ -984,7 +994,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
   * Provjeriti je li aplikacija isporučena na Payara server (`Payara Console > Applications`)
 
-    <img src="../dokumentacija/projekt/Screenshot_3.png">
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_3.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_3.png"></a>
+    </div>
 
   * Aplikacija je dostupna na adresi `localhost:8080/mkovac_aplikacija_2`
 
@@ -1000,7 +1012,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
     ./scripts/pokretac.sh
     ```
 
-    <img src="../dokumentacija/projekt/Screenshot_4.png">
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_4.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_4.png"></a>
+    </div>
 
   * Aplikacija je sada dostupna i na `200.20.0.4:8080/mkovac_aplikacija_2`
 
@@ -1044,13 +1058,17 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
     [GET] http://200.20.0.4:8080/mkovac_aplikacija_2/api/aerodromi/LDZA/udaljenosti?odBroja=1&broj=1000
     ```
 
-    <img src="../dokumentacija/projekt/Screenshot_5.png">
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_5.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_5.png"></a>
+    </div>
 
     <br>
 
     ⚠️ Ukoliko niste obavili inicijalizaciju servera `mkovac_aplikacija_1` (ili ste ga pauzirali) javlja se pogreška `403 - Forbidden`:
 
-    <img src="../dokumentacija/projekt/Screenshot_6.png">
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_6.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_6.png"></a>
+    </div>
 
 * Gašenje Payara Web servera:
 
@@ -1110,7 +1128,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
     ⚠️ Isporukom aplikacije u prethodnom koraku (ako je sve bilo ispravno) se automatski započinje s radom aplikacije, dakle krenut će se preuzimati letovi sukladno zadanim postavkama.
 
-    <img src="../dokumentacija/projekt/Screenshot_8.png">
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_8.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_8.png"></a>
+    </div>
 
   * Preuzete letove možete pregledati u Eclipse IDE koristeći DBeaver
 
@@ -1120,7 +1140,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
     Na `Payara Console > Applications` odaberite iz popisa `mkovac_aplikacija_3-1.0.0` te kliknite na `Undeploy`
 
-    <img src="../dokumentacija/projekt/Screenshot_7.png">
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_7.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_7.png"></a>
+    </div>
 
 ### mkovac_aplikacija_4
 
@@ -1161,7 +1183,9 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
     Ovdje je primjer zahtjeva `dajMeteo` i odgovora
 
-    <img src="../dokumentacija/projekt/Screenshot_9.png">
+    <div align="center">
+      <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_9.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_9.png"></a>
+    </div>
 
 ### mkovac_aplikacija_5
 
@@ -1177,25 +1201,31 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
   * Za početak se prijavite s korisničkim imenom i lozinkom kreiranom u `mkovac_aplikacija_4` ili obavite registraciju ako niste
 
-  * Upravljanje poslužiteljem AP1 (`mkovac_aplikacija_1`):
+  * U nastavku se nalazi nekoliko primjera glavnih funkcionalnosti:
 
-    <img src="../dokumentacija/projekt/AP5_1.gif">
+    * Upravljanje poslužiteljem AP1 (`mkovac_aplikacija_1`):
 
-  * Pregled aerodroma:
+      <img src="../dokumentacija/projekt/AP5_1.gif">
 
-    <img src="../dokumentacija/projekt/AP5_2.gif">
+    * Pregled aerodroma:
 
-  * Izračun udaljenosti između dva aerodroma:
+      <img src="../dokumentacija/projekt/AP5_2.gif">
 
-    <img src="../dokumentacija/projekt/AP5_3.gif">
+    * Izračun udaljenosti između dva aerodroma:
 
-  * Pregled letova s aerodroma u zadanom intervalu:
+      <img src="../dokumentacija/projekt/AP5_3.gif">
 
-    <img src="../dokumentacija/projekt/Screenshot_12.png">
+    * Pregled letova s aerodroma u zadanom intervalu:
 
-  * Pregled dnevnika (log):
+      <div align="center">
+        <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_12.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_12.png"></a>
+      </div>
 
-    <img src="../dokumentacija/projekt/Screenshot_11.png">
+    * Pregled dnevnika (log):
+
+      <div align="center">
+        <a href="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_11.png"><img alt="nwtis_demo" src="https://raw.githubusercontent.com/mkovac700/nwtis/docs/dokumentacija/projekt/Screenshot_11.png"></a>
+      </div>
 
 <p align="right">(<a href="#readme-top">povratak na vrh</a>)</p>
 
