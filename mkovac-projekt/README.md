@@ -722,7 +722,7 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
 * Soap UI
 
-### Pokretanje
+### Priprema
 
   * Klonirajte ovaj repozitorij:
 
@@ -749,6 +749,39 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
   * Podesite bazu podataka:
 
     * #TODO steps za konfiguriranje baze (user i lozinka, kreiranje shema s linkovima na skripte, uvoz podataka koji su potrebni inicijalno)
+
+  * Podesite JMS poruke (samo za Payara Full ⚠️):
+
+    * Smjestite se u sljedeći direktorij (mjesto gdje je instaliran Payara Full) i pokrenite `asadmin`:
+
+    ```bash
+    cd /opt/payara-full-6.2023.4/glassfish/bin
+
+    ./asadmin 
+    ```
+
+    * Izvršite sljedeće naredbe:
+    ```bash
+    create-jmsdest --desttype queue jms_nwtis_queue
+
+    create-jms-resource --restype jakarta.jms.ConnectionFactory jms/NWTiS_mkovac_qf
+
+    create-jms-resource --restype jakarta.jms.Queue jms/NWTiS_mkovac
+    ```
+
+    * Sada možete provjeriti postojeće JMS hostove:
+
+    ```bash
+    list-jms-hosts
+    ```
+
+    * Ako želite kasnije obrisati resurse, izvršite sljedeće naredbe:
+
+    ```bash
+    delete-jms-resource jms/NWTiS_mkovac
+    delete-jms-resource jms/NWTiS_mkovac_qf
+    delete-jmsdest jms_nwtis_queue
+    ```
 
   * Smjestite se u korijenski direktorij projekta (koristeći File Browser) - potrebno radi pokretanja skripti (više informacija u nastavku)
 
@@ -807,17 +840,21 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
 ### mkovac_aplikacija_2
 
-* Pokretanje baze (lokalno)
+* Smjestiti se u direktorij `mkovac_aplikacija_2`
+
+* Pokretanje baze (lokalno):
+
+  ⚠️ Korišteno za inicijalno kreiranje shema i slično. Nije potrebno pokretati osim ako nije potrebno uređivati bazu. Javit će se greška ako je već pokrenuta baza na Dockeru (time je baza dostupna i na `localhost:9001` i na adresi kontejnera `200.20.0.3:9001`). 
+
+  * U direktoriju `mkovac_aplikacija_2` otvorite terminal (`Desni klik > Open in Terminal`) i izvršite naredbu:
 
   ```bash
   ./scripts/pokreniBazu.sh
   ```
 
-  ⚠️ Korišteno za inicijalno kreiranje shema i slično. Nije potrebno pokretati (javit će se greška) ako je već pokrenuta baza na Dockeru (time je baza dostupna i na `localhost:9001` i na adresi kontejnera `200.20.0.3:9001`). 
+* Pokretanje Payara Web servera (lokalno):
 
-* Pokretanje Payara Web servera (lokalno)
-
-  * Izvršiti naredbu:
+  * U direktoriju `mkovac_aplikacija_2` otvorite terminal (`Desni klik > Open in Terminal`) i izvršite naredbu:
 
     ```bash
     ./scripts/pokreniServer.sh
@@ -849,7 +886,7 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
 * Pokretanje Payara Micro servera (Docker):
 
-  * Izvršiti naredbu:
+  * U direktoriju `mkovac_aplikacija_2` otvorite terminal (`Desni klik > Open in Terminal`) i izvršite naredbu:
 
     ```bash
     ./scripts/pokretac.sh
@@ -857,7 +894,7 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
     <img src="../dokumentacija/projekt/Screenshot_4.png">
 
-  * Aplikacija je sada dostupna i na ``200.20.0.4:8080/mkovac_aplikacija_2``
+  * Aplikacija je sada dostupna i na `200.20.0.4:8080/mkovac_aplikacija_2`
 
   <br>
 
@@ -909,22 +946,144 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 
 * Gašenje Payara Web servera:
 
-  ```bash
-  ./scripts/zaustaviServer.sh
-  ```
+  Iz terminala u kojem se pokretali server, izvršite naredbu:
+
+    ```bash
+    ./scripts/zaustaviServer.sh
+    ```
 
   ⚠️ Za nastavak rada potrebno je ugasiti server, jer će se nadalje koristiti Payara Full, koji ne može biti pokrenut istovremeno sa Payara Web serverom (koriste se identične postavke). Gašenje lokalnog Payara Web servera neće utjecati na rad Payara Micro servera pokrenutog na Dockeru!
 
 
 ### mkovac_aplikacija_3
 
-  * ugasiti srv ako nije
+  * Ugasiti Payara Web server (ako još nije ugašen)
 
-  * postaviti JMS poruke prema datoteci mkovac_app_3/glassfish_jms.txt (extractati info van)
+  * Smjestiti se u direktorij `mkovac_aplikacija_3`
 
-  * pokrenuti full
+  * Pokretanje Payara Full servera (lokalno)
 
-  * VAŽNO: nwtis rest lib je u /home/NWTiS_2/lib
+    ⚠️ Prije pokretanja provjerite jeste li podesili JMS poruke (opisano u sekciji <a href="#priprema">Priprema</a>)
+
+    * U direktoriju `mkovac_aplikacija_3` otvorite terminal (`Desni klik > Open in Terminal`) i izvršite naredbu:
+
+      ```bash
+      ./scripts/pokreniServer.sh
+      ```
+
+    * Payara Console dostupna je na `localhost:4848`
+
+      👉🏽 Vrijede ista pravila kao i za Payara Full, pa se može samo osvježiti stranica (ako nije ugašena)
+
+      * Klikom na `Applications` moguće je vidjeti popis isporučenih (deployanih) aplikacija
+
+      * Klikom na `server (Admin Server) > View Raw Log` moguće je uživo pratiti logove servera (kontrola rada aplikacija, iznimke i sl.)
+
+  * Sada se može obaviti isporuka aplikacije:
+
+    * Unutar Eclipse IDE izvršite konfiguraciju `mkovac_aplikacija_3 - redeploy`
+
+      NAPOMENE:
+
+      ⚠️ U slučaju greške kod deploya, provjeriti jesu li ispravno napravljeni svi prethodni koraci (uvjet je ispravno pokrenuta i podešena baza podataka, pokrenuta i <strong>inicijalizirana (naredba `INIT`)</strong> `mkovac_aplikacija_1` te ispravno podešene JMS poruke). Također, problem se može javiti s bibliotekom `nwtis_rest_lib v 3.0.0` koja se nalazi na repozitoriju fakulteta te ako isti u budućnosti ne bude dostupan, tada treba podesiti lokalno (biblioteka se nalazi u `nwtis/Libs`, dok se u `pom.xml` projekta nalazi zakomentirana instrukcija)
+
+      ⚠️ Aplikacija preuzima letove sa servisa Open Sky Network, međutim program ima i alternativno rješenje ako servis padne, te u tom slučaju treba promijeniti postavku u datoteci `nwtis/mkovac-projekt/mkovac_aplikacija_3/src/main/webapp/WEB-INF/NWTiS.db.config_3.xml`:
+
+      ```bash
+      <entry key="preuzimanje.klijent">OSKlijent</entry>
+
+      #OSKlijent - default, koristi se Open Sky Network za preuzimanje letova
+      #OSKlijentBP - alternativno, koristi se baza podataka s FOI-ja u kojoj se nalaze preuzeti letovi od ranije (čini se da više nije dostupno)
+      ```
+
+    * Provjeriti je li aplikacija isporučena na Payara server (`Payara Console > Applications`)
+
+  * Pratite rad aplikacije u `server (Admin Server) > View Raw Log`
+
+    ⚠️ Isporukom aplikacije u prethodnom koraku (ako je sve bilo ispravno) se automatski započinje s radom aplikacije, dakle krenut će se preuzimati letovi sukladno zadanim postavkama.
+
+    <img src="../dokumentacija/projekt/Screenshot_8.png">
+
+  * Zaustavljanje aplikacije:
+
+    Na `Payara Console > Applications` odaberite iz popisa `mkovac_aplikacija_3-1.0.0` te kliknite na `Undeploy`
+
+    <img src="../dokumentacija/projekt/Screenshot_7.png">
+
+### mkovac_aplikacija_4
+
+* Ako je Payara Full već pokrenut (i sve prethodne aplikacije), sve što je potrebno napraviti jest isporuka aplikacije kroz Eclipse IDE:
+
+  * Unutar Eclipse IDE izvršite konfiguraciju `mkovac_aplikacija_4 - redeploy`
+
+  * Provjeriti je li aplikacija isporučena na Payara server (`Payara Console > Applications`)
+
+  ⚠️ Ako se pojavi greška u kreiranju wsdl-ova kod isporuke (redeploy) unutar Eclipse IDE, potrebno je napraviti sljedeće:
+
+  `Desni klik` na `mkovac_aplikacija_4` i isprobati nešto od sljedećeg:
+    1. `Refresh`
+    2. `Maven > Update Project`
+    3. Ponovno pokrenuti Eclipse IDE
+
+  ⚠️ U slučaju druge greške kod deploya, provjeriti jesu li ispravno napravljeni svi prethodni koraci (uvjet je ispravno pokrenuta i podešena baza podataka te pokrenuta i <strong>inicijalizirana (naredba `INIT`)</strong> `mkovac_aplikacija_1`)
+
+* Sada se može testirati aplikacija:
+
+  * Pokrenite SoapUI i napravite uvoz skripte:
+
+      * Kliknite na gumb `Import`
+
+      * Učitajte datoteku `mkovac-aplikacija-4-soapui-project.xml`
+
+        Datoteka se nalazi na putanji:
+
+        ```bash
+        mkovac-projekt/mkovac_aplikacija_4/
+        ```
+
+  * Za početak dodajte novog korisnika koristeći zahtjev `dodajKorisnika`
+
+    ⚠️ Ovo je važno jer je za određene zahtjeve potrebna autentikacija
+
+  * Potom možete isprobati ostale zahtjeve
+
+    Ovdje je primjer zahtjeva `dajMeteo` i odgovora
+
+    <img src="../dokumentacija/projekt/Screenshot_9.png">
+
+### mkovac_aplikacija_5
+
+* Ako je Payara Full već pokrenut (i sve prethodne aplikacije), sve što je potrebno napraviti jest isporuka aplikacije kroz Eclipse IDE:
+
+  * Unutar Eclipse IDE izvršite konfiguraciju `mkovac_aplikacija_5 - redeploy`
+
+  * Provjeriti je li aplikacija isporučena na Payara server (`Payara Console > Applications`)
+
+  ⚠️ U slučaju greške kod deploya, provjeriti jesu li ispravno napravljeni svi prethodni koraci (minimalni uvjet je ispravno pokrenuta i podešena baza podataka, pokrenuta i <strong>inicijalizirana (naredba `INIT`)</strong> `mkovac_aplikacija_1` te pokrenuta `mkovac_aplikacija_4` (autentikacija)). Aplikacija `mkovac_aplikacija_3` nije od krucijalnog značaja za rad.
+
+* Pristupite aplikaciji koristeći `Launch` unutar `Payara Console > Applications` ili putem adrese http://localhost:8080/mkovac_aplikacija_5/
+
+  * Za početak se prijavite s korisničkim imenom i lozinkom kreiranom u `mkovac_aplikacija_4` ili obavite registraciju ako niste
+
+  * Upravljanje poslužiteljem AP1 (`mkovac_aplikacija_1`):
+
+    <img src="../dokumentacija/projekt/AP5_1.gif">
+
+  * Pregled aerodroma:
+
+    <img src="../dokumentacija/projekt/AP5_2.gif">
+
+  * Izračun udaljenosti između dva aerodroma:
+
+    <img src="../dokumentacija/projekt/AP5_3.gif">
+
+  * Pregled letova s aerodroma u zadanom intervalu:
+
+    <img src="../dokumentacija/projekt/Screenshot_12.png">
+
+  * Pregled dnevnika (log):
+
+    <img src="../dokumentacija/projekt/Screenshot_11.png">
 
 <p align="right">(<a href="#readme-top">povratak na vrh</a>)</p>
 
