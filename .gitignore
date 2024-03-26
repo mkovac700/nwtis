@@ -2,3 +2,6 @@
 **/*.jar
 .metadata/**
 /.metadata/
+
+# Include a specific .jar file
+!/nwtis_rest_lib/nwtis_rest_lib-3.0.0.jar
