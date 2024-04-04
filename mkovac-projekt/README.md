@@ -1238,8 +1238,7 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
   <a href="https://www.docker.com/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg" width=100/></a>
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bash/bash-original.svg" width=100/>
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postman/postman-original.svg" width=100/>
-          
-          
+
 </div>
 
 <p align="right">(<a href="#readme-top">povratak na vrh</a>)</p>
