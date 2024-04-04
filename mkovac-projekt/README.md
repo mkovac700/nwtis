@@ -1232,9 +1232,13 @@ Za pokretanje rješenja bit će vam potrebno sljedeće:
 <div align="center">
   
   <a href="https://www.java.com/en/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original-wordmark.svg" width=100/></a>
-  <a href="https://www.eclipse.org/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eclipse/eclipse-original-wordmark.svg" width=100/></a>
+  <a href="https://www.eclipse.org/"> <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/eclipse/eclipse-original.svg" width=100/></a>
   <a href="https://maven.apache.org/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/maven/maven-original.svg" width=100/></a>
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jquery/jquery-plain-wordmark.svg" width=100/>
   <a href="https://www.docker.com/"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg" width=100/></a>
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bash/bash-original.svg" width=100/>
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postman/postman-original.svg" width=100/>
+          
           
 </div>
 
