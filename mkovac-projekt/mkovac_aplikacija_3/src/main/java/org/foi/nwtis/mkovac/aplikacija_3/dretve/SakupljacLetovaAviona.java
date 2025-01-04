@@ -24,7 +24,6 @@ import org.foi.nwtis.mkovac.aplikacija_3.zrna.JmsPosiljatelj;
 import org.foi.nwtis.mkovac.aplikacija_3.zrna.LetoviPolasciFacade;
 import org.foi.nwtis.rest.klijenti.NwtisRestIznimka;
 import org.foi.nwtis.rest.klijenti.OSKlijent;
-import org.foi.nwtis.rest.klijenti.OSKlijentBP;
 import org.foi.nwtis.rest.podaci.LetAviona;
 import jakarta.annotation.Resource;
 import jakarta.persistence.NoResultException;
@@ -145,14 +144,14 @@ public class SakupljacLetovaAviona extends Thread {
     if (klijent.equals("OSKlijent"))
       osKlijent = new OSKlijent(osKorisnik, osLozinka);
 
-    OSKlijentBP osKlijentBP = null;
-    if (klijent.equals("OSKlijentBP"))
-      osKlijentBP = new OSKlijentBP(bpKorisnik, bpLozinka);
+    // OSKlijentBP osKlijentBP = null;
+    // if (klijent.equals("OSKlijentBP"))
+    // osKlijentBP = new OSKlijentBP(bpKorisnik, bpLozinka);
 
-    if (osKlijent == null && osKlijentBP == null) {
-      Logger.getGlobal().log(Level.SEVERE, "Nepoznat klijent preuzimanja podataka o letovima!");
-      return;
-    }
+    // if (osKlijent == null && osKlijentBP == null) {
+    // Logger.getGlobal().log(Level.SEVERE, "Nepoznat klijent preuzimanja podataka o letovima!");
+    // return;
+    // }
 
     Logger.getGlobal().log(Level.INFO, "Započeto preuzimanje letova...");
 
@@ -178,8 +177,8 @@ public class SakupljacLetovaAviona extends Thread {
           if (klijent.equals("OSKlijent"))
             letoviAviona = osKlijent.getDepartures(aerodrom, trenutniDan, dodajDan(trenutniDan));
 
-          if (klijent.equals("OSKlijentBP"))
-            letoviAviona = osKlijentBP.getDepartures(aerodrom, trenutniDan, dodajDan(trenutniDan));
+          // if (klijent.equals("OSKlijentBP"))
+          // letoviAviona = osKlijentBP.getDepartures(aerodrom, trenutniDan, dodajDan(trenutniDan));
 
           letoviAviona.removeIf(la -> la.getEstArrivalAirport() == null);
 

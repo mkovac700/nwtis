@@ -6,6 +6,7 @@
 	<packaging>war</packaging>
 	<name>mkovac_aplikacija_3</name>
 	<properties>
+		<nwtisrestlib-systemPath>/home/NWTiS_2/mkovac/nwtis_rest_lib-3.0.0.jar</nwtisrestlib-systemPath>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
@@ -34,6 +35,7 @@
 		</repository>
 	</repositories>
 	-->
+	<!--
 	<repositories>
 		<repository>
 			<id>NWTiS</id>
@@ -41,6 +43,7 @@
 			<url>http://watss.foi.hr:8088/repository/nwtis_2023/</url>
 		</repository>
 	</repositories>
+	-->
 	<build>
 		<plugins>
 			<plugin>
@@ -251,12 +254,19 @@
 			<groupId>org.foi.nwtis</groupId>
 			<artifactId>nwtis_rest_lib</artifactId>
 			<version>3.0.0</version>
+			<!--POTREBNO SAMO PRVI PUT KADA LIB NIJE INSTALIRANA U MAVEN, INACE ISKLJUCITI JER REDEPLOY NECE RADITI-->
+			<!--
+			<scope>system</scope>
+			<systemPath>${nwtisrestlib-systemPath}</systemPath>
+			-->
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>org.foi.nwtis</groupId>
 			<artifactId>nwtis_rest_bp_lib</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		-->
 		<!-- 
 		<dependency>
 			<groupId>org.foi.nwtis</groupId>

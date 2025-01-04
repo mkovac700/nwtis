@@ -11,8 +11,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
+		<nwtisrestlib-systemPath>/home/NWTiS_2/mkovac/nwtis_rest_lib-3.0.0.jar</nwtisrestlib-systemPath>
 	</properties>
-
+	<!--
 	<repositories>
 		<repository>
 			<id>NWTiS</id>
@@ -20,7 +21,7 @@
 			<url>http://nwtis.foi.hr:8088/repository/nwtis_2023/</url>
 		</repository>
 	</repositories>
-
+-->
 	<dependencies>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
@@ -37,10 +38,19 @@
 			<artifactId>jersey-common</artifactId>
 			<version>3.0.4</version>
 		</dependency>
+		<!--
 		<dependency>
 			<groupId>org.foi.nwtis</groupId>
 			<artifactId>nwtis_rest_lib</artifactId>
 			<version>3.0.0</version>
+		</dependency>
+		-->
+		<dependency>
+			<groupId>org.foi.nwtis</groupId>
+			<artifactId>nwtis_rest_lib</artifactId>
+			<version>3.0.0</version>
+			<scope>system</scope>
+			<systemPath>${nwtisrestlib-systemPath}</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.activation</groupId>
