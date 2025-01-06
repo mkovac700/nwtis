@@ -8,20 +8,27 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="hr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <title>Letovi s aerodroma na dan - OS</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 	<header>
+		<div class="container-fluid">
 		<a href="${pageContext.servletContext.contextPath}">Početna
 			stranica</a>&nbsp; <a
 			href="${pageContext.servletContext.contextPath}/mvc/letovi">Povratak</a><br> 
-		<h1>Letovi s aerodroma na dan - OS</h1>
-		<%@ include file="zaglavlje.jsp"%>
+		</div>
 	</header>
-	<main>
+	<main class="flex-grow-1">
+	
+		<div class="container mt-5">
+	
+		<h1>Letovi s aerodroma na dan - OS</h1>
 
 		<%
 		String icao = "";
@@ -41,8 +48,8 @@
 				<label for="icao">ICAO:</label><br> <input type="text"
 					id="icao" name="icao" value=<%=icao%>><br> <label
 					for="dan">Dan:</label><br> <input type="text" id="dan"
-					name="dan" placeholder="dd.MM.yyyy" value=<%=dan%>>
-				<button type="submit">Pretraži</button>
+					name="dan" placeholder="dd.MM.yyyy" value=<%=dan%>><br><br>
+				<button type="submit" class="btn btn-primary">Pretraži</button>
 			</form>
 		</div>
 		<br>
@@ -53,7 +60,7 @@
 		if ((icao != null && !icao.isEmpty()) && (dan != null && !dan.isEmpty())) {
 		  if (letoviAviona != null && !letoviAviona.isEmpty()) {
 		%>
-		<table border=1>
+		<table class="table table-hover">
 			<tr>
 				<th>ICAO24</th>
 				<th>Polazni aerodrom</th>
@@ -102,6 +109,13 @@
 		<%
 		}
 		%>
+		
+		</div>
 	</main>
 </body>
+	<footer class="bg-dark text-white text-center py-3">
+        <div class="container">
+            <p class="mb-0"><%@ include file="zaglavlje.jsp"%></p>
+        </div>
+    </footer>
 </html>

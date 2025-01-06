@@ -3,20 +3,27 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="hr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <title>Dnevnik</title>
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 	<header>
+		<div class="container-fluid">
 		<a href="${pageContext.servletContext.contextPath}">Početna
 			stranica</a><br>
-		<h1>Dnevnik</h1>
-		<%@ include file="zaglavlje.jsp"%>
+		</div>
 	</header>
 
-	<main>
+	<main class="flex-grow-1">
+	
+		<div class="container mt-5">
+	
+		<h1>Dnevnik</h1>
 
 		<%
 		String vrsta = "";
@@ -42,7 +49,7 @@
 					<option value="AP4" ${vrsta.equals("AP4") ? 'selected' : '' }>AP4</option>
 					<option value="AP5" ${vrsta.equals("AP5") ? 'selected' : '' }>AP5</option>
 				</select>
-				<button type="submit">Pretraži</button>
+				<button type="submit" class="btn btn-primary btn-sm">Pretraži</button>
 			</form>
 		</div>
 		<br>
@@ -53,7 +60,7 @@
 		if (vrsta != null && !vrsta.isEmpty()) {
 		  if (dnevnik != null && !dnevnik.isEmpty()) {
 		%>
-		<table border=1>
+		<table class="table table-hover">
 			<tr>
 				<th>Zahtjev</th>
 				<th>Metoda</th>
@@ -80,17 +87,17 @@
 			<form action="" method="post">
 				<input type="hidden" name="vrsta" value="<%=vrsta%>" /> <input
 					type="hidden" name="stranica" value="1" />
-				<button type="submit">Početak</button>
-			</form>
+				<button type="submit" class="btn btn-outline-primary">Početak</button>
+			</form> &nbsp;
 			<form action="" method="post">
 				<input type="hidden" name="vrsta" value="<%=vrsta%>" /> <input
 					type="hidden" name="stranica" value="<%=brStranice - 1%>" />
-				<button type="submit">Prethodna stranica</button>
-			</form>
+				<button type="submit" class="btn btn-outline-primary">Prethodna stranica</button>
+			</form> &nbsp;
 			<form action="" method="post">
 				<input type="hidden" name="vrsta" value="<%=vrsta%>" /> <input
 					type="hidden" name="stranica" value="<%=brStranice + 1%>" />
-				<button type="submit">Sljedeća stranica</button>
+				<button type="submit" class="btn btn-outline-primary">Sljedeća stranica</button>
 			</form>
 		</div>
 		<%
@@ -110,8 +117,18 @@
 		<%
 		}
 		%>
+		
+		<br>
+		
+		</div>
 
 	</main>
+	
+	<footer class="bg-dark text-white text-center py-3">
+        <div class="container">
+            <p class="mb-0"><%@ include file="zaglavlje.jsp"%></p>
+        </div>
+    </footer>
 
 </body>
 </html>
